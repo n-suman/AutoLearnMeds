@@ -46,8 +46,6 @@ ml = [
 colab = [
     "colab-ssh>=0.3.27",
     "google-cloud-storage>=2.17",
-    "google-api-python-client>=2.140",
-    "gdown>=5.2",
 ]
 
 [tool.uv]
