@@ -36,7 +36,7 @@ while true; do
     src="$WORKSPACE/$src_rel"
     dst="$BUCKET/$src_rel"
     if [[ -d "$src" ]]; then
-      gsutil rsync -r -d "$src" "$dst" 2>&1 | tail -5 || \
+      gsutil -m rsync -r -d "$src" "$dst" 2>&1 | tail -5 || \
         echo "[sync_to_gcs] WARN: rsync $src failed (non-fatal)"
     fi
   done

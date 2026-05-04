@@ -74,6 +74,7 @@ def test_program_md_mentions_metric(project_root: Path) -> None:
 
 
 import os
+import re
 import subprocess
 
 
@@ -103,5 +104,6 @@ def test_sync_to_gcs_exists_and_executable(project_root: Path) -> None:
     assert os.access(p, os.X_OK)
     text = p.read_text()
     assert text.startswith("#!/"), "Missing shebang"
-    assert "gsutil rsync" in text or "gcloud storage rsync" in text, "Should use gsutil/gcloud rsync"
+    assert re.search(r"\bgsutil\b(?:\s+-\w+)*\s+rsync\b", text) or "gcloud storage rsync" in text, \
+        "Should use gsutil rsync (with optional flags) or gcloud storage rsync"
     assert "set -euo pipefail" in text, "Should use strict bash"
