@@ -1,0 +1,79 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# venvs
+.venv/
+venv/
+env/
+ENV/
+
+# uv
+.uv/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# logs
+*.log
+nohup.out
+
+# data + checkpoints — large; live on GDrive/GCS, not git
+data/raw/
+data/processed/
+checkpoints/
+experiments/runs/*/checkpoints/
+wandb/
+runs/
+
+# but we DO track ledger + per-experiment notes/configs (small, critical)
+!experiments/runs/*/notes.md
+!experiments/runs/*/config.yaml
+!experiments/runs/*/metrics.json
+!experiments/runs/*/train.py
+!experiments/runs/*/train.py.patch
+!experiments/runs/*/stdout.log
+!experiments/ledger.jsonl
+!experiments/leaderboard.md
+!experiments/_active.json
+
+# secrets / config that shouldn't be public
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+service_account.json
+gcloud_credentials.json
+
+# OS-level resume marker (lives at repo root, intentionally NOT in git
+# — it's session-local state, regenerated on each session)
+RESUME_NEEDED.md
