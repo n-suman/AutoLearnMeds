@@ -148,3 +148,12 @@ def test_bootstrap_notebook_is_valid_json(project_root: Path) -> None:
     code_cells = [c for c in cells if c.get("cell_type") == "code"]
     assert any("colab_bootstrap.sh" in "".join(c.get("source", [])) for c in code_cells), \
         "Notebook must call scripts/colab_bootstrap.sh"
+
+
+def test_makefile_has_verify_target(project_root: Path) -> None:
+    p = project_root / "Makefile"
+    assert p.is_file()
+    text = p.read_text()
+    assert "verify:" in text, "Makefile must define a 'verify' target"
+    assert "test:" in text, "Makefile must define a 'test' target"
+    assert "lint:" in text, "Makefile must define a 'lint' target"
