@@ -107,3 +107,13 @@ def test_sync_to_gcs_exists_and_executable(project_root: Path) -> None:
     assert re.search(r"\bgsutil\b(?:\s+-\w+)*\s+rsync\b", text) or "gcloud storage rsync" in text, \
         "Should use gsutil rsync (with optional flags) or gcloud storage rsync"
     assert "set -euo pipefail" in text, "Should use strict bash"
+
+
+def test_update_ssh_config_exists_and_executable(project_root: Path) -> None:
+    p = project_root / "scripts" / "update_ssh_config.sh"
+    assert p.is_file()
+    assert os.access(p, os.X_OK)
+    text = p.read_text()
+    assert text.startswith("#!/"), "Missing shebang"
+    assert "trycloudflare" in text or "cloudflared" in text, "Should reference cloudflared"
+    assert "Host autolearnmeds-colab" in text, "Should write the canonical Host alias"
