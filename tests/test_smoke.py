@@ -117,3 +117,21 @@ def test_update_ssh_config_exists_and_executable(project_root: Path) -> None:
     assert text.startswith("#!/"), "Missing shebang"
     assert "trycloudflare" in text or "cloudflared" in text, "Should reference cloudflared"
     assert "Host autolearnmeds-colab" in text, "Should write the canonical Host alias"
+
+
+def test_colab_bootstrap_exists_and_has_required_steps(project_root: Path) -> None:
+    p = project_root / "scripts" / "colab_bootstrap.sh"
+    assert p.is_file()
+    assert os.access(p, os.X_OK)
+    text = p.read_text()
+    # Required steps per spec §6.4
+    assert text.startswith("#!/"), "Missing shebang"
+    assert "set -euo pipefail" in text, "Should use strict bash"
+    assert "drive.mount" in text, "Step 1: GDrive mount"
+    assert "gcsfuse" in text, "Step 2: GCS mount"
+    assert "ln -sfn" in text, "Step 3: Symlink workspace"
+    assert "uv sync" in text, "Step 4: Install deps"
+    assert "launch_ssh_cloudflared" in text, "Step 5: SSH tunnel"
+    assert "keepalive.py" in text, "Step 6: Daemons — keepalive"
+    assert "sync_to_gcs.sh" in text, "Step 6: Daemons — gcs sync"
+    assert "READY" in text, "Step 7: Success banner"
