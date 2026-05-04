@@ -86,3 +86,17 @@ def test_active_with_ledger_entry_returns_clear_and_start_new(
     _write_metrics(workspace)
     _append_ledger(workspace)
     assert mod.next_action(workspace) == "CLEAR_AND_START_NEW"
+
+
+def test_malformed_active_json_returns_start_new(workspace: Path, project_root: Path) -> None:
+    """A non-dict JSON value in _active.json must not crash; treat as no-active."""
+    mod = _load_module(project_root)
+    (workspace / "experiments" / "_active.json").write_text(json.dumps(["not", "a", "dict"]))
+    assert mod.next_action(workspace) == "START_NEW"
+
+
+def test_garbage_active_json_returns_start_new(workspace: Path, project_root: Path) -> None:
+    """Non-JSON garbage in _active.json must not crash; treat as no-active."""
+    mod = _load_module(project_root)
+    (workspace / "experiments" / "_active.json").write_text("not-json-{}{[")
+    assert mod.next_action(workspace) == "START_NEW"

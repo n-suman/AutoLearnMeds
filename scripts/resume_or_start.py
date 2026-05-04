@@ -23,9 +23,12 @@ def _read_active(workspace: Path) -> dict | None:
     if not active_path.is_file():
         return None
     try:
-        return json.loads(active_path.read_text())
+        data = json.loads(active_path.read_text())
     except json.JSONDecodeError:
         return None
+    if not isinstance(data, dict):
+        return None
+    return data
 
 
 def _metrics_exist(workspace: Path, run_id: str) -> bool:
@@ -36,16 +39,17 @@ def _ledger_has_run(workspace: Path, run_id: str) -> bool:
     ledger_path = workspace / "experiments" / "ledger.jsonl"
     if not ledger_path.is_file():
         return False
-    for line in ledger_path.read_text().splitlines():
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            entry = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        if entry.get("run_id") == run_id:
-            return True
+    with ledger_path.open() as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                entry = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(entry, dict) and entry.get("run_id") == run_id:
+                return True
     return False
 
 
@@ -72,7 +76,9 @@ def next_action(workspace: Path) -> Action:
     if has_metrics and _ledger_has_run(workspace, run_id):
         return "CLEAR_AND_START_NEW"
 
-    # Defensive default: ACTIVE with metrics but ambiguous state — restart safely.
+    # Defensive default: _active.json exists with an unrecognized status (not
+    # PLANNING/ACTIVE) and no metrics.json — likely a partial-write or unknown-
+    # status crash. Restart the experiment from scratch as the safest action.
     return "RESTART"
 
 
@@ -90,11 +96,11 @@ def main() -> int:
     action = next_action(args.workspace)
     print(f"[resume_or_start] action={action}")
 
-    if args.print_only:
-        return 0
+    if not args.print_only:
+        # Phase-1+ wiring goes here: dispatch on `action` to invoke
+        # run_experiment.sh, finalize ledger entry, etc. Currently a no-op.
+        pass
 
-    # Side effects (Phase 1+ wiring): for now, just print.
-    # Future tasks add: invoke run_experiment.sh, finalize ledger entry, etc.
     return 0
 
 
