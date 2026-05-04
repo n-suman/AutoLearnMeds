@@ -95,3 +95,13 @@ def test_keepalive_imports_clean(project_root: Path) -> None:
     # Allowed to fail if it has a __main__ guard; we only care it doesn't crash on import-time evaluation.
     # Empty stdout/stderr or a clean exit is the pass condition.
     assert result.returncode == 0 or "main" in result.stderr.lower() or result.stderr == "", f"Unexpected error: {result.stderr}"
+
+
+def test_sync_to_gcs_exists_and_executable(project_root: Path) -> None:
+    p = project_root / "scripts" / "sync_to_gcs.sh"
+    assert p.is_file()
+    assert os.access(p, os.X_OK)
+    text = p.read_text()
+    assert text.startswith("#!/"), "Missing shebang"
+    assert "gsutil rsync" in text or "gcloud storage rsync" in text, "Should use gsutil/gcloud rsync"
+    assert "set -euo pipefail" in text, "Should use strict bash"
