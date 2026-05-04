@@ -7,6 +7,14 @@ This script bridges the two: it pulls each named Drive folder by ID and
 mirrors it into a stable subpath under the GCS bucket. Idempotent — skips
 folders whose target subpath already contains objects, unless --force.
 
+Two strategies, tried in order:
+  1. Drive mount (fastest, works for folders in the user's MyDrive when the
+     calling notebook has run google.colab.auth.authenticate_user() and
+     google.colab.drive.mount). Resolves folder ID -> name via the Drive
+     API, locates the folder under /content/drive/MyDrive/, then copies
+     directly with gsutil.
+  2. gdown fallback (works only for shared "Anyone with the link" folders).
+
 Required (env vars or flags):
   --bucket | AUTOLEARNMEDS_GCS_BUCKET            gs://bucket-name
   --golden-set-id | AUTOLEARNMEDS_DRIVE_GOLDEN_SET_ID    Drive folder ID for label JSON
@@ -29,6 +37,8 @@ from pathlib import Path
 GOLDEN_SET_SUBPATH = "raw/golden_set"
 RAW_IMAGES_SUBPATH = "raw/images"
 
+DRIVE_MOUNT_ROOT = Path("/content/drive/MyDrive")
+
 
 def gcs_path_has_objects(bucket: str, subpath: str) -> bool:
     """Return True iff gs://bucket/subpath/ contains at least one object."""
@@ -41,15 +51,72 @@ def gcs_path_has_objects(bucket: str, subpath: str) -> bool:
     return result.returncode == 0 and bool(result.stdout.strip())
 
 
-def sync_one(folder_id: str, bucket: str, subpath: str, force: bool, tmp_root: Path) -> None:
-    """Download one Drive folder by ID, then upload to gs://bucket/subpath."""
-    target = f"{bucket.rstrip('/')}/{subpath.strip('/')}"
-    print(f"[sync] {folder_id} -> {target}")
+def find_folder_on_mount(folder_id: str) -> Path | None:
+    """Resolve a Drive folder ID to a local path under the mounted Drive.
 
-    if not force and gcs_path_has_objects(bucket, subpath):
-        print("[sync]   already populated, skipping (use --force to re-sync)")
-        return
+    Uses the Drive API (with whatever ADC the calling environment has, set up
+    by google.colab.auth.authenticate_user() in the notebook) to look up the
+    folder's name and parent chain, then walks /content/drive/MyDrive/ for
+    the matching path. Returns None if the API call fails or the resolved
+    path does not exist on disk.
+    """
+    if not DRIVE_MOUNT_ROOT.exists():
+        return None
+    try:
+        import google.auth
+        from googleapiclient.discovery import build
+    except ImportError as e:
+        print(f"[sync]   Drive API libs not available ({e}); falling back to gdown.", file=sys.stderr)
+        return None
 
+    try:
+        creds, _ = google.auth.default(
+            scopes=["https://www.googleapis.com/auth/drive.readonly"]
+        )
+        service = build("drive", "v3", credentials=creds, cache_discovery=False)
+    except Exception as e:
+        print(f"[sync]   Drive API auth failed: {e}", file=sys.stderr)
+        return None
+
+    try:
+        meta = service.files().get(fileId=folder_id, fields="name,parents").execute()
+    except Exception as e:
+        print(f"[sync]   Drive API folder lookup failed for {folder_id}: {e}", file=sys.stderr)
+        return None
+
+    name = meta.get("name")
+    if not name:
+        return None
+
+    # Simple case first: folder is directly in MyDrive root.
+    candidate = DRIVE_MOUNT_ROOT / name
+    if candidate.is_dir():
+        return candidate
+
+    # Walk up the parent chain to build the full path.
+    path_parts: list[str] = [name]
+    parents = meta.get("parents") or []
+    parent_id = parents[0] if parents else None
+    visited = {folder_id}
+    while parent_id and parent_id not in visited:
+        visited.add(parent_id)
+        try:
+            pmeta = service.files().get(fileId=parent_id, fields="name,parents").execute()
+        except Exception:
+            break
+        pname = pmeta.get("name", "")
+        if pname == "My Drive":
+            break
+        path_parts.insert(0, pname)
+        pp = pmeta.get("parents") or []
+        parent_id = pp[0] if pp else None
+
+    full_path = DRIVE_MOUNT_ROOT.joinpath(*path_parts)
+    return full_path if full_path.is_dir() else None
+
+
+def gdown_into(folder_id: str, dest: Path) -> int:
+    """Download a Drive folder via gdown. Returns number of files written, or -1 on failure."""
     try:
         import gdown
     except ImportError:
@@ -57,43 +124,73 @@ def sync_one(folder_id: str, bucket: str, subpath: str, force: bool, tmp_root: P
             "[sync] FATAL: gdown not installed. On Colab, run: uv sync --extra colab",
             file=sys.stderr,
         )
-        sys.exit(1)
-
-    local = tmp_root / subpath.replace("/", "_")
-    local.mkdir(parents=True, exist_ok=True)
-    print(f"[sync]   downloading from Drive folder {folder_id} to {local} ...")
+        return -1
+    dest.mkdir(parents=True, exist_ok=True)
+    print(f"[sync]   trying gdown to download folder {folder_id} into {dest} ...")
     try:
         result = gdown.download_folder(
             id=folder_id,
-            output=str(local),
+            output=str(dest),
             quiet=False,
             use_cookies=False,
         )
     except Exception as e:
         print(
-            f"[sync]   FAIL: gdown raised {type(e).__name__}: {e}\n"
-            "[sync]   If folder is large or shared, try mounting Drive and "
-            "using gsutil cp directly from /content/drive/MyDrive/<folder>.",
+            f"[sync]   gdown FAIL: {type(e).__name__}: {e}\n"
+            "[sync]     gdown only handles folders shared 'Anyone with the link'.\n"
+            "[sync]     For private MyDrive folders, the Drive-mount strategy is used instead.",
+            file=sys.stderr,
+        )
+        return -1
+    if not result:
+        print("[sync]   gdown FAIL: returned no files (folder likely private)", file=sys.stderr)
+        return -1
+    return sum(1 for p in dest.rglob("*") if p.is_file())
+
+
+def gsutil_upload(src: Path, target: str) -> bool:
+    """Upload a local directory to gs://target/ using gsutil -m cp -r. Returns True on success."""
+    cp = subprocess.run(["gsutil", "-m", "cp", "-r", f"{src}/.", f"{target}/"])
+    return cp.returncode == 0
+
+
+def sync_one(folder_id: str, bucket: str, subpath: str, force: bool, tmp_root: Path) -> None:
+    """Mirror one Drive folder ID to gs://bucket/subpath/ via the best-available strategy."""
+    target = f"{bucket.rstrip('/')}/{subpath.strip('/')}"
+    print(f"[sync] {folder_id} -> {target}")
+
+    if not force and gcs_path_has_objects(bucket, subpath):
+        print("[sync]   already populated, skipping (use --force to re-sync)")
+        return
+
+    # Strategy 1: Drive mount + gsutil (private MyDrive folders, fastest).
+    mount_path = find_folder_on_mount(folder_id)
+    if mount_path is not None:
+        print(f"[sync]   found on mounted Drive at {mount_path}")
+        if gsutil_upload(mount_path, target):
+            print("[sync]   uploaded via Drive mount + gsutil")
+            return
+        print("[sync]   gsutil upload failed for mount path; falling back to gdown ...", file=sys.stderr)
+
+    # Strategy 2: gdown (only works for folders shared with anyone-with-the-link).
+    local = tmp_root / subpath.replace("/", "_")
+    n = gdown_into(folder_id, local)
+    if n < 0:
+        print(
+            "[sync]   FAIL: neither Drive-mount nor gdown could fetch this folder.\n"
+            "[sync]   Workarounds:\n"
+            "[sync]     a) move the folder into your MyDrive root, OR\n"
+            "[sync]     b) share the folder publicly ('Anyone with the link'), OR\n"
+            "[sync]     c) upload to GCS manually: gsutil -m cp -r ./folder/ "
+            f"{target}/",
             file=sys.stderr,
         )
         sys.exit(2)
-    if not result:
-        print(
-            "[sync]   FAIL: gdown returned no files. Possible causes: "
-            "Drive API quota, the folder is shared (not in MyDrive), or the ID is wrong.",
-            file=sys.stderr,
-        )
-        sys.exit(3)
-
-    n = sum(1 for p in local.rglob("*") if p.is_file())
-    print(f"[sync]   downloaded {n} files locally")
-
-    print(f"[sync]   uploading to {target} ...")
-    cp = subprocess.run(["gsutil", "-m", "cp", "-r", f"{local}/.", f"{target}/"])
-    if cp.returncode != 0:
-        print(f"[sync]   FAIL: gsutil cp exit {cp.returncode}", file=sys.stderr)
+    print(f"[sync]   downloaded {n} files via gdown")
+    if not gsutil_upload(local, target):
+        print("[sync]   FAIL: gsutil cp from local stage failed", file=sys.stderr)
         sys.exit(4)
-    print(f"[sync]   uploaded {n} files to {target}")
+    print(f"[sync]   uploaded {n} files via gdown + gsutil")
 
 
 def main() -> int:

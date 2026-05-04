@@ -39,10 +39,14 @@ ml = [
     "python-Levenshtein>=0.25",
 ]
 
-# Colab-specific
+# Colab-specific.
+# colab-ssh isn't actually usable from this venv (it imports `apt`, a system
+# Python module not in the venv) — the bootstrap installs it into system
+# Python via `--user`. Listed here only to document the project depends on it.
 colab = [
     "colab-ssh>=0.3.27",
     "google-cloud-storage>=2.17",
+    "google-api-python-client>=2.140",
     "gdown>=5.2",
 ]
 

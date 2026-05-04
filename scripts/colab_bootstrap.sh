@@ -99,8 +99,33 @@ else
 fi
 
 # 6. Launch SSH server + Cloudflare Tunnel
+# IMPORTANT: colab-ssh imports `apt`, the python-apt module that ships with
+# Debian/Ubuntu's system Python. Our project venv (Python 3.11 created by uv)
+# does NOT have it. Run from a system Python that does.
 echo "[6/8] Launching SSH + cloudflared..."
-uv run python -c "
+SYSTEM_PYTHON=""
+for candidate in \
+    /usr/local/bin/python3.12 /usr/local/bin/python3.11 /usr/local/bin/python3.10 \
+    /usr/bin/python3.12 /usr/bin/python3.11 /usr/bin/python3.10 \
+    /usr/bin/python3
+do
+  if [[ -x "$candidate" ]] && "$candidate" -c "import apt" 2>/dev/null; then
+    SYSTEM_PYTHON="$candidate"
+    break
+  fi
+done
+
+if [[ -z "$SYSTEM_PYTHON" ]]; then
+  echo "FATAL: no system Python with the 'apt' module found (needed by colab-ssh)" >&2
+  echo "  Tried: /usr/local/bin/python3.{10,11,12} /usr/bin/python3.{10,11,12} /usr/bin/python3" >&2
+  exit 1
+fi
+echo "  using system Python: $SYSTEM_PYTHON"
+
+# Install colab-ssh into the system Python's user site (no venv overlay).
+"$SYSTEM_PYTHON" -m pip install -q --user colab-ssh
+
+"$SYSTEM_PYTHON" -c "
 from colab_ssh import launch_ssh_cloudflared
 launch_ssh_cloudflared(password='$SSH_PASSWORD')
 " | tee /tmp/colab_ssh_output.txt
