@@ -49,8 +49,22 @@ echo "[2/7] Mounting GCS bucket $BUCKET..."
 if ! command -v gcsfuse >/dev/null 2>&1; then
   echo "  installing gcsfuse..."
   echo "deb https://packages.cloud.google.com/apt gcsfuse-bookworm main" | sudo tee /etc/apt/sources.list.d/gcsfuse.list
-  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-  sudo apt-get update -q && sudo apt-get install -y -q gcsfuse
+  curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+  # apt update can fail on pre-installed Colab launchpad PPAs (deadsnakes,
+  # graphics-drivers, ubuntugis). Those aren't needed by us. Tolerate partial
+  # failures and use short HTTP timeouts so flaky PPAs fail fast (~15s vs ~100s).
+  sudo apt-get update -q \
+       -o Acquire::http::Timeout=15 \
+       -o Acquire::https::Timeout=15 \
+       -o APT::Update::Error-Mode=any || \
+    echo "  WARN: apt-get update had partial failures (likely unrelated PPAs); continuing"
+  # Try apt install; fall back to a direct .deb if the gcsfuse source itself was down.
+  if ! sudo apt-get install -y -q gcsfuse; then
+    echo "  apt install gcsfuse failed; downloading .deb directly..."
+    GCSFUSE_VER="2.7.0"
+    curl -fsSL "https://github.com/GoogleCloudPlatform/gcsfuse/releases/download/v${GCSFUSE_VER}/gcsfuse_${GCSFUSE_VER}_amd64.deb" -o /tmp/gcsfuse.deb
+    sudo dpkg -i /tmp/gcsfuse.deb || sudo apt-get install -f -y
+  fi
 fi
 mkdir -p /mnt/gcs
 GCS_BUCKET_NAME="${BUCKET#gs://}"
