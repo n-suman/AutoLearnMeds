@@ -55,3 +55,19 @@ def test_placeholder_readmes_exist(project_root: Path) -> None:
     """Every placeholder README from spec §2.2 must exist."""
     missing = [r for r in EXPECTED_READMES if not (project_root / r).is_file()]
     assert not missing, f"Missing READMEs: {missing}"
+
+
+THREE_FILES = ["prepare.py", "train.py", "program.md", "program_explore.md", "program_confirm.md"]
+
+
+def test_three_file_discipline_stubs(project_root: Path) -> None:
+    """The autoresearch three-file convention requires these to exist (even as stubs)."""
+    for f in THREE_FILES:
+        assert (project_root / f).is_file(), f"Missing: {f}"
+
+
+def test_program_md_mentions_metric(project_root: Path) -> None:
+    """program.md must declare the optimization metric clearly."""
+    text = (project_root / "program.md").read_text()
+    assert "macro_f1" in text.lower() or "macro-f1" in text.lower()
+    assert "final_macro_f1" in text  # must reference exact stdout token
