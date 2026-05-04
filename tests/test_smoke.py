@@ -126,10 +126,13 @@ def test_colab_bootstrap_exists_and_has_required_steps(project_root: Path) -> No
     # Required steps per spec §6.4
     assert text.startswith("#!/"), "Missing shebang"
     assert "set -euo pipefail" in text, "Should use strict bash"
-    # GDrive mount is performed by the notebook cell, not by this script;
-    # this script verifies the mount is in place.
-    assert "drive.mount" in text, "Should reference drive.mount in error message"
-    assert "/content/drive" in text, "Should check the canonical Drive mount path"
+    # The bootstrap clones to a LOCAL SSD path by default (not Drive) to avoid
+    # Drive's API quota during uv sync. AUTOLEARNMEDS_PROJECT_DIR can override.
+    assert "AUTOLEARNMEDS_PROJECT_DIR" in text, "Should support PROJECT_DIR override"
+    assert "/content/AutoLearnMeds" in text, "Default project dir on local SSD"
+    # GCP auth is verified via gsutil before any other step.
+    assert "auth.authenticate_user" in text, "Should reference auth.authenticate_user in error message"
+    assert "gsutil ls" in text, "Should verify GCP auth via gsutil ls"
     assert "gcsfuse" in text, "GCS mount"
     assert "ln -sfn" in text, "Symlink workspace"
     assert "uv sync" in text, "Install deps"

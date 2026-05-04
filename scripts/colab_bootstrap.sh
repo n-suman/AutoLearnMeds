@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # AutoLearnMeds — one-cell Colab Pro+ bootstrap.
 #
-# Run from a Colab notebook cell (after the cell has done drive.mount and
-# auth.authenticate_user — those need the IPython kernel):
+# Run from a Colab notebook cell (after the cell has done auth.authenticate_user
+# — that needs the IPython kernel):
 #   !curl -sSL https://raw.githubusercontent.com/<user>/<repo>/<branch>/scripts/colab_bootstrap.sh | bash
 #
 # At end, prints an SSH command to copy into your Mac's ~/.ssh/config.
@@ -14,9 +14,15 @@
 #
 # Optional:
 #   AUTOLEARNMEDS_BRANCH        repo branch to clone (default: main)
+#   AUTOLEARNMEDS_PROJECT_DIR   where to clone (default: /content/AutoLearnMeds
+#                               on local SSD; do NOT put on Drive — uv sync writes
+#                               thousands of files which trip Drive's API quota)
 #
-# Note: data is uploaded directly to gs://${BUCKET}/raw/* by the user
-# (no Drive→GCS sync inside this bootstrap).
+# Persistence model:
+# - Code: GitHub (committed + pushed; re-cloned on each session — fast).
+# - Data: gs://${BUCKET}/raw/* (uploaded by user directly to GCS).
+# - Experiment ledger + checkpoints: GCS (synced live by sync_to_gcs.sh).
+# - Drive is NOT in the working path — too quota-prone for ML workloads.
 
 set -euo pipefail
 
@@ -24,25 +30,28 @@ BUCKET="${AUTOLEARNMEDS_GCS_BUCKET:?Set AUTOLEARNMEDS_GCS_BUCKET=gs://your-bucke
 REPO_URL="${AUTOLEARNMEDS_REPO_URL:?Set AUTOLEARNMEDS_REPO_URL=https://github.com/...}"
 SSH_PASSWORD="${AUTOLEARNMEDS_SSH_PASSWORD:?Set AUTOLEARNMEDS_SSH_PASSWORD=...}"
 BRANCH="${AUTOLEARNMEDS_BRANCH:-main}"
-DRIVE_PROJECT_DIR="/content/drive/MyDrive/AutoLearnMeds"
+PROJECT_DIR="${AUTOLEARNMEDS_PROJECT_DIR:-/content/AutoLearnMeds}"
 WORKSPACE="/workspace"
 
 echo "============================================================"
 echo "AutoLearnMeds bootstrap — $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 echo "  branch=$BRANCH"
+echo "  project_dir=$PROJECT_DIR"
 echo "============================================================"
 
-# 1. Verify Google Drive is mounted (notebook cell does the actual mount because
-#    google.colab.drive.mount needs the IPython kernel; subprocesses can't.)
-echo "[1/7] Verifying Google Drive mount..."
-if ! mountpoint -q /content/drive 2>/dev/null && [[ ! -d /content/drive/MyDrive ]]; then
-  echo "FATAL: /content/drive is not mounted." >&2
+# 1. Verify GCP auth (notebook cell does auth.authenticate_user, which sets ADC).
+#    drive.mount is intentionally NOT used — putting the project on Drive triggers
+#    Google Drive's per-user API rate limit when uv sync writes ~thousands of
+#    small dependency files.
+echo "[1/7] Verifying GCP auth (gsutil ls of bucket)..."
+if ! gsutil ls "$BUCKET" >/dev/null 2>&1; then
+  echo "FATAL: cannot 'gsutil ls $BUCKET'." >&2
   echo "  This script expects the calling notebook cell to have run:" >&2
-  echo "    from google.colab import drive; drive.mount('/content/drive')" >&2
-  echo "  (drive.mount needs the IPython kernel, which subprocesses don't have.)" >&2
+  echo "    from google.colab import auth; auth.authenticate_user()" >&2
+  echo "  (auth.authenticate_user needs the IPython kernel; subprocesses can't.)" >&2
   exit 1
 fi
-echo "  OK: /content/drive is mounted"
+echo "  OK: gsutil reaches $BUCKET"
 
 # 2. Mount GCS bucket (gcsfuse)
 echo "[2/7] Mounting GCS bucket $BUCKET..."
@@ -73,19 +82,20 @@ if ! mountpoint -q /mnt/gcs; then
     echo "  WARN: gcsfuse mount failed (auth?). GCS sync will still work via gsutil."
 fi
 
-# 3. Clone repo into Drive (so it survives runtime restarts) and symlink to /workspace
+# 3. Clone repo to LOCAL SSD (not Drive) and symlink to /workspace.
+#    Local SSD = fast random IO, no Drive API quota. Re-cloning every session
+#    is cheap (under 5s for our small repo).
 echo "[3/7] Setting up workspace (branch=$BRANCH)..."
-mkdir -p /content/drive/MyDrive
-if [[ ! -d "$DRIVE_PROJECT_DIR/.git" ]]; then
-  git clone -b "$BRANCH" "$REPO_URL" "$DRIVE_PROJECT_DIR"
+if [[ ! -d "$PROJECT_DIR/.git" ]]; then
+  git clone -b "$BRANCH" "$REPO_URL" "$PROJECT_DIR"
 else
-  cd "$DRIVE_PROJECT_DIR" && \
+  cd "$PROJECT_DIR" && \
     git fetch origin && \
     git checkout "$BRANCH" && \
     git pull --ff-only origin "$BRANCH" || \
     echo "  WARN: git pull failed (continuing with existing copy)"
 fi
-ln -sfn "$DRIVE_PROJECT_DIR" "$WORKSPACE"
+ln -sfn "$PROJECT_DIR" "$WORKSPACE"
 cd "$WORKSPACE"
 
 # 4. Install uv + sync deps (full ml + colab extras on Colab)
@@ -145,7 +155,7 @@ nohup bash scripts/sync_to_gcs.sh > /tmp/sync_to_gcs.log 2>&1 &
 # 7. Success banner
 echo "============================================================"
 echo "[7/7] READY"
-echo "  Workspace:     $WORKSPACE"
+echo "  Workspace:     $WORKSPACE  ->  $PROJECT_DIR"
 echo "  GCS bucket:    $BUCKET"
 echo "  Branch:        $BRANCH"
 echo "  Cloudflared:   ${CLOUDFLARED_HOST:-<see /tmp/colab_ssh_output.txt>}"
