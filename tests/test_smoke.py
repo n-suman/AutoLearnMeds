@@ -13,3 +13,45 @@ def test_design_spec_exists(project_root: Path) -> None:
     """The design spec from brainstorming must be present."""
     spec = project_root / "docs" / "superpowers" / "specs" / "2026-05-05-pharma-vlm-autoresearch-design.md"
     assert spec.is_file()
+
+
+EXPECTED_DIRS = [
+    "data",
+    "data/raw",
+    "data/processed",
+    "checkpoints",
+    "experiments",
+    "experiments/runs",
+    "paper",
+    "paper/figures",
+    "paper/tables",
+    "paper/sections",
+    "scripts",
+    "notebooks",
+    "tests",
+    "papers",
+    "docs",
+]
+
+EXPECTED_READMES = [
+    "data/README.md",
+    "checkpoints/README.md",
+    "experiments/README.md",
+    "paper/README.md",
+    "scripts/README.md",
+    "notebooks/README.md",
+    "papers/README.md",
+    "README.md",
+]
+
+
+def test_folder_skeleton_exists(project_root: Path) -> None:
+    """Every directory from spec §2.2 must exist."""
+    missing = [d for d in EXPECTED_DIRS if not (project_root / d).is_dir()]
+    assert not missing, f"Missing directories: {missing}"
+
+
+def test_placeholder_readmes_exist(project_root: Path) -> None:
+    """Every placeholder README from spec §2.2 must exist."""
+    missing = [r for r in EXPECTED_READMES if not (project_root / r).is_file()]
+    assert not missing, f"Missing READMEs: {missing}"
