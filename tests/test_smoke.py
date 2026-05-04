@@ -73,6 +73,7 @@ def test_program_md_mentions_metric(project_root: Path) -> None:
     assert "final_macro_f1" in text  # must reference exact stdout token
 
 
+import json
 import os
 import re
 import subprocess
@@ -135,3 +136,15 @@ def test_colab_bootstrap_exists_and_has_required_steps(project_root: Path) -> No
     assert "keepalive.py" in text, "Step 6: Daemons — keepalive"
     assert "sync_to_gcs.sh" in text, "Step 6: Daemons — gcs sync"
     assert "READY" in text, "Step 7: Success banner"
+
+
+def test_bootstrap_notebook_is_valid_json(project_root: Path) -> None:
+    p = project_root / "notebooks" / "00_bootstrap.ipynb"
+    assert p.is_file()
+    data = json.loads(p.read_text())
+    assert data.get("nbformat") == 4
+    cells = data.get("cells", [])
+    assert len(cells) >= 1, "Notebook must have at least one cell"
+    code_cells = [c for c in cells if c.get("cell_type") == "code"]
+    assert any("colab_bootstrap.sh" in "".join(c.get("source", [])) for c in code_cells), \
+        "Notebook must call scripts/colab_bootstrap.sh"
