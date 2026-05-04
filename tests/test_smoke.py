@@ -126,7 +126,10 @@ def test_colab_bootstrap_exists_and_has_required_steps(project_root: Path) -> No
     # Required steps per spec §6.4 + Drive→GCS sync step
     assert text.startswith("#!/"), "Missing shebang"
     assert "set -euo pipefail" in text, "Should use strict bash"
-    assert "drive.mount" in text, "GDrive mount"
+    # GDrive mount is performed by the notebook cell, not by this script;
+    # this script verifies the mount is in place.
+    assert "drive.mount" in text, "Should reference drive.mount in error message"
+    assert "/content/drive" in text, "Should check the canonical Drive mount path"
     assert "gcsfuse" in text, "GCS mount"
     assert "ln -sfn" in text, "Symlink workspace"
     assert "uv sync" in text, "Install deps"

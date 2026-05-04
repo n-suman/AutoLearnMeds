@@ -36,11 +36,17 @@ echo "AutoLearnMeds bootstrap — $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 echo "  branch=$BRANCH"
 echo "============================================================"
 
-# 1. Mount Google Drive (interactive auth on first run; cached after)
-echo "[1/8] Mounting Google Drive..."
-python -c "from google.colab import drive; drive.mount('/content/drive', force_remount=False)" || {
-  echo "FATAL: Drive mount failed" >&2; exit 1;
-}
+# 1. Verify Google Drive is mounted (notebook cell does the actual mount because
+#    google.colab.drive.mount needs the IPython kernel; subprocesses can't.)
+echo "[1/8] Verifying Google Drive mount..."
+if ! mountpoint -q /content/drive 2>/dev/null && [[ ! -d /content/drive/MyDrive ]]; then
+  echo "FATAL: /content/drive is not mounted." >&2
+  echo "  This script expects the calling notebook cell to have run:" >&2
+  echo "    from google.colab import drive; drive.mount('/content/drive')" >&2
+  echo "  (drive.mount needs the IPython kernel, which subprocesses don't have.)" >&2
+  exit 1
+fi
+echo "  OK: /content/drive is mounted"
 
 # 2. Mount GCS bucket (gcsfuse)
 echo "[2/8] Mounting GCS bucket $BUCKET..."
