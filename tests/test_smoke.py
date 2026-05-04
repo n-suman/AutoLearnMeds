@@ -1,6 +1,10 @@
 """Phase 0 smoke tests — repo layout, scripts, file integrity."""
 from __future__ import annotations
 
+import json
+import os
+import re
+import subprocess
 from pathlib import Path
 
 
@@ -73,12 +77,6 @@ def test_program_md_mentions_metric(project_root: Path) -> None:
     assert "final_macro_f1" in text  # must reference exact stdout token
 
 
-import json
-import os
-import re
-import subprocess
-
-
 def test_keepalive_exists_and_executable(project_root: Path) -> None:
     """scripts/keepalive.py must exist and be executable."""
     p = project_root / "scripts" / "keepalive.py"
@@ -125,17 +123,41 @@ def test_colab_bootstrap_exists_and_has_required_steps(project_root: Path) -> No
     assert p.is_file()
     assert os.access(p, os.X_OK)
     text = p.read_text()
-    # Required steps per spec §6.4
+    # Required steps per spec §6.4 + Drive→GCS sync step
     assert text.startswith("#!/"), "Missing shebang"
     assert "set -euo pipefail" in text, "Should use strict bash"
-    assert "drive.mount" in text, "Step 1: GDrive mount"
-    assert "gcsfuse" in text, "Step 2: GCS mount"
-    assert "ln -sfn" in text, "Step 3: Symlink workspace"
-    assert "uv sync" in text, "Step 4: Install deps"
-    assert "launch_ssh_cloudflared" in text, "Step 5: SSH tunnel"
-    assert "keepalive.py" in text, "Step 6: Daemons — keepalive"
-    assert "sync_to_gcs.sh" in text, "Step 6: Daemons — gcs sync"
-    assert "READY" in text, "Step 7: Success banner"
+    assert "drive.mount" in text, "GDrive mount"
+    assert "gcsfuse" in text, "GCS mount"
+    assert "ln -sfn" in text, "Symlink workspace"
+    assert "uv sync" in text, "Install deps"
+    assert "launch_ssh_cloudflared" in text, "SSH tunnel"
+    assert "keepalive.py" in text, "Daemons — keepalive"
+    assert "sync_to_gcs.sh" in text, "Daemons — gcs sync"
+    assert "sync_drive_to_gcs.py" in text, "Drive→GCS one-time data sync"
+    assert "AUTOLEARNMEDS_BRANCH" in text, "Branch parameter for git clone"
+    assert "READY" in text, "Success banner"
+
+
+def test_sync_drive_to_gcs_exists_and_executable(project_root: Path) -> None:
+    """scripts/sync_drive_to_gcs.py must exist, be executable, and be import-clean."""
+    p = project_root / "scripts" / "sync_drive_to_gcs.py"
+    assert p.is_file()
+    assert os.access(p, os.X_OK)
+    text = p.read_text()
+    assert text.startswith("#!/"), "Missing shebang"
+    # Required behaviors
+    assert "gdown" in text, "Should use gdown for Drive folder downloads"
+    assert "gsutil" in text, "Should use gsutil to upload to GCS"
+    assert "AUTOLEARNMEDS_GCS_BUCKET" in text, "Should read GCS bucket from env"
+    assert "AUTOLEARNMEDS_DRIVE_GOLDEN_SET_ID" in text, "Should read golden_set folder id"
+    assert "AUTOLEARNMEDS_DRIVE_RAW_IMAGES_ID" in text, "Should read raw_images folder id"
+    assert "--force" in text, "Should support --force re-sync"
+    # Import-clean check (has __main__ guard, no side effects on import)
+    result = subprocess.run(
+        ["python", "-c", f"import importlib.util, sys; spec = importlib.util.spec_from_file_location('s', '{p}'); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)"],
+        capture_output=True, text=True, timeout=5,
+    )
+    assert result.returncode == 0, f"sync_drive_to_gcs.py should import cleanly: {result.stderr}"
 
 
 def test_bootstrap_notebook_is_valid_json(project_root: Path) -> None:

@@ -13,7 +13,7 @@ from __future__ import annotations
 import os
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 HEARTBEAT_PATH = Path(os.environ.get("AUTOLEARNMEDS_HEARTBEAT", "/workspace/heartbeat.txt"))
@@ -22,7 +22,7 @@ INTERVAL_SECONDS = int(os.environ.get("AUTOLEARNMEDS_HEARTBEAT_INTERVAL", "60"))
 
 def beat() -> None:
     HEARTBEAT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    HEARTBEAT_PATH.write_text(datetime.now(timezone.utc).isoformat() + "\n")
+    HEARTBEAT_PATH.write_text(datetime.now(UTC).isoformat() + "\n")
 
 
 def main() -> int:
