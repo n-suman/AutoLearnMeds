@@ -206,7 +206,6 @@ dependencies = [
 
 [package.optional-dependencies]
 colab = [
-    { name = "colab-ssh" },
     { name = "google-cloud-storage" },
 ]
 dev = [
@@ -234,7 +233,6 @@ ml = [
 [package.metadata]
 requires-dist = [
     { name = "accelerate", marker = "extra == 'ml'", specifier = ">=0.31" },
-    { name = "colab-ssh", marker = "extra == 'colab'", specifier = ">=0.3.27" },
     { name = "datasets", marker = "extra == 'ml'", specifier = ">=2.20" },
     { name = "google-cloud-storage", marker = "extra == 'colab'", specifier = ">=2.17" },
     { name = "matplotlib", marker = "extra == 'ml'", specifier = ">=3.9" },
@@ -435,15 +433,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/bb/63/f9e1ea081ce35720d8b92acde70daaedace594dc93b693c869e0d5910718/click-8.3.3.tar.gz", hash = "sha256:398329ad4837b2ff7cbe1dd166a4c0f8900c3ca3a218de04466f38f6497f18a2", size = 328061, upload-time = "2026-04-22T15:11:27.506Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ae/44/c1221527f6a71a01ec6fbad7fa78f1d50dfa02217385cf0fa3eec7087d59/click-8.3.3-py3-none-any.whl", hash = "sha256:a2bf429bb3033c89fa4936ffb35d5cb471e3719e1f3c8a7c3fff0b8314305613", size = 110502, upload-time = "2026-04-22T15:11:25.044Z" },
-]
-
-[[package]]
-name = "colab-ssh"
-version = "0.3.27"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ae/4c/032806749be8c7cb1beb0615051e96280df9ff5dc7d1ba87ed29cea3b492/colab_ssh-0.3.27.tar.gz", hash = "sha256:21dcdbdc651cd820e2eebb54cf1193d1b505c17546c99ad7159fa693daa2f9da", size = 16387, upload-time = "2021-10-28T13:53:53.361Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/ef/10/eca847b3ab100e9e8e312ecfc7296ba3f535e35bc51adf62a8d33e4658f2/colab_ssh-0.3.27-py3-none-any.whl", hash = "sha256:04032c47461527c256f66f412eb04b1d935596e29a66e71ce887680766d6def7", size = 26332, upload-time = "2021-10-28T13:53:52.15Z" },
 ]
 
 [[package]]

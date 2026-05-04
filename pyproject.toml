@@ -39,12 +39,9 @@ ml = [
     "python-Levenshtein>=0.25",
 ]
 
-# Colab-specific.
-# colab-ssh isn't actually usable from this venv (it imports `apt`, a system
-# Python module not in the venv) — the bootstrap installs it into system
-# Python via `--user`. Listed here only to document the project depends on it.
+# Colab-specific. SSH tunnel is set up by direct cloudflared + sshd invocation
+# in colab_bootstrap.sh; we no longer depend on the colab-ssh Python package.
 colab = [
-    "colab-ssh>=0.3.27",
     "google-cloud-storage>=2.17",
 ]
 

@@ -106,44 +106,72 @@ if ! command -v uv >/dev/null 2>&1; then
 fi
 uv sync --extra ml --extra colab
 
-# 5. Launch SSH server + Cloudflare Tunnel
-# IMPORTANT: colab-ssh imports `apt`, the python-apt module that ships with
-# Debian/Ubuntu's system Python. Our project venv (Python 3.11 created by uv)
-# does NOT have it. Run from a system Python that does.
+# 5. Launch SSH server + Cloudflare Tunnel — pure shell (no colab-ssh).
+# colab-ssh got killed by something (OOM? sandbox?) on the user's last run,
+# and its only value over plain bash is convenience. Bypass it: install
+# cloudflared, configure sshd ourselves, run cloudflared tunnel, scrape URL.
 echo "[5/7] Launching SSH + cloudflared..."
-SYSTEM_PYTHON=""
-for candidate in \
-    /usr/local/bin/python3.12 /usr/local/bin/python3.11 /usr/local/bin/python3.10 \
-    /usr/bin/python3.12 /usr/bin/python3.11 /usr/bin/python3.10 \
-    /usr/bin/python3
-do
-  if [[ -x "$candidate" ]] && "$candidate" -c "import apt" 2>/dev/null; then
-    SYSTEM_PYTHON="$candidate"
-    break
-  fi
+
+# Install openssh-server if not present
+if ! command -v sshd >/dev/null 2>&1 && [[ ! -x /usr/sbin/sshd ]]; then
+  echo "  installing openssh-server..."
+  sudo apt-get install -y -q openssh-server || \
+    echo "  WARN: openssh-server install failed; sshd may already be present"
+fi
+
+# Configure sshd to accept root login with password (cloudflared tunnels SSH).
+echo "  configuring sshd (root login + password auth)..."
+echo "root:$SSH_PASSWORD" | sudo chpasswd
+sudo sed -i \
+  -e 's/^#\?PermitRootLogin.*/PermitRootLogin yes/' \
+  -e 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' \
+  /etc/ssh/sshd_config
+
+# Restart sshd. service may not exist; fall back to direct invocation.
+sudo service ssh restart 2>/dev/null || sudo /usr/sbin/sshd -D &
+sleep 1
+
+# Install cloudflared binary if not already present.
+if ! command -v cloudflared >/dev/null 2>&1; then
+  echo "  installing cloudflared (Cloudflare Tunnel client)..."
+  sudo curl -fsSL -o /usr/local/bin/cloudflared \
+    https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+  sudo chmod +x /usr/local/bin/cloudflared
+fi
+
+# Launch the tunnel in background. cloudflared writes its public hostname
+# (somefoo.trycloudflare.com) to its own stderr; we tail for it.
+echo "  launching cloudflared tunnel..."
+: > /tmp/cloudflared.log
+nohup cloudflared tunnel --url tcp://localhost:22 \
+                         --no-autoupdate \
+                         --logfile /tmp/cloudflared.log \
+                         > /tmp/cloudflared.stdout.log 2>&1 &
+CLOUDFLARED_PID=$!
+
+# Wait up to 30s for the tunnel to come up and emit the trycloudflare hostname.
+CLOUDFLARED_HOST=""
+for _ in $(seq 1 15); do
+  sleep 2
+  CLOUDFLARED_HOST="$(grep -oE '[a-zA-Z0-9-]+\.trycloudflare\.com' \
+                       /tmp/cloudflared.log /tmp/cloudflared.stdout.log 2>/dev/null \
+                     | head -1 || true)"
+  [[ -n "$CLOUDFLARED_HOST" ]] && break
 done
 
-if [[ -z "$SYSTEM_PYTHON" ]]; then
-  echo "FATAL: no system Python with the 'apt' module found (needed by colab-ssh)" >&2
-  echo "  Tried: /usr/local/bin/python3.{10,11,12} /usr/bin/python3.{10,11,12} /usr/bin/python3" >&2
+if [[ -z "$CLOUDFLARED_HOST" ]]; then
+  echo "FATAL: cloudflared tunnel did not establish in 30s." >&2
+  echo "  Tail of /tmp/cloudflared.log:" >&2
+  tail -30 /tmp/cloudflared.log /tmp/cloudflared.stdout.log >&2 || true
   exit 1
 fi
-echo "  using system Python: $SYSTEM_PYTHON"
 
-# Install colab-ssh into the system Python's user site (no venv overlay).
-"$SYSTEM_PYTHON" -m pip install -q --user colab-ssh
-
-"$SYSTEM_PYTHON" -c "
-from colab_ssh import launch_ssh_cloudflared
-launch_ssh_cloudflared(password='$SSH_PASSWORD')
-" | tee /tmp/colab_ssh_output.txt
-
-# Extract the cloudflared host from the colab-ssh output and pin it.
-CLOUDFLARED_HOST="$(grep -oE '[a-zA-Z0-9-]+\.trycloudflare\.com' /tmp/colab_ssh_output.txt | head -1 || true)"
-if [[ -n "$CLOUDFLARED_HOST" ]]; then
-  echo "$CLOUDFLARED_HOST" > "$WORKSPACE/.colab_ssh_host"
-  gsutil cp "$WORKSPACE/.colab_ssh_host" "$BUCKET/.colab_ssh_host" 2>/dev/null || true
-fi
+# Persist the host alongside the legacy /tmp/colab_ssh_output.txt path used
+# by other tooling (and grepped by older docs).
+echo "ssh root@$CLOUDFLARED_HOST" | tee /tmp/colab_ssh_output.txt
+echo "$CLOUDFLARED_HOST" > "$WORKSPACE/.colab_ssh_host"
+gsutil cp "$WORKSPACE/.colab_ssh_host" "$BUCKET/.colab_ssh_host" 2>/dev/null || true
+echo "  cloudflared tunnel ESTABLISHED: $CLOUDFLARED_HOST (pid $CLOUDFLARED_PID)"
 
 # 6. Background daemons
 echo "[6/7] Starting keepalive + GCS sync daemons..."

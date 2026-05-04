@@ -136,13 +136,14 @@ def test_colab_bootstrap_exists_and_has_required_steps(project_root: Path) -> No
     assert "gcsfuse" in text, "GCS mount"
     assert "ln -sfn" in text, "Symlink workspace"
     assert "uv sync" in text, "Install deps"
-    assert "launch_ssh_cloudflared" in text, "SSH tunnel"
+    # SSH tunnel is set up via direct cloudflared invocation (no colab-ssh).
+    assert "cloudflared tunnel" in text, "SSH tunnel via cloudflared"
+    assert "PermitRootLogin yes" in text, "sshd config: allow root login"
+    assert "PasswordAuthentication yes" in text, "sshd config: allow password auth"
+    assert "trycloudflare.com" in text, "Should grep cloudflared output for the public host"
     assert "keepalive.py" in text, "Daemons — keepalive"
     assert "sync_to_gcs.sh" in text, "Daemons — gcs sync"
     assert "AUTOLEARNMEDS_BRANCH" in text, "Branch parameter for git clone"
-    # Bootstrap must run colab-ssh from a system Python (not venv) because
-    # colab-ssh imports `apt`, the python-apt module that lives in system Python.
-    assert "import apt" in text, "Should detect a system Python that has the apt module"
     assert "READY" in text, "Success banner"
 
 
