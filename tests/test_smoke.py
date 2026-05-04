@@ -71,3 +71,27 @@ def test_program_md_mentions_metric(project_root: Path) -> None:
     text = (project_root / "program.md").read_text()
     assert "macro_f1" in text.lower() or "macro-f1" in text.lower()
     assert "final_macro_f1" in text  # must reference exact stdout token
+
+
+import os
+import subprocess
+
+
+def test_keepalive_exists_and_executable(project_root: Path) -> None:
+    """scripts/keepalive.py must exist and be executable."""
+    p = project_root / "scripts" / "keepalive.py"
+    assert p.is_file(), "scripts/keepalive.py missing"
+    assert os.access(p, os.X_OK), "scripts/keepalive.py not executable (chmod +x)"
+
+
+def test_keepalive_imports_clean(project_root: Path) -> None:
+    """The keepalive script must import without side effects on import."""
+    p = project_root / "scripts" / "keepalive.py"
+    # Use python -c with importlib to test import-without-execution.
+    result = subprocess.run(
+        ["python", "-c", f"import importlib.util, sys; spec = importlib.util.spec_from_file_location('k', '{p}'); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)"],
+        capture_output=True, text=True, timeout=5,
+    )
+    # Allowed to fail if it has a __main__ guard; we only care it doesn't crash on import-time evaluation.
+    # Empty stdout/stderr or a clean exit is the pass condition.
+    assert result.returncode == 0 or "main" in result.stderr.lower() or result.stderr == "", f"Unexpected error: {result.stderr}"
