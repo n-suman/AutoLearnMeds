@@ -198,7 +198,7 @@ wheels = [
 [[package]]
 name = "autolearnmeds"
 version = "0.1.0"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "pyyaml" },
     { name = "rich" },
