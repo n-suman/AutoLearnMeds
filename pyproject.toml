@@ -1,6 +1,7 @@
 [project]
 name = "autolearnmeds"
 version = "0.1.0"
+readme = "README.md"
 description = "Autoresearch-driven custom VLM for pharmaceutical product label information extraction"
 requires-python = ">=3.11"
 authors = [{ name = "Suman" }]
