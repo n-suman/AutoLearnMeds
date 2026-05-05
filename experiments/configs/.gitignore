@@ -1,0 +1,3 @@
+# Allow committed canonical configs.
+!*.yaml
+!.gitignore
