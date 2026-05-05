@@ -59,3 +59,31 @@ def test_decoder_block_forward_shape(train_mod) -> None:
     causal = train_mod.causal_mask(7, x.device)
     out = block(x, mem, causal)
     assert out.shape == (2, 7, 128)
+
+
+def test_decoder_forward_shape(train_mod) -> None:
+    """Decoder(token_ids, memory) returns (B, T, vocab_size) logits."""
+    import torch
+    vocab_size = 256
+    decoder = train_mod.Decoder(
+        vocab_size=vocab_size,
+        hidden_dim=128,
+        n_layers=2,
+        n_heads=4,
+        ffn_ratio=4,
+        dropout=0.0,
+        tied_embeddings=True,
+    )
+    token_ids = torch.randint(0, vocab_size, (2, 7))
+    memory = torch.randn(2, 196, 128)
+    logits = decoder(token_ids, memory)
+    assert logits.shape == (2, 7, vocab_size)
+
+
+def test_decoder_tied_embeddings_share_weight(train_mod) -> None:
+    """When tied_embeddings=True, output projection weight IS the embedding weight."""
+    decoder = train_mod.Decoder(
+        vocab_size=128, hidden_dim=64, n_layers=2, n_heads=4,
+        ffn_ratio=4, dropout=0.0, tied_embeddings=True,
+    )
+    assert decoder.embedding.weight is decoder.output_proj_weight

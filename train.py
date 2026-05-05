@@ -266,6 +266,96 @@ class DecoderBlock:
         return x
 
 
+# === Decoder (stack of blocks, tied embeddings) ===
+
+class Decoder:
+    """Donut-style autoregressive decoder.
+
+    Token embeddings -> N x DecoderBlock -> final LayerNorm -> output projection
+    (optionally tied to the input embedding weight).
+    """
+
+    def __init__(
+        self,
+        vocab_size: int,
+        hidden_dim: int,
+        n_layers: int,
+        n_heads: int,
+        ffn_ratio: int,
+        dropout: float,
+        tied_embeddings: bool,
+    ) -> None:
+        torch = _import_torch()
+        nn = torch.nn
+
+        self.vocab_size = vocab_size
+        self.hidden_dim = hidden_dim
+        self.n_layers = n_layers
+
+        self.embedding = nn.Embedding(vocab_size, hidden_dim)
+        self.blocks = [
+            DecoderBlock(
+                hidden_dim=hidden_dim,
+                n_heads=n_heads,
+                ffn_ratio=ffn_ratio,
+                dropout=dropout,
+            )
+            for _ in range(n_layers)
+        ]
+        self.final_ln = nn.LayerNorm(hidden_dim)
+
+        if tied_embeddings:
+            self.output_proj_weight = self.embedding.weight
+            self.output_proj_bias = None
+        else:
+            self.output_proj_weight = nn.Parameter(torch.empty(vocab_size, hidden_dim))
+            nn.init.normal_(self.output_proj_weight, mean=0.0, std=0.02)
+            self.output_proj_bias = nn.Parameter(torch.zeros(vocab_size))
+
+    def parameters(self):
+        seen: set[int] = set()
+        for m in (self.embedding, self.final_ln, *self.blocks):
+            for p in m.parameters():
+                if id(p) in seen:
+                    continue
+                seen.add(id(p))
+                yield p
+        if self.output_proj_weight is not self.embedding.weight:
+            yield self.output_proj_weight
+            if self.output_proj_bias is not None:
+                yield self.output_proj_bias
+
+    def to(self, device):
+        self.embedding.to(device)
+        self.final_ln.to(device)
+        for b in self.blocks:
+            b.to(device)
+        if self.output_proj_weight is not self.embedding.weight:
+            self.output_proj_weight = self.output_proj_weight.to(device)
+            if self.output_proj_bias is not None:
+                self.output_proj_bias = self.output_proj_bias.to(device)
+        return self
+
+    def train(self, mode: bool = True):
+        self.embedding.train(mode)
+        self.final_ln.train(mode)
+        for b in self.blocks:
+            b.train(mode)
+        return self
+
+    def __call__(self, token_ids, memory):
+        """token_ids: (B, T) int64, memory: (B, S, H) float. Returns (B, T, V) logits."""
+        torch = _import_torch()
+        B, T = token_ids.shape
+        x = self.embedding(token_ids)
+        mask = causal_mask(T, x.device)
+        for block in self.blocks:
+            x = block(x, memory, mask)
+        x = self.final_ln(x)
+        logits = torch.nn.functional.linear(x, self.output_proj_weight, self.output_proj_bias)
+        return logits
+
+
 # === Main ===
 
 def main(argv: list[str] | None = None) -> int:
