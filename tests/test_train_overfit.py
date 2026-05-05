@@ -41,6 +41,7 @@ def test_overfit_on_synthetic_fixtures(
     )
 
     import torch
+
     import prepare
 
     tok = prepare.get_tokenizer(project_root / "data" / "processed" / "tokenizer.json")
@@ -69,7 +70,7 @@ def test_overfit_on_synthetic_fixtures(
     optimizer = torch.optim.AdamW(list(model.trainable_parameters()), lr=1e-3)
     train_iter = train_mod._infinite(dl)
     losses: list[float] = []
-    for step in range(50):
+    for _step in range(50):
         model.train(True)
         batch = next(train_iter)
         images = batch["image"].to(device).float()

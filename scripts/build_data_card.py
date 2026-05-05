@@ -75,9 +75,9 @@ def build_data_card(
         "## Composition",
         "",
         f"- **Total labeled records:** {len(all_recs)}",
-        f"- **Image format:** JPEG, RGB, varying resolutions (resized at "
-        f"training time to 224×224 with letterbox padding).",
-        f"- **Fields per record:** variable; up to 12 OCR fields.",
+        "- **Image format:** JPEG, RGB, varying resolutions (resized at "
+        "training time to 224×224 with letterbox padding).",
+        "- **Fields per record:** variable; up to 12 OCR fields.",
         "",
     ]
 

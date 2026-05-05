@@ -4,8 +4,6 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
-import pytest
-
 
 def _load_module(project_root: Path):
     spec = importlib.util.spec_from_file_location(

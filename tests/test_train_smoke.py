@@ -92,6 +92,7 @@ def test_decoder_tied_embeddings_share_weight(train_mod) -> None:
 def test_pharma_vlm_predict_text_returns_strings(train_mod, project_root: Path) -> None:
     """An untrained model still produces strings of length B (one per image)."""
     import torch
+
     import prepare
     tok = prepare.get_tokenizer(project_root / "data" / "processed" / "tokenizer.json")
     model = train_mod.PharmaVLM(
@@ -116,6 +117,7 @@ def test_pharma_vlm_predict_text_returns_strings(train_mod, project_root: Path) 
 def test_pharma_vlm_forward_returns_loss(train_mod, project_root: Path) -> None:
     """forward(images, target_ids) returns a scalar loss tensor."""
     import torch
+
     import prepare
     tok = prepare.get_tokenizer(project_root / "data" / "processed" / "tokenizer.json")
     model = train_mod.PharmaVLM(
