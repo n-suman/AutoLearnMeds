@@ -248,9 +248,228 @@ class QwenWrapper:
         return outputs
 
 
-# === Main (placeholder — T4-T6 fill in model + training loop + eval) ===
+# === Dataset ===
 
-def main() -> int:
+def build_train_dataset(cfg: "QwenConfig", processor):
+    """Wrap Track A's PharmaLabelDataset for Track B's per-step iteration.
+
+    The Qwen training loop iterates this dataset index-by-index and tokenizes
+    per-step (no DataLoader collation — Qwen's variable-length pixel_values
+    makes batching awkward; gradient accumulation is used instead). The
+    `processor` arg is unused here (kept in signature so the loop can pass
+    it through if a future refactor needs it).
+    """
+    import prepare
+    return prepare.PharmaLabelDataset(
+        jsonl_path=cfg.train_jsonl,
+        images_root=cfg.images_root,
+        path_strip_prefix=cfg.path_strip_prefix,
+    )
+
+
+# === Per-step tokenization ===
+
+def _build_qwen_sft_inputs(processor, image_pil, target_text: str):
+    """Build a single-example SFT inputs dict for Qwen2-VL.
+
+    Constructs a 3-turn chat (system / user-with-image / assistant-with-target),
+    applies Qwen's chat template, runs the processor (with vision-info), then
+    masks all non-assistant tokens to -100 in `labels` so the loss is computed
+    only over the assistant span.
+    """
+    from qwen_vl_utils import process_vision_info
+
+    messages = [
+        {"role": "system", "content": [{"type": "text", "text": PHARMA_SYSTEM_PROMPT}]},
+        {"role": "user", "content": [{"type": "image", "image": image_pil}]},
+        {"role": "assistant", "content": [{"type": "text", "text": target_text}]},
+    ]
+    full_text = processor.apply_chat_template(
+        messages, tokenize=False, add_generation_prompt=False
+    )
+    image_inputs, video_inputs = process_vision_info(messages)
+    inputs = processor(
+        text=[full_text],
+        images=image_inputs,
+        videos=video_inputs,
+        padding=True,
+        return_tensors="pt",
+    )
+
+    # Determine prompt-only token length so we mask the prompt out of labels.
+    prompt_messages = messages[:2]
+    prompt_text = processor.apply_chat_template(
+        prompt_messages, tokenize=False, add_generation_prompt=True
+    )
+    prompt_image_inputs, prompt_video_inputs = process_vision_info(prompt_messages)
+    prompt_inputs = processor(
+        text=[prompt_text],
+        images=prompt_image_inputs,
+        videos=prompt_video_inputs,
+        padding=True,
+        return_tensors="pt",
+    )
+    prompt_len = int(prompt_inputs["input_ids"].shape[1])
+
+    labels = inputs["input_ids"].clone()
+    labels[:, :prompt_len] = -100
+    inputs["labels"] = labels
+    return inputs
+
+
+# === Training loop ===
+
+def train_qwen_loop(bundle: dict, cfg: "QwenConfig", wandb_run) -> dict:
+    """Hand-rolled single-process training loop with gradient accumulation.
+
+    Iterates the train dataset index-by-index, tokenizes per step, accumulates
+    gradients over `cfg.grad_accum_steps` micro-steps, then does a single optim
+    step under cosine-with-warmup LR schedule. Evaluates every `cfg.eval_every`
+    steps via `prepare.evaluate(QwenWrapper(...), ...)` and saves best LoRA
+    adapters to `cfg.checkpoint_dir/best_lora`.
+
+    Returns the best-by-macro-f1 metrics dict, regardless of whether the final
+    step happened to be the best.
+    """
+    import math
+    import time
+
+    import torch
+    from PIL import Image
+
+    model = bundle["model"]
+    processor = bundle["processor"]
+
+    train_ds = build_train_dataset(cfg, processor)
+    print(f"[track-b] train dataset size = {len(train_ds)}")
+
+    trainable_params = [p for p in model.parameters() if p.requires_grad]
+    optim = torch.optim.AdamW(
+        trainable_params,
+        lr=cfg.peak_lr,
+        betas=tuple(cfg.adam_betas),
+        weight_decay=cfg.weight_decay,
+    )
+
+    def lr_at(step: int) -> float:
+        if step < cfg.warmup_steps:
+            return cfg.peak_lr * (step + 1) / max(1, cfg.warmup_steps)
+        progress = (step - cfg.warmup_steps) / max(1, cfg.max_steps - cfg.warmup_steps)
+        progress = min(1.0, max(0.0, progress))
+        return cfg.min_lr + 0.5 * (cfg.peak_lr - cfg.min_lr) * (
+            1.0 + math.cos(math.pi * progress)
+        )
+
+    best_f1 = 0.0
+    best_metrics = {"macro_f1": 0.0, "macro_edit_f1": 0.0}
+    start = time.time()
+
+    model.train(True)
+    rng_indices = list(range(len(train_ds)))
+    random.shuffle(rng_indices)
+    cursor = 0
+    step = 0
+    loss_value = 0.0
+
+    while step < cfg.max_steps:
+        optim.zero_grad(set_to_none=True)
+        for _ in range(cfg.grad_accum_steps):
+            if cursor >= len(rng_indices):
+                random.shuffle(rng_indices)
+                cursor = 0
+            idx = rng_indices[cursor]
+            cursor += 1
+
+            sample = train_ds[idx]
+            image_tensor = sample["image"]
+            target_text = sample["target_text"]
+
+            arr = (
+                image_tensor.clamp(-1, 1)
+                .add(1)
+                .mul(127.5)
+                .byte()
+                .permute(1, 2, 0)
+                .cpu()
+                .numpy()
+            )
+            img_pil = Image.fromarray(arr)
+
+            inputs = _build_qwen_sft_inputs(processor, img_pil, target_text)
+            inputs = {k: v.to(model.device) for k, v in inputs.items()}
+
+            with torch.autocast(device_type="cuda", dtype=torch.bfloat16):
+                out = model(**inputs)
+            loss = out.loss / cfg.grad_accum_steps
+            loss.backward()
+            loss_value = loss.item()
+
+        torch.nn.utils.clip_grad_norm_(trainable_params, cfg.grad_clip)
+        cur_lr = lr_at(step)
+        for g in optim.param_groups:
+            g["lr"] = cur_lr
+        optim.step()
+        step += 1
+
+        if step % cfg.log_every == 0:
+            eff_loss = loss_value * cfg.grad_accum_steps
+            print(
+                f"[track-b] step={step} loss={eff_loss:.4f} lr={cur_lr:.2e}"
+            )
+            if wandb_run is not None:
+                wandb_run.log(
+                    {"train/loss": eff_loss, "train/lr": cur_lr, "step": step}
+                )
+
+        if step % cfg.eval_every == 0 or step == cfg.max_steps:
+            model.train(False)
+            wrapper = QwenWrapper(model, processor, cfg)
+            import prepare
+            metrics = prepare.evaluate(
+                wrapper,
+                cfg.val_jsonl,
+                cfg.images_root,
+                cfg.path_strip_prefix,
+                max_new_tokens=cfg.max_new_tokens_eval,
+            )
+            macro = metrics["macro_f1"]
+            macro_edit = metrics.get("macro_edit_f1", 0.0)
+            print(
+                f"[track-b] step={step} val_macro_f1={macro:.4f} "
+                f"val_macro_edit_f1={macro_edit:.4f}"
+            )
+            if wandb_run is not None:
+                wandb_run.log(
+                    {
+                        "val/macro_f1": macro,
+                        "val/macro_edit_f1": macro_edit,
+                        "step": step,
+                    }
+                )
+            if macro > best_f1:
+                best_f1 = macro
+                best_metrics = {"macro_f1": macro, "macro_edit_f1": macro_edit}
+                ckpt_dir = Path(cfg.checkpoint_dir) / "best_lora"
+                ckpt_dir.parent.mkdir(parents=True, exist_ok=True)
+                model.save_pretrained(ckpt_dir)
+                print(
+                    f"[track-b] saved best LoRA adapters to {ckpt_dir} "
+                    f"(macro_f1={macro:.4f})"
+                )
+            model.train(True)
+
+    wall = time.time() - start
+    print(
+        f"[track-b] DONE wall={wall:.1f}s "
+        f"best_macro_f1={best_metrics['macro_f1']:.4f} "
+        f"best_macro_edit_f1={best_metrics['macro_edit_f1']:.4f}"
+    )
+    return best_metrics
+
+
+# === Main ===
+
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Track B (Qwen2-VL+LoRA) trainer.")
     parser.add_argument(
         "--config",
@@ -264,7 +483,12 @@ def main() -> int:
         default=None,
         help="Optional override for cfg.seed.",
     )
-    args = parser.parse_args()
+    parser.add_argument(
+        "--no-wandb",
+        action="store_true",
+        help="Disable W&B logging",
+    )
+    args = parser.parse_args(argv)
 
     cfg = QwenConfig.from_yaml(args.config)
     if args.seed is not None:
@@ -273,9 +497,26 @@ def main() -> int:
 
     print(f"[track-b] track={cfg.track} model={cfg.model_name} seed={cfg.seed}")
 
-    # Placeholder final metrics — T6 replaces these with the real eval values.
-    print("final_macro_f1=0.0000")
-    print("final_macro_edit_f1=0.0000")
+    wandb_run = None
+    if not args.no_wandb:
+        try:
+            import wandb
+            wandb_run = wandb.init(
+                project=cfg.wandb_project,
+                config=dataclasses.asdict(cfg),
+                mode=cfg.wandb_mode,
+            )
+        except Exception as e:
+            print(f"[track-b] WARN: wandb init failed ({e}); continuing without it")
+
+    bundle = load_qwen_with_lora(cfg)
+    metrics = train_qwen_loop(bundle, cfg, wandb_run)
+
+    if wandb_run is not None:
+        wandb_run.finish()
+
+    print(f"final_macro_f1={metrics['macro_f1']:.4f}")
+    print(f"final_macro_edit_f1={metrics['macro_edit_f1']:.4f}")
     return 0
 
 
