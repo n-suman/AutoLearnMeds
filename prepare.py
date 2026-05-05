@@ -136,3 +136,86 @@ def get_tokenizer(path: Path | str):
     from tokenizers import Tokenizer
 
     return Tokenizer.from_file(str(Path(path)))
+
+
+# === Normalization + F1 ===
+
+_WHITESPACE_RE = re.compile(r"\s+")
+
+
+def normalize_field_value(s: str | None) -> str:
+    """Light normalization: lowercase + strip + collapse internal whitespace.
+
+    Phase-1 deliberately does NOT strip prefixes like "B.No.:" or parse dates;
+    those are Phase-7 sweep candidates.
+    """
+    if not s:
+        return ""
+    return _WHITESPACE_RE.sub(" ", s.strip()).lower()
+
+
+def compute_field_f1(
+    predictions: list[dict[str, str]],
+    truths: list[dict[str, str]],
+    field: str,
+) -> float:
+    """F1 for a single field across N records.
+
+    A predicted text for `field` matches truth iff their normalized values
+    are equal AND truth contains the field. Records where neither has the
+    field contribute nothing (no TP/FP/FN).
+
+    Returns 0.0 when precision+recall == 0.
+    """
+    if len(predictions) != len(truths):
+        raise ValueError(f"len mismatch: {len(predictions)} vs {len(truths)}")
+
+    tp = fp = fn = 0
+    for pred, truth in zip(predictions, truths):
+        p = pred.get(field)
+        t = truth.get(field)
+        if p is None and t is None:
+            continue
+        if p is not None and t is None:
+            fp += 1
+            continue
+        if p is None and t is not None:
+            fn += 1
+            continue
+        # Both present.
+        if normalize_field_value(p) == normalize_field_value(t):
+            tp += 1
+        else:
+            fp += 1
+            fn += 1
+
+    if tp + fp == 0 or tp + fn == 0:
+        return 0.0
+    precision = tp / (tp + fp)
+    recall = tp / (tp + fn)
+    if precision + recall == 0:
+        return 0.0
+    return 2 * precision * recall / (precision + recall)
+
+
+def compute_metrics(
+    predictions: list[dict[str, str]],
+    truths: list[dict[str, str]],
+) -> dict[str, Any]:
+    """Compute macro_f1 (over HIGH_FREQUENCY_FIELDS) + per-field F1 (over all 12).
+
+    Returns:
+        {
+            "macro_f1": float in [0, 1],
+            "per_field_f1": {field: float, ...} for ALL 12 fields,
+            "n_examples": int,
+        }
+    """
+    per_field = {f: compute_field_f1(predictions, truths, f) for f in FIELD_ORDER}
+    high_freq = [v for f, v in per_field.items() if f in HIGH_FREQUENCY_FIELDS]
+    macro = sum(high_freq) / len(high_freq) if high_freq else 0.0
+    return {
+        "macro_f1": macro,
+        "per_field_f1": per_field,
+        "n_examples": len(predictions),
+    }
