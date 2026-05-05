@@ -88,6 +88,48 @@ def set_seed(seed: int) -> None:
         pass
 
 
+# === Encoder (SigLIP wrapper, frozen) ===
+
+def _import_torch():
+    """Lazy torch import. Returns the torch module."""
+    import torch
+    return torch
+
+
+class Encoder:
+    """SigLIP-base-patch16-224 vision encoder, FROZEN.
+
+    Agent-editable: model name, normalization mean/std (via processor),
+    whether to freeze. Default: pretrained, frozen, no [CLS] (only patch tokens).
+    """
+
+    def __init__(self, model_name: str = "google/siglip-base-patch16-224") -> None:
+        from transformers import AutoModel
+        torch = _import_torch()
+        self._torch = torch
+        self.model = AutoModel.from_pretrained(model_name).vision_model
+        for p in self.model.parameters():
+            p.requires_grad_(False)
+
+    def parameters(self):
+        return self.model.parameters()
+
+    def to(self, device):
+        self.model.to(device)
+        return self
+
+    def train(self, mode: bool = True):
+        self.model.train(mode)
+        return self
+
+    def __call__(self, pixel_values):
+        """pixel_values: (B, 3, H, W). Returns (B, 196, 768) patch features."""
+        torch = self._torch
+        with torch.no_grad():
+            out = self.model(pixel_values=pixel_values, output_hidden_states=False)
+        return out.last_hidden_state
+
+
 # === Main ===
 
 def main(argv: list[str] | None = None) -> int:
