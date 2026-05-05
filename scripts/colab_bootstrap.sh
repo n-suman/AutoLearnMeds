@@ -106,6 +106,17 @@ if ! command -v uv >/dev/null 2>&1; then
 fi
 uv sync --extra ml --extra colab
 
+# Make NVIDIA libraries discoverable to non-interactive shells (e.g., the SSH
+# session that VSCode connects through). Colab's interactive shell sets
+# LD_LIBRARY_PATH to include /usr/lib64-nvidia, but SSH sessions don't inherit
+# that, so `nvidia-smi` and any CUDA-using process can't find libnvidia-ml.so.
+# Add the path to the system linker config so all shells see it.
+if [[ -d /usr/lib64-nvidia ]] && [[ ! -f /etc/ld.so.conf.d/nvidia.conf ]]; then
+  echo "  registering /usr/lib64-nvidia with ldconfig (so SSH sees nvidia-smi)..."
+  echo "/usr/lib64-nvidia" | sudo tee /etc/ld.so.conf.d/nvidia.conf >/dev/null
+  sudo ldconfig 2>/dev/null || true
+fi
+
 # 5. Launch SSH server + Cloudflare Tunnel — pure shell (no colab-ssh).
 # colab-ssh got killed by something (OOM? sandbox?) on the user's last run,
 # and its only value over plain bash is convenience. Bypass it: install
