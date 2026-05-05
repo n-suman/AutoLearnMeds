@@ -166,3 +166,30 @@ def test_makefile_has_verify_target(project_root: Path) -> None:
     assert "verify:" in text, "Makefile must define a 'verify' target"
     assert "test:" in text, "Makefile must define a 'test' target"
     assert "lint:" in text, "Makefile must define a 'lint' target"
+
+
+def test_program_md_has_full_contract(project_root: Path) -> None:
+    """program.md must include every section the agent needs to operate."""
+    text = (project_root / "program.md").read_text()
+    required_sections = [
+        "## Goal",
+        "## Metric",
+        "## Time budget",
+        "## Allowed",
+        "## Forbidden",
+        "## Source vetting",
+        "## Workflow per experiment",
+        "## Notes.md template",
+        "## Backup",
+        "## Do not",
+    ]
+    for sec in required_sections:
+        assert sec in text, f"missing section: {sec!r}"
+    # Must reference the canonical scripts the agent uses
+    assert "scripts/run_experiment.sh" in text
+    assert "scripts/finalize_experiment.sh" in text
+    # Must reference the metric format
+    assert "final_macro_f1" in text
+    # Must declare the test-set firewall
+    assert "test.jsonl" in text
+    assert "evaluate_test" in text
