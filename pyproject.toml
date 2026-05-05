@@ -26,7 +26,7 @@ dev = [
 ml = [
     "torch>=2.3",
     "torchvision>=0.18",
-    "transformers>=4.42",
+    "transformers>=4.46",  # bumped from 4.42 — Qwen2-VL minimum
     "accelerate>=0.31",
     "datasets>=2.20",
     "pillow>=10.3",
@@ -38,6 +38,9 @@ ml = [
     "tqdm>=4.66",
     "tokenizers>=0.19",
     "python-Levenshtein>=0.25",
+    "peft>=0.13",  # LoRA
+    "bitsandbytes>=0.44",  # 4-bit quantization
+    "qwen-vl-utils>=0.0.10",  # Qwen2-VL helpers
 ]
 
 # Colab-specific. SSH tunnel is set up by direct cloudflared + sshd invocation
