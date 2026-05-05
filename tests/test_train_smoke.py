@@ -37,3 +37,25 @@ def test_encoder_forward_shape(train_mod) -> None:
     with torch.no_grad():
         out = enc(x)
     assert out.shape == (2, 196, 768)
+
+
+def test_apply_rope_preserves_shape(train_mod) -> None:
+    """RoPE rotates the last dim in pairs; shape is preserved."""
+    import torch
+    head_dim = 64
+    seq = 32
+    q = torch.randn(2, 4, seq, head_dim)  # (B, H, T, D)
+    cos, sin = train_mod.rope_cache(seq, head_dim, device=q.device, dtype=q.dtype)
+    q_rot = train_mod.apply_rope(q, cos, sin)
+    assert q_rot.shape == q.shape
+
+
+def test_decoder_block_forward_shape(train_mod) -> None:
+    """DecoderBlock returns (B, T, hidden) given (B, T, hidden) and (B, S, hidden) memory."""
+    import torch
+    block = train_mod.DecoderBlock(hidden_dim=128, n_heads=4, ffn_ratio=4, dropout=0.0)
+    x = torch.randn(2, 7, 128)
+    mem = torch.randn(2, 196, 128)
+    causal = train_mod.causal_mask(7, x.device)
+    out = block(x, mem, causal)
+    assert out.shape == (2, 7, 128)
