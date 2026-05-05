@@ -1,0 +1,9119 @@
+{
+  "version": "1.0",
+  "truncation": null,
+  "padding": null,
+  "added_tokens": [
+    {
+      "id": 0,
+      "content": "<unk>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 1,
+      "content": "<pad>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 2,
+      "content": "<s>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 3,
+      "content": "</s>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 4,
+      "content": "<brand_name>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 5,
+      "content": "<drug_name>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 6,
+      "content": "<generic_name>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 7,
+      "content": "<strength>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 8,
+      "content": "<quantity>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 9,
+      "content": "<company>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 10,
+      "content": "<manufacturer>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 11,
+      "content": "<batch_number>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 12,
+      "content": "<mfg_date>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 13,
+      "content": "<expiry_date>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 14,
+      "content": "<mrp>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 15,
+      "content": "<warnings>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 16,
+      "content": "</brand_name>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 17,
+      "content": "</drug_name>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 18,
+      "content": "</generic_name>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 19,
+      "content": "</strength>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 20,
+      "content": "</quantity>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 21,
+      "content": "</company>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 22,
+      "content": "</manufacturer>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 23,
+      "content": "</batch_number>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 24,
+      "content": "</mfg_date>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 25,
+      "content": "</expiry_date>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 26,
+      "content": "</mrp>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    },
+    {
+      "id": 27,
+      "content": "</warnings>",
+      "single_word": false,
+      "lstrip": false,
+      "rstrip": false,
+      "normalized": false,
+      "special": true
+    }
+  ],
+  "normalizer": null,
+  "pre_tokenizer": {
+    "type": "ByteLevel",
+    "add_prefix_space": false,
+    "trim_offsets": true,
+    "use_regex": true
+  },
+  "post_processor": null,
+  "decoder": null,
+  "model": {
+    "type": "BPE",
+    "dropout": null,
+    "unk_token": "<unk>",
+    "continuing_subword_prefix": null,
+    "end_of_word_suffix": null,
+    "fuse_unk": false,
+    "byte_fallback": false,
+    "ignore_merges": false,
+    "vocab": {
+      "<unk>": 0,
+      "<pad>": 1,
+      "<s>": 2,
+      "</s>": 3,
+      "<brand_name>": 4,
+      "<drug_name>": 5,
+      "<generic_name>": 6,
+      "<strength>": 7,
+      "<quantity>": 8,
+      "<company>": 9,
+      "<manufacturer>": 10,
+      "<batch_number>": 11,
+      "<mfg_date>": 12,
+      "<expiry_date>": 13,
+      "<mrp>": 14,
+      "<warnings>": 15,
+      "</brand_name>": 16,
+      "</drug_name>": 17,
+      "</generic_name>": 18,
+      "</strength>": 19,
+      "</quantity>": 20,
+      "</company>": 21,
+      "</manufacturer>": 22,
+      "</batch_number>": 23,
+      "</mfg_date>": 24,
+      "</expiry_date>": 25,
+      "</mrp>": 26,
+      "</warnings>": 27,
+      "%": 28,
+      "&": 29,
+      "'": 30,
+      "(": 31,
+      ")": 32,
+      "+": 33,
+      ",": 34,
+      "-": 35,
+      ".": 36,
+      "/": 37,
+      "0": 38,
+      "1": 39,
+      "2": 40,
+      "3": 41,
+      "4": 42,
+      "5": 43,
+      "6": 44,
+      "7": 45,
+      "8": 46,
+      "9": 47,
+      ":": 48,
+      "=": 49,
+      "A": 50,
+      "B": 51,
+      "C": 52,
+      "D": 53,
+      "E": 54,
+      "F": 55,
+      "G": 56,
+      "H": 57,
+      "I": 58,
+      "J": 59,
+      "K": 60,
+      "L": 61,
+      "M": 62,
+      "N": 63,
+      "O": 64,
+      "P": 65,
+      "Q": 66,
+      "R": 67,
+      "S": 68,
+      "T": 69,
+      "U": 70,
+      "V": 71,
+      "W": 72,
+      "X": 73,
+      "Y": 74,
+      "Z": 75,
+      "a": 76,
+      "b": 77,
+      "c": 78,
+      "d": 79,
+      "e": 80,
+      "f": 81,
+      "g": 82,
+      "h": 83,
+      "i": 84,
+      "j": 85,
+      "k": 86,
+      "l": 87,
+      "m": 88,
+      "n": 89,
+      "o": 90,
+      "p": 91,
+      "q": 92,
+      "r": 93,
+      "s": 94,
+      "t": 95,
+      "u": 96,
+      "v": 97,
+      "w": 98,
+      "x": 99,
+      "y": 100,
+      "z": 101,
+      "¹": 102,
+      "â": 103,
+      "Ċ": 104,
+      "Ġ": 105,
+      "Ĥ": 106,
+      "20": 107,
+      "202": 108,
+      "in": 109,
+      "ĠD": 110,
+      "et": 111,
+      "an": 112,
+      "ol": 113,
+      "al": 114,
+      "te": 115,
+      "ĠP": 116,
+      "ĠT": 117,
+      "ĠS": 118,
+      "IN": 119,
+      "es": 120,
+      "ĠM": 121,
+      "ic": 122,
+      "ON": 123,
+      "TE": 124,
+      "ĠC": 125,
+      "ro": 126,
+      "ate": 127,
+      "LE": 128,
+      "ab": 129,
+      "00": 130,
+      "ra": 131,
+      "er": 132,
+      "IP": 133,
+      "ul": 134,
+      "en": 135,
+      "yl": 136,
+      "id": 137,
+      "ĠA": 138,
+      "RA": 139,
+      "TI": 140,
+      "on": 141,
+      "st": 142,
+      "MF": 143,
+      "EX": 144,
+      "NO": 145,
+      "el": 146,
+      "of": 147,
+      "TION": 148,
+      "Ġ1": 149,
+      "EXP": 150,
+      "eth": 151,
+      "ĠTA": 152,
+      "am": 153,
+      "25": 154,
+      "ATE": 155,
+      "2026": 156,
+      "OL": 157,
+      "ac": 158,
+      "Ġ0": 159,
+      "2025": 160,
+      ".:": 161,
+      "AN": 162,
+      "ĠIP": 163,
+      "ES": 164,
+      "Ġ:": 165,
+      "No": 166,
+      "ĠO": 167,
+      "ĠR": 168,
+      "ant": 169,
+      "ĠH": 170,
+      "Ġan": 171,
+      "ap": 172,
+      "2024": 173,
+      "ine": 174,
+      "ti": 175,
+      "Ġand": 176,
+      "ĠG": 177,
+      "or": 178,
+      "ow": 179,
+      "Ġ&": 180,
+      "yd": 181,
+      "MFG": 182,
+      "der": 183,
+      "Ġ.": 184,
+      "ĠPow": 185,
+      "aps": 186,
+      "ĠPowder": 187,
+      "re": 188,
+      "ethyl": 189,
+      "cl": 190,
+      "abl": 191,
+      "ules": 192,
+      "apsules": 193,
+      "th": 194,
+      "ĠF": 195,
+      "ĠL": 196,
+      "AL": 197,
+      "VO": 198,
+      "LEVO": 199,
+      "ch": 200,
+      "ma": 201,
+      "ĠCapsules": 202,
+      "200": 203,
+      "ets": 204,
+      "anto": 205,
+      "ablets": 206,
+      "OR": 207,
+      "Rs": 208,
+      "il": 209,
+      "Al": 210,
+      "Em": 211,
+      "TRA": 212,
+      "um": 213,
+      "In": 214,
+      "ph": 215,
+      "Ex": 216,
+      "ĠTablets": 217,
+      "ĠTAB": 218,
+      "CE": 219,
+      "Ġ2": 220,
+      "2027": 221,
+      "UG": 222,
+      "EC": 223,
+      "cid": 224,
+      "us": 225,
+      "ĠAL": 226,
+      "CL": 227,
+      "Ġ7": 228,
+      "Exp": 229,
+      "AW": 230,
+      "HA": 231,
+      "Panto": 232,
+      "08": 233,
+      "Mf": 234,
+      "ex": 235,
+      "Ġ,": 236,
+      "AWIN": 237,
+      "AC": 238,
+      "SI": 239,
+      "XES": 240,
+      "se": 241,
+      "ĠTAXES": 242,
+      "ANAWIN": 243,
+      "ĠALL": 244,
+      "Mfg": 245,
+      "UL": 246,
+      "gab": 247,
+      "ium": 248,
+      "ĠMethyl": 249,
+      "Ġ15": 250,
+      "NE": 251,
+      "ip": 252,
+      "ofen": 253,
+      "amin": 254,
+      "Dic": 255,
+      "MA": 256,
+      "UTION": 257,
+      "ara": 258,
+      "eset": 259,
+      "tion": 260,
+      "ydro": 261,
+      "chl": 262,
+      "Emeset": 263,
+      "Dicl": 264,
+      "07": 265,
+      "ĠDate": 266,
+      "10": 267,
+      "pra": 268,
+      "oly": 269,
+      "alic": 270,
+      "MFD": 271,
+      "ĠGel": 272,
+      "24": 273,
+      "HC": 274,
+      "QS": 275,
+      "RS": 276,
+      "INCL": 277,
+      "ĠFOR": 278,
+      "HE": 279,
+      "ast": 280,
+      "15": 281,
+      "ot": 282,
+      "ĠSalic": 283,
+      "ylate": 284,
+      "HCQS": 285,
+      "DU": 286,
+      "ff": 287,
+      "ĠIN": 288,
+      "ĠNo": 289,
+      "ĠSalicylate": 290,
+      "ffin": 291,
+      "ĠINJ": 292,
+      "12": 293,
+      "ITE": 294,
+      "SR": 295,
+      "co": 296,
+      "ed": 297,
+      "zol": 298,
+      "âĤ": 299,
+      "ĠDSR": 300,
+      "ide": 301,
+      "âĤ¹": 302,
+      "ER": 303,
+      "YR": 304,
+      "eu": 305,
+      "ĠOil": 306,
+      "Diclofen": 307,
+      "RO": 308,
+      "ax": 309,
+      "mg": 310,
+      "ĠDATE": 311,
+      "Ġ75": 312,
+      "Cal": 313,
+      "FOL": 314,
+      "Neu": 315,
+      "VITE": 316,
+      "gel": 317,
+      "it": 318,
+      "qu": 319,
+      "Ġt": 320,
+      "thol": 321,
+      "TRACE": 322,
+      "ECTION": 323,
+      "ULTRACE": 324,
+      "gaba": 325,
+      "arac": 326,
+      "ĠINJECTION": 327,
+      "FOLVITE": 328,
+      "Neugaba": 329,
+      "ULTRACET": 330,
+      "03": 331,
+      "AP": 332,
+      "DATE": 333,
+      "PYR": 334,
+      "ĠIn": 335,
+      "ĠDHA": 336,
+      "ĠRS": 337,
+      "NEON": 338,
+      "AUTION": 339,
+      "IM": 340,
+      "RIP": 341,
+      "RES": 342,
+      "RUG": 343,
+      "TS": 344,
+      "mi": 345,
+      "nd": 346,
+      "Ġ(": 347,
+      "Ġ5": 348,
+      "Ġp": 349,
+      "ĠPRES": 350,
+      "LETS": 351,
+      "ĠHydro": 352,
+      "oride": 353,
+      "ĠTABLETS": 354,
+      "chloride": 355,
+      "ĠHydrochloride": 356,
+      "Dt": 357,
+      "Parac": 358,
+      "SU": 359,
+      "cium": 360,
+      "ren": 361,
+      "set": 362,
+      "Ġof": 363,
+      "inse": 364,
+      "ĠDRUG": 365,
+      "ĠPoly": 366,
+      "ĠSul": 367,
+      "onate": 368,
+      "OLATE": 369,
+      "phonate": 370,
+      "Calcium": 371,
+      "RIPTION": 372,
+      "rene": 373,
+      "ĠPolyst": 374,
+      "ĠSulphonate": 375,
+      "13": 376,
+      "41": 377,
+      "400": 378,
+      "EP": 379,
+      "at": 380,
+      "ist": 381,
+      "om": 382,
+      "olu": 383,
+      "ĠMul": 384,
+      "ĠLinse": 385,
+      "HEDU": 386,
+      "axes": 387,
+      "ĠPRESC": 388,
+      "ĠMulti": 389,
+      "HEDULE": 390,
+      "AK": 391,
+      "FAK": 392,
+      "KP": 393,
+      "bal": 394,
+      "ce": 395,
+      "rom": 396,
+      "amine": 397,
+      "Incl": 398,
+      "ĠPRESCRIPTION": 399,
+      "FAKIM": 400,
+      "40": 401,
+      "BA": 402,
+      "Cre": 403,
+      "Pre": 404,
+      "cal": 405,
+      "rk": 406,
+      "ĠâĤ¹": 407,
+      "enthol": 408,
+      "ĠOF": 409,
+      "ĠGast": 410,
+      "maffin": 411,
+      "Ali": 412,
+      "ĠTABS": 413,
+      "Pantocid": 414,
+      "ĠMethylco": 415,
+      "zole": 416,
+      "PYROLATE": 417,
+      "Cremaffin": 418,
+      "ĠGastro": 419,
+      "ĠMethylcobal": 420,
+      "70": 421,
+      "DI": 422,
+      "IC": 423,
+      "Pot": 424,
+      "dol": 425,
+      "tra": 426,
+      "ĠDi": 427,
+      "esist": 428,
+      "ĠMenthol": 429,
+      "rama": 430,
+      "ĠRs": 431,
+      "prazole": 432,
+      "Diclofenac": 433,
+      "Potcl": 434,
+      "esistant": 435,
+      "AR": 436,
+      "JAN": 437,
+      "Ond": 438,
+      "RP": 439,
+      "TA": 440,
+      "UP": 441,
+      "ay": 442,
+      "day": 443,
+      "ĠE": 444,
+      "ical": 445,
+      "Ġ10": 446,
+      "amol": 447,
+      "acin": 448,
+      "ethylamine": 449,
+      "itamin": 450,
+      "ĠMethylcobalamin": 451,
+      "ĠDiethylamine": 452,
+      "Ondan": 453,
+      "01": 454,
+      "Bin": 455,
+      "MRP": 456,
+      "ction": 457,
+      "ir": 458,
+      "yrene": 459,
+      "Ġal": 460,
+      "Ġgel": 461,
+      "etamol": 462,
+      "olic": 463,
+      "ter": 464,
+      "ĠAcid": 465,
+      "250": 466,
+      "ALFAKIM": 467,
+      "SUN": 468,
+      "ĠPolystyrene": 469,
+      "Bind": 470,
+      "iry": 471,
+      "Ġall": 472,
+      "31": 473,
+      "38": 474,
+      "ID": 475,
+      "OW": 476,
+      "PO": 477,
+      "PRA": 478,
+      "TH": 479,
+      "UM": 480,
+      "op": 481,
+      "Ġ-": 482,
+      "ĠI": 483,
+      "ĠDt": 484,
+      "ĠPOW": 485,
+      "APR": 486,
+      "ĠLinseed": 487,
+      "ramadol": 488,
+      "02": 489,
+      "11": 490,
+      "45": 491,
+      "Ami": 492,
+      "Du": 493,
+      "EN": 494,
+      "NBA": 495,
+      "Pr": 496,
+      "Resistant": 497,
+      "SC": 498,
+      "XY": 499,
+      "YL": 500,
+      "dium": 501,
+      "ection": 502,
+      "jection": 503,
+      "kacin": 504,
+      "odium": 505,
+      "Ġs": 506,
+      "Ġmg": 507,
+      "ĠDom": 508,
+      "ĠTop": 509,
+      "ĠSpra": 510,
+      "ĠSPRA": 511,
+      "ĠSodium": 512,
+      "INE": 513,
+      "RANBA": 514,
+      "Ġ05": 515,
+      "Ġ08": 516,
+      "ydus": 517,
+      "ext": 518,
+      "ĠInjection": 519,
+      "Paracetamol": 520,
+      "ARK": 521,
+      "Amikacin": 522,
+      "ĠTopical": 523,
+      "ĠSpray": 524,
+      "ĠSPRAY": 525,
+      "RANBAXY": 526,
+      "Bat": 527,
+      "BUP": 528,
+      "Ke": 529,
+      "Nan": 530,
+      "SSI": 531,
+      "ase": 532,
+      "pro": 533,
+      "yth": 534,
+      "ycal": 535,
+      "Ġ2025": 536,
+      "Ġ200": 537,
+      "alin": 538,
+      "ĠCON": 539,
+      "2500": 540,
+      "LEVOBUP": 541,
+      "olution": 542,
+      "TASSI": 543,
+      "383": 544,
+      "POTASSI": 545,
+      "SCHEDULE": 546,
+      "Batch": 547,
+      "Keycal": 548,
+      "POTASSIUM": 549,
+      "27": 550,
+      "CAUTION": 551,
+      "IR": 552,
+      "IV": 553,
+      "aine": 554,
+      "ease": 555,
+      "fi": 556,
+      "nac": 557,
+      "per": 558,
+      "rol": 559,
+      "ust": 560,
+      "ĠPHA": 561,
+      "elease": 562,
+      "EXPIR": 563,
+      "ĠLi": 564,
+      "Altra": 565,
+      "Ġ225": 566,
+      "0731": 567,
+      "Ġtaxes": 568,
+      "Ondanset": 569,
+      "LEVOBUPIV": 570,
+      "rolon": 571,
+      "EXPIRY": 572,
+      "Altraday": 573,
+      "LEVOBUPIVAC": 574,
+      "26": 575,
+      "98": 576,
+      "Ark": 577,
+      "Folic": 578,
+      "GP": 579,
+      "Hydro": 580,
+      "ML": 581,
+      "NTRA": 582,
+      "OF": 583,
+      "Rx": 584,
+      "SEP": 585,
+      "bin": 586,
+      "bpro": 587,
+      "oro": 588,
+      "xy": 589,
+      "zer": 590,
+      "Ġm": 591,
+      "Ġn": 592,
+      "ĠTramadol": 593,
+      "ĠSOL": 594,
+      "ĠCH": 595,
+      "one": 596,
+      "ofast": 597,
+      "Ġ06": 598,
+      "CENTRA": 599,
+      "gabalin": 600,
+      "MAR": 601,
+      "chloro": 602,
+      "quid": 603,
+      "400383": 604,
+      "Alibpro": 605,
+      "Dubin": 606,
+      "Nanofast": 607,
+      "ĠCONCENTRA": 608,
+      "fizer": 609,
+      "Hydroxy": 610,
+      "ĠSOLUTION": 611,
+      "Dubinor": 612,
+      "04": 613,
+      "19": 614,
+      "125": 615,
+      "56": 616,
+      "76": 617,
+      "AY": 618,
+      "BIN": 619,
+      "BIP": 620,
+      "Cip": 621,
+      "la": 622,
+      "min": 623,
+      "mine": 624,
+      "ral": 625,
+      "roly": 626,
+      "vitamin": 627,
+      "ĠNO": 628,
+      "Ġ.:": 629,
+      "tein": 630,
+      "ĠSolution": 631,
+      "TER": 632,
+      "ĠCAUTION": 633,
+      "abs": 634,
+      "eral": 635,
+      "yle": 636,
+      "ĠHyd": 637,
+      "Expiry": 638,
+      "ĠMultimin": 639,
+      "ĠMultivitamin": 640,
+      "Pregabalin": 641,
+      "BIND": 642,
+      "BIPRO": 643,
+      "Cipla": 644,
+      "rolys": 645,
+      "ĠHydrolys": 646,
+      "ĠMultimineral": 647,
+      "1400383": 648,
+      "CLE": 649,
+      "DER": 650,
+      "ETH": 651,
+      "Li": 652,
+      "Mext": 653,
+      "Pfizer": 654,
+      "VOL": 655,
+      "ion": 656,
+      "ne": 657,
+      "pa": 658,
+      "sid": 659,
+      "zydus": 660,
+      "Ġc": 661,
+      "2029": 662,
+      "ance": 663,
+      "ted": 664,
+      "ĠPara": 665,
+      "ĠPER": 666,
+      "ĠSEP": 667,
+      "INI": 668,
+      "ated": 669,
+      "idone": 670,
+      "RAMA": 671,
+      "orph": 672,
+      "Emset": 673,
+      "Pantoprazole": 674,
+      "Pantosid": 675,
+      "INCLU": 676,
+      "quine": 677,
+      "Ġ53": 678,
+      "4141": 679,
+      "ĠPOWDER": 680,
+      "25007": 681,
+      "peridone": 682,
+      "ĠPHARAMA": 683,
+      "Ondansetrom": 684,
+      "GPD": 685,
+      "ĠCHL": 686,
+      "chloroquine": 687,
+      "ĠCONCENTRATE": 688,
+      "1254141": 689,
+      "CLEON": 690,
+      "ETHYL": 691,
+      "Liquid": 692,
+      "VOLINI": 693,
+      "ĠParaffin": 694,
+      "115": 695,
+      "325": 696,
+      "58": 697,
+      "AUG": 698,
+      "Ace": 699,
+      "AINE": 700,
+      "BRA": 701,
+      "DAY": 702,
+      "FLE": 703,
+      "GM": 704,
+      "IO": 705,
+      "JUL": 706,
+      "LY": 707,
+      "Rel": 708,
+      "RIO": 709,
+      "SE": 710,
+      "THE": 711,
+      "de": 712,
+      "dic": 713,
+      "eprazole": 714,
+      "ga": 715,
+      "nter": 716,
+      "oated": 717,
+      "rt": 718,
+      "rip": 719,
+      "taxes": 720,
+      "ude": 721,
+      "Ġb": 722,
+      "Ġ2026": 723,
+      "Ġ2024": 724,
+      "Ġth": 725,
+      "ĠKP": 726,
+      "ĠDEC": 727,
+      "ĠProlon": 728,
+      "ĠTRIO": 729,
+      "ĠSust": 730,
+      "ese": 731,
+      "ĠCoated": 732,
+      "abeprazole": 733,
+      "erdic": 734,
+      "ĠAUG": 735,
+      "Ġ11": 736,
+      "Ġ03": 737,
+      "ĠOral": 738,
+      "ĠRelease": 739,
+      "ĠRabeprazole": 740,
+      "clofen": 741,
+      "ALI": 742,
+      "ALTER": 743,
+      "antopa": 744,
+      "ORID": 745,
+      "Alex": 746,
+      "SIG": 747,
+      "SIFLE": 748,
+      "Ġ159": 749,
+      "iperdic": 750,
+      "ROSIFLE": 751,
+      "geld": 752,
+      "mited": 753,
+      "Ġ55": 754,
+      "Ġper": 755,
+      "Include": 756,
+      "ĠEnter": 757,
+      "Prantopa": 758,
+      "ĠDomiperdic": 759,
+      "ained": 760,
+      "RxAce": 761,
+      "1151": 762,
+      "Relese": 763,
+      "Ġthe": 764,
+      "ĠProlongeld": 765,
+      "ĠSustained": 766,
+      "clofennac": 767,
+      "ALTERDAY": 768,
+      "ORIDE": 769,
+      "ROSIFLEX": 770,
+      "ĠEnteric": 771,
+      "Prantopazol": 772,
+      "ĠDomiperdicne": 773,
+      "RxAceclofennac": 774,
+      "06": 775,
+      "09": 776,
+      "97": 777,
+      "CT": 778,
+      "Date": 779,
+      "DEC": 780,
+      "EB": 781,
+      "ENE": 782,
+      "GENE": 783,
+      "SHEDULE": 784,
+      "ZAC": 785,
+      "af": 786,
+      "ail": 787,
+      "bs": 788,
+      "hol": 789,
+      "is": 790,
+      "lco": 791,
+      "vum": 792,
+      "Ġ2027": 793,
+      "ĠDT": 794,
+      "etail": 795,
+      "ana": 796,
+      "ron": 797,
+      "ĠAbs": 798,
+      "NOV": 799,
+      "ANE": 800,
+      "apex": 801,
+      "20058": 802,
+      "TRAMA": 803,
+      "0825007": 804,
+      "olute": 805,
+      "Alivum": 806,
+      "DIGENE": 807,
+      "ĠEu": 808,
+      "Ġmyth": 809,
+      "Ġnana": 810,
+      "Hydroxychloroquine": 811,
+      "lcohol": 812,
+      "ĠAbsolute": 813,
+      "TRAMAZAC": 814,
+      ".(": 815,
+      "57": 816,
+      "95": 817,
+      "Dex": 818,
+      "EL": 819,
+      "EZ": 820,
+      "Mu": 821,
+      "PA": 822,
+      "RE": 823,
+      "TAC": 824,
+      "UC": 825,
+      "URE": 826,
+      "Vitamin": 827,
+      "dom": 828,
+      "gabl": 829,
+      "ric": 830,
+      "ĠN": 831,
+      "Ġr": 832,
+      "ĠJAN": 833,
+      "ĠDI": 834,
+      "ĠTabs": 835,
+      "INSE": 836,
+      "ĠMeth": 837,
+      "ĠCAP": 838,
+      "ent": 839,
+      "TIC": 840,
+      "2520058": 841,
+      "ANES": 842,
+      "ĠGEL": 843,
+      "ĠLINSE": 844,
+      "CLOF": 845,
+      "Paracip": 846,
+      "1308": 847,
+      "Pregabl": 848,
+      "DICLOF": 849,
+      "ICAL": 850,
+      "ICURE": 851,
+      "ĠLimited": 852,
+      "LEVOBUPIVACANE": 853,
+      "ĠCHLORIDE": 854,
+      "THETIC": 855,
+      "ALIBIPRO": 856,
+      "EZICURE": 857,
+      "Muc": 858,
+      "TACID": 859,
+      "ANESTHETIC": 860,
+      "Pregablin": 861,
+      "DICLOFEN": 862,
+      ".âĤ¹": 863,
+      "36": 864,
+      "55": 865,
+      "507": 866,
+      "92": 867,
+      "AB": 868,
+      "AM": 869,
+      "An": 870,
+      "BH": 871,
+      "CO": 872,
+      "DE": 873,
+      "FEB": 874,
+      "GK": 875,
+      "GLY": 876,
+      "Mic": 877,
+      "ORA": 878,
+      "OCT": 879,
+      "Ph": 880,
+      "SL": 881,
+      "SO": 882,
+      "VE": 883,
+      "ain": 884,
+      "airy": 885,
+      "ml": 886,
+      "ment": 887,
+      "pt": 888,
+      "sion": 889,
+      "tyl": 890,
+      "tment": 891,
+      "ur": 892,
+      "ythol": 893,
+      "ymine": 894,
+      "ypt": 895,
+      "Ġ+": 896,
+      "Ġ3": 897,
+      "Ġf": 898,
+      "Ġin": 899,
+      "intment": 900,
+      "ĠDeth": 901,
+      "ĠMyth": 902,
+      "ĠMythol": 903,
+      "ĠCam": 904,
+      "rocid": 905,
+      "LES": 906,
+      "ĠAn": 907,
+      "ĠAnd": 908,
+      "ĠAlcohol": 909,
+      "Ġ108": 910,
+      "ĠOintment": 911,
+      "ilymine": 912,
+      "phor": 913,
+      "Expairy": 914,
+      "SIVE": 915,
+      "MAY": 916,
+      "ĠNort": 917,
+      "Diclofenance": 918,
+      "SULES": 919,
+      "ĠPolystrene": 920,
+      "ĠLinsed": 921,
+      "calypt": 922,
+      "ĠPOWER": 923,
+      "118": 924,
+      "Prtein": 925,
+      "ĠDomperidone": 926,
+      "273": 927,
+      "LEVOBUPIVACAINE": 928,
+      "ĠHydrolysaf": 929,
+      "INCLUSIVE": 930,
+      "riptyl": 931,
+      "SHEDULED": 932,
+      "ĠEucalypt": 933,
+      "Ġmythyl": 934,
+      "ĠCAPSULES": 935,
+      "ABORA": 936,
+      "GLYCO": 937,
+      "Microcid": 938,
+      "ĠDethilymine": 939,
+      "ĠCamphor": 940,
+      "ĠNortriptyl": 941,
+      "ĠHydrolysafe": 942,
+      "ĠEucalyptus": 943,
+      "ĠNortriptyline": 944,
+      "16": 945,
+      "113": 946,
+      "340": 947,
+      "495": 948,
+      "50": 949,
+      "54": 950,
+      "500": 951,
+      "73": 952,
+      "CA": 953,
+      "Dext": 954,
+      "GT": 955,
+      "Gl": 956,
+      "IL": 957,
+      "JU": 958,
+      "Meth": 959,
+      "Max": 960,
+      "NPA": 961,
+      "Pro": 962,
+      "Zydus": 963,
+      "bu": 964,
+      "brom": 965,
+      "eate": 966,
+      "hl": 967,
+      "ia": 968,
+      "iv": 969,
+      "ira": 970,
+      "oil": 971,
+      "ru": 972,
+      "rine": 973,
+      "tac": 974,
+      "xate": 975,
+      "yro": 976,
+      "yel": 977,
+      "yru": 978,
+      "zac": 979,
+      "Ġa": 980,
+      "Ġl": 981,
+      "Ġoil": 982,
+      "2028": 983,
+      "alab": 984,
+      "aleate": 985,
+      "ĠSAL": 986,
+      "ĠSyru": 987,
+      "esc": 988,
+      "ĠMEN": 989,
+      "ĠMETHYL": 990,
+      "ĠMaleate": 991,
+      "ĠChl": 992,
+      "0024": 993,
+      "IPCA": 994,
+      "enma": 995,
+      "enyle": 996,
+      "enira": 997,
+      "stron": 998,
+      "EXD": 999,
+      "ethorph": 1000,
+      "Ġ02": 1001,
+      "ĠHyro": 1002,
+      "tiga": 1003,
+      "rexate": 1004,
+      "clus": 1005,
+      "ĠFor": 1006,
+      "ĠFolic": 1007,
+      "Alter": 1008,
+      "phrine": 1009,
+      "Ġ245": 1010,
+      "07495": 1011,
+      "243": 1012,
+      "otrexate": 1013,
+      "037": 1014,
+      "1307495": 1015,
+      "romethorph": 1016,
+      "ICYL": 1017,
+      "Ondanstron": 1018,
+      "THOL": 1019,
+      "0297": 1020,
+      "ĠHydrolysate": 1021,
+      "orphenira": 1022,
+      "ETHYLAM": 1023,
+      "Ġby": 1024,
+      "Dexalab": 1025,
+      "rice": 1026,
+      "ĠDIETHYLAM": 1027,
+      "DICLOFENAC": 1028,
+      "Antac": 1029,
+      "Phenyle": 1030,
+      "ĠAntiga": 1031,
+      "GLYCOPYR": 1032,
+      "3406": 1033,
+      "Dextromethorph": 1034,
+      "GTF": 1035,
+      "Glenma": 1036,
+      "JUN": 1037,
+      "Methotrexate": 1038,
+      "Protein": 1039,
+      "bromide": 1040,
+      "ĠSALICYL": 1041,
+      "ĠSyrup": 1042,
+      "ĠMENTHOL": 1043,
+      "ĠChlorphenira": 1044,
+      "00248": 1045,
+      "ĠHyrobromide": 1046,
+      "clusiv": 1047,
+      "Alterday": 1048,
+      "Ondanstrong": 1049,
+      "ĠDIETHYLAMINE": 1050,
+      "Antacid": 1051,
+      "Phenylephrine": 1052,
+      "ĠAntigas": 1053,
+      "Dextromethorphan": 1054,
+      "Glenmark": 1055,
+      "ĠSALICYLATE": 1056,
+      "ĠChlorpheniramine": 1057,
+      "./": 1058,
+      "05": 1059,
+      "012": 1060,
+      "18": 1061,
+      "108": 1062,
+      "315": 1063,
+      "Bac": 1064,
+      "ED": 1065,
+      "Fe": 1066,
+      "IG": 1067,
+      "Ibu": 1068,
+      "NTACID": 1069,
+      "OP": 1070,
+      "PRS": 1071,
+      "Sof": 1072,
+      "Tramadol": 1073,
+      "ct": 1074,
+      "ged": 1075,
+      "mf": 1076,
+      "ote": 1077,
+      "pen": 1078,
+      "vac": 1079,
+      "Ġ/": 1080,
+      "Ġma": 1081,
+      "ĠEx": 1082,
+      "Ġ250": 1083,
+      "Ġdom": 1084,
+      "Ġ2520058": 1085,
+      "anol": 1086,
+      "ĠTOP": 1087,
+      "ĠSIG": 1088,
+      "ĠANTACID": 1089,
+      "act": 1090,
+      "ĠOIL": 1091,
+      "ĠResistant": 1092,
+      "red": 1093,
+      "ree": 1094,
+      "ALBIPRO": 1095,
+      "Ġ24": 1096,
+      "uspen": 1097,
+      "ĠALFAKIM": 1098,
+      "Diclof": 1099,
+      "Diclote": 1100,
+      "24012": 1101,
+      "ĠINJUC": 1102,
+      "Ġtablets": 1103,
+      "Ġtabs": 1104,
+      "ĠInclusiv": 1105,
+      "Ġprolon": 1106,
+      "tract": 1107,
+      "25003": 1108,
+      "ĠLif": 1109,
+      "Ġnot": 1110,
+      "1955": 1111,
+      "Ġcapsules": 1112,
+      "INCLUDE": 1113,
+      "iss": 1114,
+      "Ġrelease": 1115,
+      "ĠMethanol": 1116,
+      "ĠLINSEED": 1117,
+      "Mucaine": 1118,
+      ".âĤ¹.": 1119,
+      "ĠMythyel": 1120,
+      "11812": 1121,
+      "185": 1122,
+      "Bach": 1123,
+      "Soft": 1124,
+      "ĠExtract": 1125,
+      "Ġdomperidone": 1126,
+      "ĠTOPICAL": 1127,
+      "uspension": 1128,
+      "Diclotenac": 1129,
+      "ĠINJUCTION": 1130,
+      "ĠInclusives": 1131,
+      "Ġprolonged": 1132,
+      "195524012": 1133,
+      "100": 1134,
+      "297": 1135,
+      "308": 1136,
+      "4250": 1137,
+      "75": 1138,
+      "94": 1139,
+      "945": 1140,
+      "CH": 1141,
+      "CK": 1142,
+      "Do": 1143,
+      "FOR": 1144,
+      "GRA": 1145,
+      "IT": 1146,
+      "IES": 1147,
+      "LABORA": 1148,
+      "MD": 1149,
+      "MAC": 1150,
+      "MUC": 1151,
+      "NB": 1152,
+      "PRO": 1153,
+      "ROLATE": 1154,
+      "RMAC": 1155,
+      "St": 1156,
+      "TD": 1157,
+      "Tro": 1158,
+      "TOR": 1159,
+      "Trama": 1160,
+      "TCH": 1161,
+      "UICAL": 1162,
+      "VT": 1163,
+      "YD": 1164,
+      "aic": 1165,
+      "ark": 1166,
+      "art": 1167,
+      "bust": 1168,
+      "gist": 1169,
+      "low": 1170,
+      "our": 1171,
+      "pol": 1172,
+      "resc": 1173,
+      "tter": 1174,
+      "tain": 1175,
+      "ug": 1176,
+      "Ġor": 1177,
+      "Ġus": 1178,
+      "Ġit": 1179,
+      "Ġ40": 1180,
+      "Ġ325": 1181,
+      "ĠJUL": 1182,
+      "ĠDark": 1183,
+      "etic": 1184,
+      "old": 1185,
+      "olour": 1186,
+      "alac": 1187,
+      "ĠPra": 1188,
+      "ĠPrice": 1189,
+      "ĠPVT": 1190,
+      "ĠSHA": 1191,
+      "ĠSYR": 1192,
+      "INTI": 1193,
+      "INCK": 1194,
+      "ĠME": 1195,
+      "ĠMed": 1196,
+      "icul": 1197,
+      "ĠCaps": 1198,
+      "ula": 1199,
+      "ontain": 1200,
+      "Ġ12": 1201,
+      "Ġ125": 1202,
+      "Ġ170": 1203,
+      "Ġ1945": 1204,
+      "ethacin": 1205,
+      "Ġ07": 1206,
+      "Ġ09": 1207,
+      "ĠHYD": 1208,
+      "Ġany": 1209,
+      "ĠLic": 1210,
+      "ĠLIM": 1211,
+      "ĠLABORA": 1212,
+      "ĠLTD": 1213,
+      "madol": 1214,
+      "phalac": 1215,
+      "Ġ74250": 1216,
+      "ITED": 1217,
+      "Calpol": 1218,
+      "Ġtur": 1219,
+      "ĠIndom": 1220,
+      "Ġ501": 1221,
+      "Ġpart": 1222,
+      "Ġpresc": 1223,
+      "BATCH": 1224,
+      "25012": 1225,
+      "021": 1226,
+      "Duphalac": 1227,
+      "Ġsalic": 1228,
+      "Ġsolution": 1229,
+      "Ġsold": 1230,
+      "ĠPHARMAC": 1231,
+      "Ondansetron": 1232,
+      "Ġcolour": 1233,
+      "Ġcontain": 1234,
+      "ription": 1235,
+      "Ġbe": 1236,
+      "579": 1237,
+      "ĠNN": 1238,
+      "Ġretail": 1239,
+      "ĠLINSED": 1240,
+      "Mucain": 1241,
+      "GKG": 1242,
+      "GKSO": 1243,
+      "Ġ320": 1244,
+      "Ġfree": 1245,
+      "Ġincl": 1246,
+      "Ġli": 1247,
+      "GLYCOPYRROLATE": 1248,
+      "Febust": 1249,
+      "Ġmatter": 1250,
+      "Ġ243": 1251,
+      "GRACE": 1252,
+      "ITUICAL": 1253,
+      "LABORATE": 1254,
+      "MUCAINE": 1255,
+      "Tromadol": 1256,
+      "TORIES": 1257,
+      "Tramazac": 1258,
+      "aicin": 1259,
+      "Ġuse": 1260,
+      "ĠSHAP": 1261,
+      "ĠSYRUP": 1262,
+      "INTIGRACE": 1263,
+      "INCKL": 1264,
+      "ĠMedical": 1265,
+      "iculate": 1266,
+      "ĠCapsaicin": 1267,
+      "Ġ1945037": 1268,
+      "ĠLIMITED": 1269,
+      "ĠLABORATORIES": 1270,
+      "Ġ742505": 1271,
+      "Ġturn": 1272,
+      "ĠIndomethacin": 1273,
+      "Ġparticulate": 1274,
+      "Ġprescription": 1275,
+      "ĠPHARMACITUICAL": 1276,
+      "Ġcontains": 1277,
+      "Febustat": 1278,
+      "Ġmatters": 1279,
+      "'s": 1280,
+      "17": 1281,
+      "231": 1282,
+      "35": 1283,
+      "37": 1284,
+      "327": 1285,
+      "42": 1286,
+      "48": 1287,
+      "53": 1288,
+      "60": 1289,
+      "617": 1290,
+      "74": 1291,
+      "84": 1292,
+      "90": 1293,
+      "Ast": 1294,
+      "ACE": 1295,
+      "ABA": 1296,
+      "BPRO": 1297,
+      "Cit": 1298,
+      "Dab": 1299,
+      "Er": 1300,
+      "ETHE": 1301,
+      "FB": 1302,
+      "FP": 1303,
+      "FR": 1304,
+      "FS": 1305,
+      "FT": 1306,
+      "Gel": 1307,
+      "GEN": 1308,
+      "HT": 1309,
+      "ITRA": 1310,
+      "Jan": 1311,
+      "KG": 1312,
+      "Lact": 1313,
+      "LACE": 1314,
+      "ME": 1315,
+      "MG": 1316,
+      "Man": 1317,
+      "MUL": 1318,
+      "OB": 1319,
+      "Reu": 1320,
+      "SP": 1321,
+      "Sch": 1322,
+      "SQS": 1323,
+      "Tra": 1324,
+      "TCL": 1325,
+      "USE": 1326,
+      "USP": 1327,
+      "Vol": 1328,
+      "VPA": 1329,
+      "WAL": 1330,
+      "Yel": 1331,
+      "YDU": 1332,
+      "ZYDU": 1333,
+      "ad": 1334,
+      "as": 1335,
+      "are": 1336,
+      "aed": 1337,
+      "ayle": 1338,
+      "ces": 1339,
+      "care": 1340,
+      "date": 1341,
+      "dia": 1342,
+      "eo": 1343,
+      "eSt": 1344,
+      "egist": 1345,
+      "fen": 1346,
+      "fus": 1347,
+      "fact": 1348,
+      "gm": 1349,
+      "ges": 1350,
+      "gia": 1351,
+      "gula": 1352,
+      "hetic": 1353,
+      "if": 1354,
+      "im": 1355,
+      "iq": 1356,
+      "ies": 1357,
+      "ien": 1358,
+      "ith": 1359,
+      "iat": 1360,
+      "ka": 1361,
+      "lus": 1362,
+      "llcohol": 1363,
+      "mzac": 1364,
+      "nth": 1365,
+      "nion": 1366,
+      "oo": 1367,
+      "ou": 1368,
+      "ora": 1369,
+      "ose": 1370,
+      "oalin": 1371,
+      "pfizer": 1372,
+      "pvac": 1373,
+      "ran": 1374,
+      "retail": 1375,
+      "sf": 1376,
+      "tor": 1377,
+      "ue": 1378,
+      "uu": 1379,
+      "uga": 1380,
+      "ured": 1381,
+      "ufact": 1382,
+      "with": 1383,
+      "yot": 1384,
+      "Ġ4": 1385,
+      "ĠW": 1386,
+      "Ġon": 1387,
+      "ĠEm": 1388,
+      "Ġqu": 1389,
+      "Ġ400": 1390,
+      "Ġ45": 1391,
+      "Ġchloroquine": 1392,
+      "Ġ95": 1393,
+      "ĠINCLUSIVE": 1394,
+      "ĠJan": 1395,
+      "ĠYel": 1396,
+      "Ġdate": 1397,
+      "Ġgm": 1398,
+      "Ġif": 1399,
+      "Ġwith": 1400,
+      "2023": 1401,
+      "inance": 1402,
+      "ĠPaed": 1403,
+      "ĠPlus": 1404,
+      "ĠStra": 1405,
+      "ĠSuspension": 1406,
+      "ĠSFP": 1407,
+      "ĠMG": 1408,
+      "ĠMl": 1409,
+      "ĠMFT": 1410,
+      "ĠCiss": 1411,
+      "ĠCITRA": 1412,
+      "abora": 1413,
+      "002": 1414,
+      "006": 1415,
+      "ergia": 1416,
+      "ule": 1417,
+      "ulsion": 1418,
+      "ulose": 1419,
+      "ĠAqu": 1420,
+      "ĠAllcohol": 1421,
+      "Ġ1400383": 1422,
+      "ethas": 1423,
+      "amethas": 1424,
+      "OLORIDE": 1425,
+      "ANTACID": 1426,
+      "ĠOCT": 1427,
+      "ĠRetail": 1428,
+      "ĠRegist": 1429,
+      "ĠGKG": 1430,
+      "ĠFEB": 1431,
+      "ilate": 1432,
+      "Ġ26": 1433,
+      "Ġ27": 1434,
+      "UGABA": 1435,
+      "Ġ76": 1436,
+      "081": 1437,
+      "0820": 1438,
+      "0840": 1439,
+      "Ġ154": 1440,
+      "NEUGABA": 1441,
+      "1037": 1442,
+      "2407": 1443,
+      "2456": 1444,
+      "2409": 1445,
+      "24081": 1446,
+      "241037": 1447,
+      "HCSQS": 1448,
+      "ĠNot": 1449,
+      "edule": 1450,
+      "Diclofence": 1451,
+      "ROGEN": 1452,
+      "itra": 1453,
+      "Ġto": 1454,
+      "aracetamol": 1455,
+      "APS": 1456,
+      "ĠIndia": 1457,
+      "Ġprice": 1458,
+      "Ġparacetamol": 1459,
+      "ĠPRESRIPTION": 1460,
+      "atyot": 1461,
+      "Prega": 1462,
+      "ĠMethylcobali": 1463,
+      "DIUM": 1464,
+      "DISO": 1465,
+      "ARVPA": 1466,
+      "ctioner": 1467,
+      "25010": 1468,
+      "POTCL": 1469,
+      "ĠDtnth": 1470,
+      "Ġsiss": 1471,
+      "Ġsuspension": 1472,
+      "Ġsuga": 1473,
+      "Nano": 1474,
+      "profen": 1475,
+      "ĠLiquid": 1476,
+      "GPE": 1477,
+      "Ġml": 1478,
+      "ĠCHOLORIDE": 1479,
+      "chlorouu": 1480,
+      "ĠCONCENTRATION": 1481,
+      "Hydroxychlorouu": 1482,
+      "192": 1483,
+      "ralka": 1484,
+      "GPDOB": 1485,
+      "LYNE": 1486,
+      "Ġ11241037": 1487,
+      "ALIBPRO": 1488,
+      "afamine": 1489,
+      "ĠEuatyot": 1490,
+      "Ġmythayle": 1491,
+      "Dexamethas": 1492,
+      "ĠNA": 1493,
+      "ĠNon": 1494,
+      "ĠDIETHE": 1495,
+      "ĠMethol": 1496,
+      "DICLOFENCE": 1497,
+      "DEM": 1498,
+      "Ġ310": 1499,
+      "ĠMythyle": 1500,
+      "11842": 1501,
+      "Maxim": 1502,
+      "Ġaug": 1503,
+      "escien": 1504,
+      "GLYCOPYRRO": 1505,
+      "Ibuges": 1506,
+      "Ibuprofen": 1507,
+      "mfd": 1508,
+      "Diclofance": 1509,
+      "Diclofinance": 1510,
+      "ĠLifeSt": 1511,
+      "ĠLifescien": 1512,
+      "Softvac": 1513,
+      "Softpvac": 1514,
+      "1000": 1515,
+      "ĠPractioner": 1516,
+      "ĠHYDROGEN": 1517,
+      "Ġsalicilate": 1518,
+      "Ġlimited": 1519,
+      "Ġturns": 1520,
+      "Asthetic": 1521,
+      "Citralka": 1522,
+      "Dabergia": 1523,
+      "Eris": 1524,
+      "FSA": 1525,
+      "HTB": 1526,
+      "Lactulose": 1527,
+      "Manufact": 1528,
+      "Reunion": 1529,
+      "Schedule": 1530,
+      "Tramzac": 1531,
+      "Volitra": 1532,
+      "WALLACE": 1533,
+      "ZYDUS": 1534,
+      "adran": 1535,
+      "eous": 1536,
+      "fusion": 1537,
+      "gulais": 1538,
+      "iqen": 1539,
+      "iatric": 1540,
+      "out": 1541,
+      "tories": 1542,
+      "ĠEmulsion": 1543,
+      "Ġquadran": 1544,
+      "ĠYellow": 1545,
+      "Ġwithout": 1546,
+      "ĠPaediatric": 1547,
+      "ĠSFPFB": 1548,
+      "ĠCissue": 1549,
+      "ĠCITRATE": 1550,
+      "aboratories": 1551,
+      "ĠAqueous": 1552,
+      "ĠRegistred": 1553,
+      "084013": 1554,
+      "24564": 1555,
+      "24090820": 1556,
+      "Diclofenceac": 1557,
+      "Pregaoalin": 1558,
+      "DISODIUM": 1559,
+      "ĠDtnthafamine": 1560,
+      "Ġsissoo": 1561,
+      "Ġsugar": 1562,
+      "Hydroxychlorouuiqen": 1563,
+      "ĠEuatyotus": 1564,
+      "Dexamethasone": 1565,
+      "ĠDIETHELYNE": 1566,
+      "Maximum": 1567,
+      "Ibugesic": 1568,
+      "ĠLifeStyle": 1569,
+      "ĠLifesciences": 1570,
+      "Manufactured": 1571,
+      "Ġquadrangulais": 1572,
+      "020": 1573,
+      "28": 1574,
+      "312": 1575,
+      "320058": 1576,
+      "348": 1577,
+      "49": 1578,
+      "51": 1579,
+      "525": 1580,
+      "501": 1581,
+      "72": 1582,
+      "900": 1583,
+      "=-": 1584,
+      "AS": 1585,
+      "ANO": 1586,
+      "AFR": 1587,
+      "Bi": 1588,
+      "By": 1589,
+      "BAC": 1590,
+      "CD": 1591,
+      "Co": 1592,
+      "CIP": 1593,
+      "DA": 1594,
+      "DM": 1595,
+      "De": 1596,
+      "DTI": 1597,
+      "DRUG": 1598,
+      "FTER": 1599,
+      "Free": 1600,
+      "Gent": 1601,
+      "IK": 1602,
+      "ITA": 1603,
+      "ITH": 1604,
+      "IAS": 1605,
+      "LUP": 1606,
+      "MIN": 1607,
+      "Methyl": 1608,
+      "Menthol": 1609,
+      "MINE": 1610,
+      "MNB": 1611,
+      "MIAS": 1612,
+      "NAL": 1613,
+      "NANO": 1614,
+      "PR": 1615,
+      "Pl": 1616,
+      "Per": 1617,
+      "PEN": 1618,
+      "Res": 1619,
+      "ROL": 1620,
+      "Retail": 1621,
+      "SATE": 1622,
+      "SER": 1623,
+      "TM": 1624,
+      "To": 1625,
+      "TON": 1626,
+      "VITA": 1627,
+      "WSC": 1628,
+      "XDA": 1629,
+      "YSATE": 1630,
+      "bus": 1631,
+      "bbal": 1632,
+      "bia": 1633,
+      "cti": 1634,
+      "cted": 1635,
+      "dust": 1636,
+      "eal": 1637,
+      "gh": 1638,
+      "ial": 1639,
+      "iant": 1640,
+      "kula": 1641,
+      "le": 1642,
+      "ly": 1643,
+      "lamine": 1644,
+      "na": 1645,
+      "no": 1646,
+      "ost": 1647,
+      "otion": 1648,
+      "ocare": 1649,
+      "parac": 1650,
+      "rated": 1651,
+      "rial": 1652,
+      "sw": 1653,
+      "siant": 1654,
+      "xost": 1655,
+      "yate": 1656,
+      "yco": 1657,
+      "ybus": 1658,
+      "ze": 1659,
+      "zybus": 1660,
+      "ĠON": 1661,
+      "Ġ00": 1662,
+      "ĠEX": 1663,
+      "Ġre": 1664,
+      "ĠRANBAXY": 1665,
+      "Ġ2029": 1666,
+      "Ġ92": 1667,
+      "Ġyel": 1668,
+      "Ġ617": 1669,
+      "ĠUSE": 1670,
+      "ĠNEUGABA": 1671,
+      "Ġ900": 1672,
+      "ĠBi": 1673,
+      "208": 1674,
+      "2015": 1675,
+      "inclusiv": 1676,
+      "ĠDo": 1677,
+      "ĠDop": 1678,
+      "ĠDAY": 1679,
+      "anch": 1680,
+      "tected": 1681,
+      "ĠPre": 1682,
+      "ĠPanch": 1683,
+      "ĠTHE": 1684,
+      "ING": 1685,
+      "INAC": 1686,
+      "INER": 1687,
+      "esth": 1688,
+      "ĠMA": 1689,
+      "ĠML": 1690,
+      "ĠMUL": 1691,
+      "ĠMAR": 1692,
+      "ĠMRP": 1693,
+      "ĠMAY": 1694,
+      "TEIN": 1695,
+      "ĠCer": 1696,
+      "rotected": 1697,
+      "003": 1698,
+      "0001": 1699,
+      "0057": 1700,
+      "erid": 1701,
+      "ĠAU": 1702,
+      "ĠAre": 1703,
+      "ĠAug": 1704,
+      "ĠAFR": 1705,
+      "ĠAFTER": 1706,
+      "ĠAPR": 1707,
+      "RAL": 1708,
+      "TIMINE": 1709,
+      "TIVITA": 1710,
+      "NODEM": 1711,
+      "ell": 1712,
+      "elow": 1713,
+      "Ġ13": 1714,
+      "Ġ16": 1715,
+      "ethlamine": 1716,
+      "25320058": 1717,
+      "Ġ04": 1718,
+      "ĠOPEN": 1719,
+      "ĠHeal": 1720,
+      "tifi": 1721,
+      "ĠGM": 1722,
+      "ore": 1723,
+      "Ġ..": 1724,
+      "thcare": 1725,
+      "ĠLaboratories": 1726,
+      "mar": 1727,
+      "Albia": 1728,
+      "Indust": 1729,
+      "ussw": 1730,
+      "AWAWIN": 1731,
+      "Pantopa": 1732,
+      "Mfd": 1733,
+      "exp": 1734,
+      "ACIN": 1735,
+      "SION": 1736,
+      "tioner": 1737,
+      "24525": 1738,
+      "ĠSalicyate": 1739,
+      "126": 1740,
+      "Diclofenc": 1741,
+      "itamol": 1742,
+      "ĠInfusion": 1743,
+      "RIPTON": 1744,
+      "Ġ57": 1745,
+      "Ġprotected": 1746,
+      "Paracitamol": 1747,
+      "inseed": 1748,
+      "1341": 1749,
+      "ĠPRESCRIPTON": 1750,
+      "ĠPRESCRIPTIONDRUG": 1751,
+      "ĠDiethlamine": 1752,
+      "TATION": 1753,
+      "TAINER": 1754,
+      "ĠEMUL": 1755,
+      "0149": 1756,
+      "3174": 1757,
+      "PRACIP": 1758,
+      "ĠISO": 1759,
+      "APRL": 1760,
+      "APRIL": 1761,
+      "ĠCONSER": 1762,
+      "ĠCONTAINER": 1763,
+      "LEVOBUPINAC": 1764,
+      "Ġmethyl": 1765,
+      "Ġmotion": 1766,
+      "193": 1767,
+      "ĠNOV": 1768,
+      "TERNAL": 1769,
+      "ĠCHLOR": 1770,
+      "Ġbelow": 1771,
+      "ĠMethyco": 1772,
+      "ĠCAPS": 1773,
+      "AMIK": 1774,
+      "Anesth": 1775,
+      "Phase": 1776,
+      "Ġ30": 1777,
+      "Ġfo": 1778,
+      "Ġfab": 1779,
+      "Ġfrom": 1780,
+      "Ġinfusion": 1781,
+      "GLYCOPYROLATE": 1782,
+      "buxost": 1783,
+      "Ġlaboratories": 1784,
+      "Ġlinseed": 1785,
+      "Febuxost": 1786,
+      "Ġmar": 1787,
+      "PROTEIN": 1788,
+      "Store": 1789,
+      "gistrated": 1790,
+      "ĠPracti": 1791,
+      "ĠHYDROL": 1792,
+      "Ġsalicylate": 1793,
+      "Ġfreeze": 1794,
+      "Ġligh": 1795,
+      "743174": 1796,
+      "MULTIVITA": 1797,
+      "ĠWTA": 1798,
+      "ĠWITH": 1799,
+      "Ġonly": 1800,
+      "ĠStrain": 1801,
+      "ĠStraussw": 1802,
+      "00658": 1803,
+      "00628": 1804,
+      "Ġ264": 1805,
+      "0203": 1806,
+      "BACH": 1807,
+      "CDDTI": 1808,
+      "Dec": 1809,
+      "Gentle": 1810,
+      "LUPIN": 1811,
+      "Plot": 1812,
+      "Ressiant": 1813,
+      "bbalamin": 1814,
+      "paracip": 1815,
+      "ĠONLY": 1816,
+      "ĠEXTERNAL": 1817,
+      "Ġregistrated": 1818,
+      "Ġ923": 1819,
+      "Ġyellow": 1820,
+      "Ġ9001": 1821,
+      "ĠBiocare": 1822,
+      "inclusive": 1823,
+      "ĠDoperid": 1824,
+      "ĠDAYS": 1825,
+      "ĠPregabalin": 1826,
+      "ĠPanchkula": 1827,
+      "ĠMULTIMINE": 1828,
+      "ĠCertifi": 1829,
+      "ĠArea": 1830,
+      "NODEMM": 1831,
+      "ĠOPENING": 1832,
+      "ĠHealthcare": 1833,
+      "Industrial": 1834,
+      "Pantopazole": 1835,
+      "134113": 1836,
+      "ĠEMULSION": 1837,
+      "ĠCONSERTATION": 1838,
+      "LEVOBUPINACANE": 1839,
+      "ĠMethycobbalamin": 1840,
+      "AMIKACIN": 1841,
+      "Anesthetic": 1842,
+      "Febuxostat": 1843,
+      "ĠPractitioner": 1844,
+      "ĠHYDROLYSATE": 1845,
+      "Ġlight": 1846,
+      "MULTIVITAMIN": 1847,
+      "ĠWITHIN": 1848,
+      "ĠStrausswell": 1849,
+      "ĠDoperidne": 1850,
+      "ĠMULTIMINERAL": 1851,
+      "ĠCertified": 1852
+    },
+    "merges": [
+      [
+        "2",
+        "0"
+      ],
+      [
+        "20",
+        "2"
+      ],
+      [
+        "i",
+        "n"
+      ],
+      [
+        "Ġ",
+        "D"
+      ],
+      [
+        "e",
+        "t"
+      ],
+      [
+        "a",
+        "n"
+      ],
+      [
+        "o",
+        "l"
+      ],
+      [
+        "a",
+        "l"
+      ],
+      [
+        "t",
+        "e"
+      ],
+      [
+        "Ġ",
+        "P"
+      ],
+      [
+        "Ġ",
+        "T"
+      ],
+      [
+        "Ġ",
+        "S"
+      ],
+      [
+        "I",
+        "N"
+      ],
+      [
+        "e",
+        "s"
+      ],
+      [
+        "Ġ",
+        "M"
+      ],
+      [
+        "i",
+        "c"
+      ],
+      [
+        "O",
+        "N"
+      ],
+      [
+        "T",
+        "E"
+      ],
+      [
+        "Ġ",
+        "C"
+      ],
+      [
+        "r",
+        "o"
+      ],
+      [
+        "a",
+        "te"
+      ],
+      [
+        "L",
+        "E"
+      ],
+      [
+        "a",
+        "b"
+      ],
+      [
+        "0",
+        "0"
+      ],
+      [
+        "r",
+        "a"
+      ],
+      [
+        "e",
+        "r"
+      ],
+      [
+        "I",
+        "P"
+      ],
+      [
+        "u",
+        "l"
+      ],
+      [
+        "e",
+        "n"
+      ],
+      [
+        "y",
+        "l"
+      ],
+      [
+        "i",
+        "d"
+      ],
+      [
+        "Ġ",
+        "A"
+      ],
+      [
+        "R",
+        "A"
+      ],
+      [
+        "T",
+        "I"
+      ],
+      [
+        "o",
+        "n"
+      ],
+      [
+        "s",
+        "t"
+      ],
+      [
+        "M",
+        "F"
+      ],
+      [
+        "E",
+        "X"
+      ],
+      [
+        "N",
+        "O"
+      ],
+      [
+        "e",
+        "l"
+      ],
+      [
+        "o",
+        "f"
+      ],
+      [
+        "TI",
+        "ON"
+      ],
+      [
+        "Ġ",
+        "1"
+      ],
+      [
+        "EX",
+        "P"
+      ],
+      [
+        "et",
+        "h"
+      ],
+      [
+        "ĠT",
+        "A"
+      ],
+      [
+        "a",
+        "m"
+      ],
+      [
+        "2",
+        "5"
+      ],
+      [
+        "A",
+        "TE"
+      ],
+      [
+        "202",
+        "6"
+      ],
+      [
+        "O",
+        "L"
+      ],
+      [
+        "a",
+        "c"
+      ],
+      [
+        "Ġ",
+        "0"
+      ],
+      [
+        "202",
+        "5"
+      ],
+      [
+        ".",
+        ":"
+      ],
+      [
+        "A",
+        "N"
+      ],
+      [
+        "Ġ",
+        "IP"
+      ],
+      [
+        "E",
+        "S"
+      ],
+      [
+        "Ġ",
+        ":"
+      ],
+      [
+        "N",
+        "o"
+      ],
+      [
+        "Ġ",
+        "O"
+      ],
+      [
+        "Ġ",
+        "R"
+      ],
+      [
+        "an",
+        "t"
+      ],
+      [
+        "Ġ",
+        "H"
+      ],
+      [
+        "Ġ",
+        "an"
+      ],
+      [
+        "a",
+        "p"
+      ],
+      [
+        "202",
+        "4"
+      ],
+      [
+        "in",
+        "e"
+      ],
+      [
+        "t",
+        "i"
+      ],
+      [
+        "Ġan",
+        "d"
+      ],
+      [
+        "Ġ",
+        "G"
+      ],
+      [
+        "o",
+        "r"
+      ],
+      [
+        "o",
+        "w"
+      ],
+      [
+        "Ġ",
+        "&"
+      ],
+      [
+        "y",
+        "d"
+      ],
+      [
+        "MF",
+        "G"
+      ],
+      [
+        "d",
+        "er"
+      ],
+      [
+        "Ġ",
+        "."
+      ],
+      [
+        "ĠP",
+        "ow"
+      ],
+      [
+        "ap",
+        "s"
+      ],
+      [
+        "ĠPow",
+        "der"
+      ],
+      [
+        "r",
+        "e"
+      ],
+      [
+        "eth",
+        "yl"
+      ],
+      [
+        "c",
+        "l"
+      ],
+      [
+        "ab",
+        "l"
+      ],
+      [
+        "ul",
+        "es"
+      ],
+      [
+        "aps",
+        "ules"
+      ],
+      [
+        "t",
+        "h"
+      ],
+      [
+        "Ġ",
+        "F"
+      ],
+      [
+        "Ġ",
+        "L"
+      ],
+      [
+        "A",
+        "L"
+      ],
+      [
+        "V",
+        "O"
+      ],
+      [
+        "LE",
+        "VO"
+      ],
+      [
+        "c",
+        "h"
+      ],
+      [
+        "m",
+        "a"
+      ],
+      [
+        "ĠC",
+        "apsules"
+      ],
+      [
+        "20",
+        "0"
+      ],
+      [
+        "et",
+        "s"
+      ],
+      [
+        "ant",
+        "o"
+      ],
+      [
+        "abl",
+        "ets"
+      ],
+      [
+        "O",
+        "R"
+      ],
+      [
+        "R",
+        "s"
+      ],
+      [
+        "i",
+        "l"
+      ],
+      [
+        "A",
+        "l"
+      ],
+      [
+        "E",
+        "m"
+      ],
+      [
+        "T",
+        "RA"
+      ],
+      [
+        "u",
+        "m"
+      ],
+      [
+        "I",
+        "n"
+      ],
+      [
+        "p",
+        "h"
+      ],
+      [
+        "E",
+        "x"
+      ],
+      [
+        "ĠT",
+        "ablets"
+      ],
+      [
+        "ĠTA",
+        "B"
+      ],
+      [
+        "C",
+        "E"
+      ],
+      [
+        "Ġ",
+        "2"
+      ],
+      [
+        "202",
+        "7"
+      ],
+      [
+        "U",
+        "G"
+      ],
+      [
+        "E",
+        "C"
+      ],
+      [
+        "c",
+        "id"
+      ],
+      [
+        "u",
+        "s"
+      ],
+      [
+        "ĠA",
+        "L"
+      ],
+      [
+        "C",
+        "L"
+      ],
+      [
+        "Ġ",
+        "7"
+      ],
+      [
+        "Ex",
+        "p"
+      ],
+      [
+        "A",
+        "W"
+      ],
+      [
+        "H",
+        "A"
+      ],
+      [
+        "P",
+        "anto"
+      ],
+      [
+        "0",
+        "8"
+      ],
+      [
+        "M",
+        "f"
+      ],
+      [
+        "e",
+        "x"
+      ],
+      [
+        "Ġ",
+        ","
+      ],
+      [
+        "AW",
+        "IN"
+      ],
+      [
+        "A",
+        "C"
+      ],
+      [
+        "S",
+        "I"
+      ],
+      [
+        "X",
+        "ES"
+      ],
+      [
+        "s",
+        "e"
+      ],
+      [
+        "ĠTA",
+        "XES"
+      ],
+      [
+        "AN",
+        "AWIN"
+      ],
+      [
+        "ĠAL",
+        "L"
+      ],
+      [
+        "Mf",
+        "g"
+      ],
+      [
+        "U",
+        "L"
+      ],
+      [
+        "g",
+        "ab"
+      ],
+      [
+        "i",
+        "um"
+      ],
+      [
+        "ĠM",
+        "ethyl"
+      ],
+      [
+        "Ġ1",
+        "5"
+      ],
+      [
+        "N",
+        "E"
+      ],
+      [
+        "i",
+        "p"
+      ],
+      [
+        "of",
+        "en"
+      ],
+      [
+        "am",
+        "in"
+      ],
+      [
+        "D",
+        "ic"
+      ],
+      [
+        "M",
+        "A"
+      ],
+      [
+        "U",
+        "TION"
+      ],
+      [
+        "a",
+        "ra"
+      ],
+      [
+        "es",
+        "et"
+      ],
+      [
+        "ti",
+        "on"
+      ],
+      [
+        "yd",
+        "ro"
+      ],
+      [
+        "ch",
+        "l"
+      ],
+      [
+        "Em",
+        "eset"
+      ],
+      [
+        "Dic",
+        "l"
+      ],
+      [
+        "0",
+        "7"
+      ],
+      [
+        "ĠD",
+        "ate"
+      ],
+      [
+        "1",
+        "0"
+      ],
+      [
+        "p",
+        "ra"
+      ],
+      [
+        "ol",
+        "y"
+      ],
+      [
+        "al",
+        "ic"
+      ],
+      [
+        "MF",
+        "D"
+      ],
+      [
+        "ĠG",
+        "el"
+      ],
+      [
+        "2",
+        "4"
+      ],
+      [
+        "H",
+        "C"
+      ],
+      [
+        "Q",
+        "S"
+      ],
+      [
+        "R",
+        "S"
+      ],
+      [
+        "IN",
+        "CL"
+      ],
+      [
+        "ĠF",
+        "OR"
+      ],
+      [
+        "H",
+        "E"
+      ],
+      [
+        "a",
+        "st"
+      ],
+      [
+        "1",
+        "5"
+      ],
+      [
+        "o",
+        "t"
+      ],
+      [
+        "ĠS",
+        "alic"
+      ],
+      [
+        "yl",
+        "ate"
+      ],
+      [
+        "HC",
+        "QS"
+      ],
+      [
+        "D",
+        "U"
+      ],
+      [
+        "f",
+        "f"
+      ],
+      [
+        "Ġ",
+        "IN"
+      ],
+      [
+        "Ġ",
+        "No"
+      ],
+      [
+        "ĠSalic",
+        "ylate"
+      ],
+      [
+        "ff",
+        "in"
+      ],
+      [
+        "ĠIN",
+        "J"
+      ],
+      [
+        "1",
+        "2"
+      ],
+      [
+        "I",
+        "TE"
+      ],
+      [
+        "S",
+        "R"
+      ],
+      [
+        "c",
+        "o"
+      ],
+      [
+        "e",
+        "d"
+      ],
+      [
+        "z",
+        "ol"
+      ],
+      [
+        "â",
+        "Ĥ"
+      ],
+      [
+        "ĠD",
+        "SR"
+      ],
+      [
+        "id",
+        "e"
+      ],
+      [
+        "âĤ",
+        "¹"
+      ],
+      [
+        "E",
+        "R"
+      ],
+      [
+        "Y",
+        "R"
+      ],
+      [
+        "e",
+        "u"
+      ],
+      [
+        "ĠO",
+        "il"
+      ],
+      [
+        "Dicl",
+        "ofen"
+      ],
+      [
+        "R",
+        "O"
+      ],
+      [
+        "a",
+        "x"
+      ],
+      [
+        "m",
+        "g"
+      ],
+      [
+        "ĠD",
+        "ATE"
+      ],
+      [
+        "Ġ7",
+        "5"
+      ],
+      [
+        "C",
+        "al"
+      ],
+      [
+        "F",
+        "OL"
+      ],
+      [
+        "N",
+        "eu"
+      ],
+      [
+        "V",
+        "ITE"
+      ],
+      [
+        "g",
+        "el"
+      ],
+      [
+        "i",
+        "t"
+      ],
+      [
+        "q",
+        "u"
+      ],
+      [
+        "Ġ",
+        "t"
+      ],
+      [
+        "th",
+        "ol"
+      ],
+      [
+        "TRA",
+        "CE"
+      ],
+      [
+        "EC",
+        "TION"
+      ],
+      [
+        "UL",
+        "TRACE"
+      ],
+      [
+        "gab",
+        "a"
+      ],
+      [
+        "ara",
+        "c"
+      ],
+      [
+        "ĠINJ",
+        "ECTION"
+      ],
+      [
+        "FOL",
+        "VITE"
+      ],
+      [
+        "Neu",
+        "gaba"
+      ],
+      [
+        "ULTRACE",
+        "T"
+      ],
+      [
+        "0",
+        "3"
+      ],
+      [
+        "A",
+        "P"
+      ],
+      [
+        "D",
+        "ATE"
+      ],
+      [
+        "P",
+        "YR"
+      ],
+      [
+        "Ġ",
+        "In"
+      ],
+      [
+        "ĠD",
+        "HA"
+      ],
+      [
+        "ĠR",
+        "S"
+      ],
+      [
+        "NE",
+        "ON"
+      ],
+      [
+        "A",
+        "UTION"
+      ],
+      [
+        "I",
+        "M"
+      ],
+      [
+        "R",
+        "IP"
+      ],
+      [
+        "R",
+        "ES"
+      ],
+      [
+        "R",
+        "UG"
+      ],
+      [
+        "T",
+        "S"
+      ],
+      [
+        "m",
+        "i"
+      ],
+      [
+        "n",
+        "d"
+      ],
+      [
+        "Ġ",
+        "("
+      ],
+      [
+        "Ġ",
+        "5"
+      ],
+      [
+        "Ġ",
+        "p"
+      ],
+      [
+        "ĠP",
+        "RES"
+      ],
+      [
+        "LE",
+        "TS"
+      ],
+      [
+        "ĠH",
+        "ydro"
+      ],
+      [
+        "or",
+        "ide"
+      ],
+      [
+        "ĠTAB",
+        "LETS"
+      ],
+      [
+        "chl",
+        "oride"
+      ],
+      [
+        "ĠHydro",
+        "chloride"
+      ],
+      [
+        "D",
+        "t"
+      ],
+      [
+        "P",
+        "arac"
+      ],
+      [
+        "S",
+        "U"
+      ],
+      [
+        "c",
+        "ium"
+      ],
+      [
+        "r",
+        "en"
+      ],
+      [
+        "s",
+        "et"
+      ],
+      [
+        "Ġ",
+        "of"
+      ],
+      [
+        "in",
+        "se"
+      ],
+      [
+        "ĠD",
+        "RUG"
+      ],
+      [
+        "ĠP",
+        "oly"
+      ],
+      [
+        "ĠS",
+        "ul"
+      ],
+      [
+        "on",
+        "ate"
+      ],
+      [
+        "OL",
+        "ATE"
+      ],
+      [
+        "ph",
+        "onate"
+      ],
+      [
+        "Cal",
+        "cium"
+      ],
+      [
+        "RIP",
+        "TION"
+      ],
+      [
+        "ren",
+        "e"
+      ],
+      [
+        "ĠPoly",
+        "st"
+      ],
+      [
+        "ĠSul",
+        "phonate"
+      ],
+      [
+        "1",
+        "3"
+      ],
+      [
+        "4",
+        "1"
+      ],
+      [
+        "4",
+        "00"
+      ],
+      [
+        "E",
+        "P"
+      ],
+      [
+        "a",
+        "t"
+      ],
+      [
+        "i",
+        "st"
+      ],
+      [
+        "o",
+        "m"
+      ],
+      [
+        "ol",
+        "u"
+      ],
+      [
+        "ĠM",
+        "ul"
+      ],
+      [
+        "ĠL",
+        "inse"
+      ],
+      [
+        "HE",
+        "DU"
+      ],
+      [
+        "ax",
+        "es"
+      ],
+      [
+        "ĠPRES",
+        "C"
+      ],
+      [
+        "ĠMul",
+        "ti"
+      ],
+      [
+        "HEDU",
+        "LE"
+      ],
+      [
+        "A",
+        "K"
+      ],
+      [
+        "F",
+        "AK"
+      ],
+      [
+        "K",
+        "P"
+      ],
+      [
+        "b",
+        "al"
+      ],
+      [
+        "c",
+        "e"
+      ],
+      [
+        "ro",
+        "m"
+      ],
+      [
+        "am",
+        "ine"
+      ],
+      [
+        "In",
+        "cl"
+      ],
+      [
+        "ĠPRESC",
+        "RIPTION"
+      ],
+      [
+        "FAK",
+        "IM"
+      ],
+      [
+        "4",
+        "0"
+      ],
+      [
+        "B",
+        "A"
+      ],
+      [
+        "C",
+        "re"
+      ],
+      [
+        "P",
+        "re"
+      ],
+      [
+        "c",
+        "al"
+      ],
+      [
+        "r",
+        "k"
+      ],
+      [
+        "Ġ",
+        "âĤ¹"
+      ],
+      [
+        "en",
+        "thol"
+      ],
+      [
+        "ĠO",
+        "F"
+      ],
+      [
+        "ĠG",
+        "ast"
+      ],
+      [
+        "ma",
+        "ffin"
+      ],
+      [
+        "Al",
+        "i"
+      ],
+      [
+        "ĠTAB",
+        "S"
+      ],
+      [
+        "Panto",
+        "cid"
+      ],
+      [
+        "ĠMethyl",
+        "co"
+      ],
+      [
+        "zol",
+        "e"
+      ],
+      [
+        "PYR",
+        "OLATE"
+      ],
+      [
+        "Cre",
+        "maffin"
+      ],
+      [
+        "ĠGast",
+        "ro"
+      ],
+      [
+        "ĠMethylco",
+        "bal"
+      ],
+      [
+        "7",
+        "0"
+      ],
+      [
+        "D",
+        "I"
+      ],
+      [
+        "I",
+        "C"
+      ],
+      [
+        "P",
+        "ot"
+      ],
+      [
+        "d",
+        "ol"
+      ],
+      [
+        "t",
+        "ra"
+      ],
+      [
+        "ĠD",
+        "i"
+      ],
+      [
+        "es",
+        "ist"
+      ],
+      [
+        "ĠM",
+        "enthol"
+      ],
+      [
+        "ra",
+        "ma"
+      ],
+      [
+        "ĠR",
+        "s"
+      ],
+      [
+        "pra",
+        "zole"
+      ],
+      [
+        "Diclofen",
+        "ac"
+      ],
+      [
+        "Pot",
+        "cl"
+      ],
+      [
+        "esist",
+        "ant"
+      ],
+      [
+        "A",
+        "R"
+      ],
+      [
+        "J",
+        "AN"
+      ],
+      [
+        "O",
+        "nd"
+      ],
+      [
+        "R",
+        "P"
+      ],
+      [
+        "T",
+        "A"
+      ],
+      [
+        "U",
+        "P"
+      ],
+      [
+        "a",
+        "y"
+      ],
+      [
+        "d",
+        "ay"
+      ],
+      [
+        "Ġ",
+        "E"
+      ],
+      [
+        "ic",
+        "al"
+      ],
+      [
+        "Ġ1",
+        "0"
+      ],
+      [
+        "am",
+        "ol"
+      ],
+      [
+        "ac",
+        "in"
+      ],
+      [
+        "ethyl",
+        "amine"
+      ],
+      [
+        "it",
+        "amin"
+      ],
+      [
+        "ĠMethylcobal",
+        "amin"
+      ],
+      [
+        "ĠDi",
+        "ethylamine"
+      ],
+      [
+        "Ond",
+        "an"
+      ],
+      [
+        "0",
+        "1"
+      ],
+      [
+        "B",
+        "in"
+      ],
+      [
+        "M",
+        "RP"
+      ],
+      [
+        "c",
+        "tion"
+      ],
+      [
+        "i",
+        "r"
+      ],
+      [
+        "y",
+        "rene"
+      ],
+      [
+        "Ġ",
+        "al"
+      ],
+      [
+        "Ġ",
+        "gel"
+      ],
+      [
+        "et",
+        "amol"
+      ],
+      [
+        "ol",
+        "ic"
+      ],
+      [
+        "te",
+        "r"
+      ],
+      [
+        "ĠA",
+        "cid"
+      ],
+      [
+        "25",
+        "0"
+      ],
+      [
+        "AL",
+        "FAKIM"
+      ],
+      [
+        "SU",
+        "N"
+      ],
+      [
+        "ĠPolyst",
+        "yrene"
+      ],
+      [
+        "Bin",
+        "d"
+      ],
+      [
+        "ir",
+        "y"
+      ],
+      [
+        "Ġal",
+        "l"
+      ],
+      [
+        "3",
+        "1"
+      ],
+      [
+        "3",
+        "8"
+      ],
+      [
+        "I",
+        "D"
+      ],
+      [
+        "O",
+        "W"
+      ],
+      [
+        "P",
+        "O"
+      ],
+      [
+        "P",
+        "RA"
+      ],
+      [
+        "T",
+        "H"
+      ],
+      [
+        "U",
+        "M"
+      ],
+      [
+        "o",
+        "p"
+      ],
+      [
+        "Ġ",
+        "-"
+      ],
+      [
+        "Ġ",
+        "I"
+      ],
+      [
+        "ĠD",
+        "t"
+      ],
+      [
+        "ĠP",
+        "OW"
+      ],
+      [
+        "AP",
+        "R"
+      ],
+      [
+        "ĠLinse",
+        "ed"
+      ],
+      [
+        "rama",
+        "dol"
+      ],
+      [
+        "0",
+        "2"
+      ],
+      [
+        "1",
+        "1"
+      ],
+      [
+        "4",
+        "5"
+      ],
+      [
+        "A",
+        "mi"
+      ],
+      [
+        "D",
+        "u"
+      ],
+      [
+        "E",
+        "N"
+      ],
+      [
+        "N",
+        "BA"
+      ],
+      [
+        "P",
+        "r"
+      ],
+      [
+        "R",
+        "esistant"
+      ],
+      [
+        "S",
+        "C"
+      ],
+      [
+        "X",
+        "Y"
+      ],
+      [
+        "Y",
+        "L"
+      ],
+      [
+        "d",
+        "ium"
+      ],
+      [
+        "e",
+        "ction"
+      ],
+      [
+        "j",
+        "ection"
+      ],
+      [
+        "k",
+        "acin"
+      ],
+      [
+        "o",
+        "dium"
+      ],
+      [
+        "Ġ",
+        "s"
+      ],
+      [
+        "Ġ",
+        "mg"
+      ],
+      [
+        "ĠD",
+        "om"
+      ],
+      [
+        "ĠT",
+        "op"
+      ],
+      [
+        "ĠS",
+        "pra"
+      ],
+      [
+        "ĠS",
+        "PRA"
+      ],
+      [
+        "ĠS",
+        "odium"
+      ],
+      [
+        "IN",
+        "E"
+      ],
+      [
+        "RA",
+        "NBA"
+      ],
+      [
+        "Ġ0",
+        "5"
+      ],
+      [
+        "Ġ0",
+        "8"
+      ],
+      [
+        "yd",
+        "us"
+      ],
+      [
+        "ex",
+        "t"
+      ],
+      [
+        "ĠIn",
+        "jection"
+      ],
+      [
+        "Parac",
+        "etamol"
+      ],
+      [
+        "AR",
+        "K"
+      ],
+      [
+        "Ami",
+        "kacin"
+      ],
+      [
+        "ĠTop",
+        "ical"
+      ],
+      [
+        "ĠSpra",
+        "y"
+      ],
+      [
+        "ĠSPRA",
+        "Y"
+      ],
+      [
+        "RANBA",
+        "XY"
+      ],
+      [
+        "B",
+        "at"
+      ],
+      [
+        "B",
+        "UP"
+      ],
+      [
+        "K",
+        "e"
+      ],
+      [
+        "N",
+        "an"
+      ],
+      [
+        "S",
+        "SI"
+      ],
+      [
+        "a",
+        "se"
+      ],
+      [
+        "p",
+        "ro"
+      ],
+      [
+        "y",
+        "th"
+      ],
+      [
+        "y",
+        "cal"
+      ],
+      [
+        "Ġ",
+        "2025"
+      ],
+      [
+        "Ġ",
+        "200"
+      ],
+      [
+        "al",
+        "in"
+      ],
+      [
+        "ĠC",
+        "ON"
+      ],
+      [
+        "25",
+        "00"
+      ],
+      [
+        "LEVO",
+        "BUP"
+      ],
+      [
+        "olu",
+        "tion"
+      ],
+      [
+        "TA",
+        "SSI"
+      ],
+      [
+        "38",
+        "3"
+      ],
+      [
+        "PO",
+        "TASSI"
+      ],
+      [
+        "SC",
+        "HEDULE"
+      ],
+      [
+        "Bat",
+        "ch"
+      ],
+      [
+        "Ke",
+        "ycal"
+      ],
+      [
+        "POTASSI",
+        "UM"
+      ],
+      [
+        "2",
+        "7"
+      ],
+      [
+        "C",
+        "AUTION"
+      ],
+      [
+        "I",
+        "R"
+      ],
+      [
+        "I",
+        "V"
+      ],
+      [
+        "a",
+        "ine"
+      ],
+      [
+        "e",
+        "ase"
+      ],
+      [
+        "f",
+        "i"
+      ],
+      [
+        "n",
+        "ac"
+      ],
+      [
+        "p",
+        "er"
+      ],
+      [
+        "r",
+        "ol"
+      ],
+      [
+        "u",
+        "st"
+      ],
+      [
+        "ĠP",
+        "HA"
+      ],
+      [
+        "el",
+        "ease"
+      ],
+      [
+        "EXP",
+        "IR"
+      ],
+      [
+        "ĠL",
+        "i"
+      ],
+      [
+        "Al",
+        "tra"
+      ],
+      [
+        "Ġ2",
+        "25"
+      ],
+      [
+        "07",
+        "31"
+      ],
+      [
+        "Ġt",
+        "axes"
+      ],
+      [
+        "Ondan",
+        "set"
+      ],
+      [
+        "LEVOBUP",
+        "IV"
+      ],
+      [
+        "rol",
+        "on"
+      ],
+      [
+        "EXPIR",
+        "Y"
+      ],
+      [
+        "Altra",
+        "day"
+      ],
+      [
+        "LEVOBUPIV",
+        "AC"
+      ],
+      [
+        "2",
+        "6"
+      ],
+      [
+        "9",
+        "8"
+      ],
+      [
+        "A",
+        "rk"
+      ],
+      [
+        "F",
+        "olic"
+      ],
+      [
+        "G",
+        "P"
+      ],
+      [
+        "H",
+        "ydro"
+      ],
+      [
+        "M",
+        "L"
+      ],
+      [
+        "N",
+        "TRA"
+      ],
+      [
+        "O",
+        "F"
+      ],
+      [
+        "R",
+        "x"
+      ],
+      [
+        "S",
+        "EP"
+      ],
+      [
+        "b",
+        "in"
+      ],
+      [
+        "b",
+        "pro"
+      ],
+      [
+        "o",
+        "ro"
+      ],
+      [
+        "x",
+        "y"
+      ],
+      [
+        "z",
+        "er"
+      ],
+      [
+        "Ġ",
+        "m"
+      ],
+      [
+        "Ġ",
+        "n"
+      ],
+      [
+        "ĠT",
+        "ramadol"
+      ],
+      [
+        "ĠS",
+        "OL"
+      ],
+      [
+        "ĠC",
+        "H"
+      ],
+      [
+        "on",
+        "e"
+      ],
+      [
+        "of",
+        "ast"
+      ],
+      [
+        "Ġ0",
+        "6"
+      ],
+      [
+        "CE",
+        "NTRA"
+      ],
+      [
+        "gab",
+        "alin"
+      ],
+      [
+        "MA",
+        "R"
+      ],
+      [
+        "chl",
+        "oro"
+      ],
+      [
+        "qu",
+        "id"
+      ],
+      [
+        "400",
+        "383"
+      ],
+      [
+        "Ali",
+        "bpro"
+      ],
+      [
+        "Du",
+        "bin"
+      ],
+      [
+        "Nan",
+        "ofast"
+      ],
+      [
+        "ĠCON",
+        "CENTRA"
+      ],
+      [
+        "fi",
+        "zer"
+      ],
+      [
+        "Hydro",
+        "xy"
+      ],
+      [
+        "ĠSOL",
+        "UTION"
+      ],
+      [
+        "Dubin",
+        "or"
+      ],
+      [
+        "0",
+        "4"
+      ],
+      [
+        "1",
+        "9"
+      ],
+      [
+        "1",
+        "25"
+      ],
+      [
+        "5",
+        "6"
+      ],
+      [
+        "7",
+        "6"
+      ],
+      [
+        "A",
+        "Y"
+      ],
+      [
+        "B",
+        "IN"
+      ],
+      [
+        "B",
+        "IP"
+      ],
+      [
+        "C",
+        "ip"
+      ],
+      [
+        "l",
+        "a"
+      ],
+      [
+        "m",
+        "in"
+      ],
+      [
+        "m",
+        "ine"
+      ],
+      [
+        "r",
+        "al"
+      ],
+      [
+        "r",
+        "oly"
+      ],
+      [
+        "v",
+        "itamin"
+      ],
+      [
+        "Ġ",
+        "NO"
+      ],
+      [
+        "Ġ",
+        ".:"
+      ],
+      [
+        "te",
+        "in"
+      ],
+      [
+        "ĠS",
+        "olution"
+      ],
+      [
+        "TE",
+        "R"
+      ],
+      [
+        "ĠC",
+        "AUTION"
+      ],
+      [
+        "ab",
+        "s"
+      ],
+      [
+        "er",
+        "al"
+      ],
+      [
+        "yl",
+        "e"
+      ],
+      [
+        "ĠH",
+        "yd"
+      ],
+      [
+        "Exp",
+        "iry"
+      ],
+      [
+        "ĠMulti",
+        "min"
+      ],
+      [
+        "ĠMulti",
+        "vitamin"
+      ],
+      [
+        "Pre",
+        "gabalin"
+      ],
+      [
+        "BIN",
+        "D"
+      ],
+      [
+        "BIP",
+        "RO"
+      ],
+      [
+        "Cip",
+        "la"
+      ],
+      [
+        "roly",
+        "s"
+      ],
+      [
+        "ĠHyd",
+        "rolys"
+      ],
+      [
+        "ĠMultimin",
+        "eral"
+      ],
+      [
+        "1",
+        "400383"
+      ],
+      [
+        "C",
+        "LE"
+      ],
+      [
+        "D",
+        "ER"
+      ],
+      [
+        "E",
+        "TH"
+      ],
+      [
+        "L",
+        "i"
+      ],
+      [
+        "M",
+        "ext"
+      ],
+      [
+        "P",
+        "fizer"
+      ],
+      [
+        "V",
+        "OL"
+      ],
+      [
+        "i",
+        "on"
+      ],
+      [
+        "n",
+        "e"
+      ],
+      [
+        "p",
+        "a"
+      ],
+      [
+        "s",
+        "id"
+      ],
+      [
+        "z",
+        "ydus"
+      ],
+      [
+        "Ġ",
+        "c"
+      ],
+      [
+        "202",
+        "9"
+      ],
+      [
+        "an",
+        "ce"
+      ],
+      [
+        "te",
+        "d"
+      ],
+      [
+        "ĠP",
+        "ara"
+      ],
+      [
+        "ĠP",
+        "ER"
+      ],
+      [
+        "ĠS",
+        "EP"
+      ],
+      [
+        "IN",
+        "I"
+      ],
+      [
+        "ate",
+        "d"
+      ],
+      [
+        "id",
+        "one"
+      ],
+      [
+        "RA",
+        "MA"
+      ],
+      [
+        "or",
+        "ph"
+      ],
+      [
+        "Em",
+        "set"
+      ],
+      [
+        "Panto",
+        "prazole"
+      ],
+      [
+        "Panto",
+        "sid"
+      ],
+      [
+        "INCL",
+        "U"
+      ],
+      [
+        "qu",
+        "ine"
+      ],
+      [
+        "Ġ5",
+        "3"
+      ],
+      [
+        "41",
+        "41"
+      ],
+      [
+        "ĠPOW",
+        "DER"
+      ],
+      [
+        "2500",
+        "7"
+      ],
+      [
+        "per",
+        "idone"
+      ],
+      [
+        "ĠPHA",
+        "RAMA"
+      ],
+      [
+        "Ondanset",
+        "rom"
+      ],
+      [
+        "GP",
+        "D"
+      ],
+      [
+        "ĠCH",
+        "L"
+      ],
+      [
+        "chloro",
+        "quine"
+      ],
+      [
+        "ĠCONCENTRA",
+        "TE"
+      ],
+      [
+        "125",
+        "4141"
+      ],
+      [
+        "CLE",
+        "ON"
+      ],
+      [
+        "ETH",
+        "YL"
+      ],
+      [
+        "Li",
+        "quid"
+      ],
+      [
+        "VOL",
+        "INI"
+      ],
+      [
+        "ĠPara",
+        "ffin"
+      ],
+      [
+        "1",
+        "15"
+      ],
+      [
+        "3",
+        "25"
+      ],
+      [
+        "5",
+        "8"
+      ],
+      [
+        "A",
+        "UG"
+      ],
+      [
+        "A",
+        "ce"
+      ],
+      [
+        "A",
+        "INE"
+      ],
+      [
+        "B",
+        "RA"
+      ],
+      [
+        "D",
+        "AY"
+      ],
+      [
+        "F",
+        "LE"
+      ],
+      [
+        "G",
+        "M"
+      ],
+      [
+        "I",
+        "O"
+      ],
+      [
+        "J",
+        "UL"
+      ],
+      [
+        "L",
+        "Y"
+      ],
+      [
+        "R",
+        "el"
+      ],
+      [
+        "R",
+        "IO"
+      ],
+      [
+        "S",
+        "E"
+      ],
+      [
+        "T",
+        "HE"
+      ],
+      [
+        "d",
+        "e"
+      ],
+      [
+        "d",
+        "ic"
+      ],
+      [
+        "e",
+        "prazole"
+      ],
+      [
+        "g",
+        "a"
+      ],
+      [
+        "n",
+        "ter"
+      ],
+      [
+        "o",
+        "ated"
+      ],
+      [
+        "r",
+        "t"
+      ],
+      [
+        "r",
+        "ip"
+      ],
+      [
+        "t",
+        "axes"
+      ],
+      [
+        "u",
+        "de"
+      ],
+      [
+        "Ġ",
+        "b"
+      ],
+      [
+        "Ġ",
+        "2026"
+      ],
+      [
+        "Ġ",
+        "2024"
+      ],
+      [
+        "Ġ",
+        "th"
+      ],
+      [
+        "Ġ",
+        "KP"
+      ],
+      [
+        "ĠD",
+        "EC"
+      ],
+      [
+        "ĠP",
+        "rolon"
+      ],
+      [
+        "ĠT",
+        "RIO"
+      ],
+      [
+        "ĠS",
+        "ust"
+      ],
+      [
+        "es",
+        "e"
+      ],
+      [
+        "ĠC",
+        "oated"
+      ],
+      [
+        "ab",
+        "eprazole"
+      ],
+      [
+        "er",
+        "dic"
+      ],
+      [
+        "ĠA",
+        "UG"
+      ],
+      [
+        "Ġ1",
+        "1"
+      ],
+      [
+        "Ġ0",
+        "3"
+      ],
+      [
+        "ĠO",
+        "ral"
+      ],
+      [
+        "ĠR",
+        "elease"
+      ],
+      [
+        "ĠR",
+        "abeprazole"
+      ],
+      [
+        "cl",
+        "ofen"
+      ],
+      [
+        "AL",
+        "I"
+      ],
+      [
+        "AL",
+        "TER"
+      ],
+      [
+        "anto",
+        "pa"
+      ],
+      [
+        "OR",
+        "ID"
+      ],
+      [
+        "Al",
+        "ex"
+      ],
+      [
+        "SI",
+        "G"
+      ],
+      [
+        "SI",
+        "FLE"
+      ],
+      [
+        "Ġ15",
+        "9"
+      ],
+      [
+        "ip",
+        "erdic"
+      ],
+      [
+        "RO",
+        "SIFLE"
+      ],
+      [
+        "gel",
+        "d"
+      ],
+      [
+        "mi",
+        "ted"
+      ],
+      [
+        "Ġ5",
+        "5"
+      ],
+      [
+        "Ġp",
+        "er"
+      ],
+      [
+        "Incl",
+        "ude"
+      ],
+      [
+        "ĠE",
+        "nter"
+      ],
+      [
+        "Pr",
+        "antopa"
+      ],
+      [
+        "ĠDom",
+        "iperdic"
+      ],
+      [
+        "aine",
+        "d"
+      ],
+      [
+        "Rx",
+        "Ace"
+      ],
+      [
+        "115",
+        "1"
+      ],
+      [
+        "Rel",
+        "ese"
+      ],
+      [
+        "Ġth",
+        "e"
+      ],
+      [
+        "ĠProlon",
+        "geld"
+      ],
+      [
+        "ĠSust",
+        "ained"
+      ],
+      [
+        "clofen",
+        "nac"
+      ],
+      [
+        "ALTER",
+        "DAY"
+      ],
+      [
+        "ORID",
+        "E"
+      ],
+      [
+        "ROSIFLE",
+        "X"
+      ],
+      [
+        "ĠEnter",
+        "ic"
+      ],
+      [
+        "Prantopa",
+        "zol"
+      ],
+      [
+        "ĠDomiperdic",
+        "ne"
+      ],
+      [
+        "RxAce",
+        "clofennac"
+      ],
+      [
+        "0",
+        "6"
+      ],
+      [
+        "0",
+        "9"
+      ],
+      [
+        "9",
+        "7"
+      ],
+      [
+        "C",
+        "T"
+      ],
+      [
+        "D",
+        "ate"
+      ],
+      [
+        "D",
+        "EC"
+      ],
+      [
+        "E",
+        "B"
+      ],
+      [
+        "E",
+        "NE"
+      ],
+      [
+        "G",
+        "ENE"
+      ],
+      [
+        "S",
+        "HEDULE"
+      ],
+      [
+        "Z",
+        "AC"
+      ],
+      [
+        "a",
+        "f"
+      ],
+      [
+        "a",
+        "il"
+      ],
+      [
+        "b",
+        "s"
+      ],
+      [
+        "h",
+        "ol"
+      ],
+      [
+        "i",
+        "s"
+      ],
+      [
+        "l",
+        "co"
+      ],
+      [
+        "v",
+        "um"
+      ],
+      [
+        "Ġ",
+        "2027"
+      ],
+      [
+        "ĠD",
+        "T"
+      ],
+      [
+        "et",
+        "ail"
+      ],
+      [
+        "an",
+        "a"
+      ],
+      [
+        "ro",
+        "n"
+      ],
+      [
+        "ĠA",
+        "bs"
+      ],
+      [
+        "NO",
+        "V"
+      ],
+      [
+        "AN",
+        "E"
+      ],
+      [
+        "ap",
+        "ex"
+      ],
+      [
+        "200",
+        "58"
+      ],
+      [
+        "TRA",
+        "MA"
+      ],
+      [
+        "08",
+        "25007"
+      ],
+      [
+        "olu",
+        "te"
+      ],
+      [
+        "Ali",
+        "vum"
+      ],
+      [
+        "DI",
+        "GENE"
+      ],
+      [
+        "ĠE",
+        "u"
+      ],
+      [
+        "Ġm",
+        "yth"
+      ],
+      [
+        "Ġn",
+        "ana"
+      ],
+      [
+        "Hydroxy",
+        "chloroquine"
+      ],
+      [
+        "lco",
+        "hol"
+      ],
+      [
+        "ĠAbs",
+        "olute"
+      ],
+      [
+        "TRAMA",
+        "ZAC"
+      ],
+      [
+        ".",
+        "("
+      ],
+      [
+        "5",
+        "7"
+      ],
+      [
+        "9",
+        "5"
+      ],
+      [
+        "D",
+        "ex"
+      ],
+      [
+        "E",
+        "L"
+      ],
+      [
+        "E",
+        "Z"
+      ],
+      [
+        "M",
+        "u"
+      ],
+      [
+        "P",
+        "A"
+      ],
+      [
+        "R",
+        "E"
+      ],
+      [
+        "T",
+        "AC"
+      ],
+      [
+        "U",
+        "C"
+      ],
+      [
+        "U",
+        "RE"
+      ],
+      [
+        "V",
+        "itamin"
+      ],
+      [
+        "d",
+        "om"
+      ],
+      [
+        "g",
+        "abl"
+      ],
+      [
+        "r",
+        "ic"
+      ],
+      [
+        "Ġ",
+        "N"
+      ],
+      [
+        "Ġ",
+        "r"
+      ],
+      [
+        "Ġ",
+        "JAN"
+      ],
+      [
+        "ĠD",
+        "I"
+      ],
+      [
+        "ĠT",
+        "abs"
+      ],
+      [
+        "IN",
+        "SE"
+      ],
+      [
+        "ĠM",
+        "eth"
+      ],
+      [
+        "ĠC",
+        "AP"
+      ],
+      [
+        "en",
+        "t"
+      ],
+      [
+        "TI",
+        "C"
+      ],
+      [
+        "25",
+        "20058"
+      ],
+      [
+        "AN",
+        "ES"
+      ],
+      [
+        "ĠG",
+        "EL"
+      ],
+      [
+        "ĠL",
+        "INSE"
+      ],
+      [
+        "CL",
+        "OF"
+      ],
+      [
+        "Parac",
+        "ip"
+      ],
+      [
+        "13",
+        "08"
+      ],
+      [
+        "Pre",
+        "gabl"
+      ],
+      [
+        "DI",
+        "CLOF"
+      ],
+      [
+        "IC",
+        "AL"
+      ],
+      [
+        "IC",
+        "URE"
+      ],
+      [
+        "ĠLi",
+        "mited"
+      ],
+      [
+        "LEVOBUPIVAC",
+        "ANE"
+      ],
+      [
+        "ĠCHL",
+        "ORIDE"
+      ],
+      [
+        "THE",
+        "TIC"
+      ],
+      [
+        "ALI",
+        "BIPRO"
+      ],
+      [
+        "EZ",
+        "ICURE"
+      ],
+      [
+        "Mu",
+        "c"
+      ],
+      [
+        "TAC",
+        "ID"
+      ],
+      [
+        "ANES",
+        "THETIC"
+      ],
+      [
+        "Pregabl",
+        "in"
+      ],
+      [
+        "DICLOF",
+        "EN"
+      ],
+      [
+        ".",
+        "âĤ¹"
+      ],
+      [
+        "3",
+        "6"
+      ],
+      [
+        "5",
+        "5"
+      ],
+      [
+        "5",
+        "07"
+      ],
+      [
+        "9",
+        "2"
+      ],
+      [
+        "A",
+        "B"
+      ],
+      [
+        "A",
+        "M"
+      ],
+      [
+        "A",
+        "n"
+      ],
+      [
+        "B",
+        "H"
+      ],
+      [
+        "C",
+        "O"
+      ],
+      [
+        "D",
+        "E"
+      ],
+      [
+        "F",
+        "EB"
+      ],
+      [
+        "G",
+        "K"
+      ],
+      [
+        "G",
+        "LY"
+      ],
+      [
+        "M",
+        "ic"
+      ],
+      [
+        "O",
+        "RA"
+      ],
+      [
+        "O",
+        "CT"
+      ],
+      [
+        "P",
+        "h"
+      ],
+      [
+        "S",
+        "L"
+      ],
+      [
+        "S",
+        "O"
+      ],
+      [
+        "V",
+        "E"
+      ],
+      [
+        "a",
+        "in"
+      ],
+      [
+        "a",
+        "iry"
+      ],
+      [
+        "m",
+        "l"
+      ],
+      [
+        "m",
+        "ent"
+      ],
+      [
+        "p",
+        "t"
+      ],
+      [
+        "s",
+        "ion"
+      ],
+      [
+        "t",
+        "yl"
+      ],
+      [
+        "t",
+        "ment"
+      ],
+      [
+        "u",
+        "r"
+      ],
+      [
+        "y",
+        "thol"
+      ],
+      [
+        "y",
+        "mine"
+      ],
+      [
+        "y",
+        "pt"
+      ],
+      [
+        "Ġ",
+        "+"
+      ],
+      [
+        "Ġ",
+        "3"
+      ],
+      [
+        "Ġ",
+        "f"
+      ],
+      [
+        "Ġ",
+        "in"
+      ],
+      [
+        "in",
+        "tment"
+      ],
+      [
+        "ĠD",
+        "eth"
+      ],
+      [
+        "ĠM",
+        "yth"
+      ],
+      [
+        "ĠM",
+        "ythol"
+      ],
+      [
+        "ĠC",
+        "am"
+      ],
+      [
+        "ro",
+        "cid"
+      ],
+      [
+        "LE",
+        "S"
+      ],
+      [
+        "ĠA",
+        "n"
+      ],
+      [
+        "ĠA",
+        "nd"
+      ],
+      [
+        "ĠA",
+        "lcohol"
+      ],
+      [
+        "Ġ1",
+        "08"
+      ],
+      [
+        "ĠO",
+        "intment"
+      ],
+      [
+        "il",
+        "ymine"
+      ],
+      [
+        "ph",
+        "or"
+      ],
+      [
+        "Exp",
+        "airy"
+      ],
+      [
+        "SI",
+        "VE"
+      ],
+      [
+        "MA",
+        "Y"
+      ],
+      [
+        "ĠNo",
+        "rt"
+      ],
+      [
+        "Diclofen",
+        "ance"
+      ],
+      [
+        "SU",
+        "LES"
+      ],
+      [
+        "ĠPolyst",
+        "rene"
+      ],
+      [
+        "ĠLinse",
+        "d"
+      ],
+      [
+        "cal",
+        "ypt"
+      ],
+      [
+        "ĠPOW",
+        "ER"
+      ],
+      [
+        "11",
+        "8"
+      ],
+      [
+        "Pr",
+        "tein"
+      ],
+      [
+        "ĠDom",
+        "peridone"
+      ],
+      [
+        "27",
+        "3"
+      ],
+      [
+        "LEVOBUPIVAC",
+        "AINE"
+      ],
+      [
+        "ĠHydrolys",
+        "af"
+      ],
+      [
+        "INCLU",
+        "SIVE"
+      ],
+      [
+        "rip",
+        "tyl"
+      ],
+      [
+        "SHEDULE",
+        "D"
+      ],
+      [
+        "ĠEu",
+        "calypt"
+      ],
+      [
+        "Ġmyth",
+        "yl"
+      ],
+      [
+        "ĠCAP",
+        "SULES"
+      ],
+      [
+        "AB",
+        "ORA"
+      ],
+      [
+        "GLY",
+        "CO"
+      ],
+      [
+        "Mic",
+        "rocid"
+      ],
+      [
+        "ĠDeth",
+        "ilymine"
+      ],
+      [
+        "ĠCam",
+        "phor"
+      ],
+      [
+        "ĠNort",
+        "riptyl"
+      ],
+      [
+        "ĠHydrolysaf",
+        "e"
+      ],
+      [
+        "ĠEucalypt",
+        "us"
+      ],
+      [
+        "ĠNortriptyl",
+        "ine"
+      ],
+      [
+        "1",
+        "6"
+      ],
+      [
+        "1",
+        "13"
+      ],
+      [
+        "3",
+        "40"
+      ],
+      [
+        "4",
+        "95"
+      ],
+      [
+        "5",
+        "0"
+      ],
+      [
+        "5",
+        "4"
+      ],
+      [
+        "5",
+        "00"
+      ],
+      [
+        "7",
+        "3"
+      ],
+      [
+        "C",
+        "A"
+      ],
+      [
+        "D",
+        "ext"
+      ],
+      [
+        "G",
+        "T"
+      ],
+      [
+        "G",
+        "l"
+      ],
+      [
+        "I",
+        "L"
+      ],
+      [
+        "J",
+        "U"
+      ],
+      [
+        "M",
+        "eth"
+      ],
+      [
+        "M",
+        "ax"
+      ],
+      [
+        "N",
+        "PA"
+      ],
+      [
+        "P",
+        "ro"
+      ],
+      [
+        "Z",
+        "ydus"
+      ],
+      [
+        "b",
+        "u"
+      ],
+      [
+        "b",
+        "rom"
+      ],
+      [
+        "e",
+        "ate"
+      ],
+      [
+        "h",
+        "l"
+      ],
+      [
+        "i",
+        "a"
+      ],
+      [
+        "i",
+        "v"
+      ],
+      [
+        "i",
+        "ra"
+      ],
+      [
+        "o",
+        "il"
+      ],
+      [
+        "r",
+        "u"
+      ],
+      [
+        "r",
+        "ine"
+      ],
+      [
+        "t",
+        "ac"
+      ],
+      [
+        "x",
+        "ate"
+      ],
+      [
+        "y",
+        "ro"
+      ],
+      [
+        "y",
+        "el"
+      ],
+      [
+        "y",
+        "ru"
+      ],
+      [
+        "z",
+        "ac"
+      ],
+      [
+        "Ġ",
+        "a"
+      ],
+      [
+        "Ġ",
+        "l"
+      ],
+      [
+        "Ġ",
+        "oil"
+      ],
+      [
+        "202",
+        "8"
+      ],
+      [
+        "al",
+        "ab"
+      ],
+      [
+        "al",
+        "eate"
+      ],
+      [
+        "ĠS",
+        "AL"
+      ],
+      [
+        "ĠS",
+        "yru"
+      ],
+      [
+        "es",
+        "c"
+      ],
+      [
+        "ĠM",
+        "EN"
+      ],
+      [
+        "ĠM",
+        "ETHYL"
+      ],
+      [
+        "ĠM",
+        "aleate"
+      ],
+      [
+        "ĠC",
+        "hl"
+      ],
+      [
+        "00",
+        "24"
+      ],
+      [
+        "IP",
+        "CA"
+      ],
+      [
+        "en",
+        "ma"
+      ],
+      [
+        "en",
+        "yle"
+      ],
+      [
+        "en",
+        "ira"
+      ],
+      [
+        "st",
+        "ron"
+      ],
+      [
+        "EX",
+        "D"
+      ],
+      [
+        "eth",
+        "orph"
+      ],
+      [
+        "Ġ0",
+        "2"
+      ],
+      [
+        "ĠH",
+        "yro"
+      ],
+      [
+        "ti",
+        "ga"
+      ],
+      [
+        "re",
+        "xate"
+      ],
+      [
+        "cl",
+        "us"
+      ],
+      [
+        "ĠF",
+        "or"
+      ],
+      [
+        "ĠF",
+        "olic"
+      ],
+      [
+        "Al",
+        "ter"
+      ],
+      [
+        "ph",
+        "rine"
+      ],
+      [
+        "Ġ2",
+        "45"
+      ],
+      [
+        "07",
+        "495"
+      ],
+      [
+        "24",
+        "3"
+      ],
+      [
+        "ot",
+        "rexate"
+      ],
+      [
+        "03",
+        "7"
+      ],
+      [
+        "13",
+        "07495"
+      ],
+      [
+        "rom",
+        "ethorph"
+      ],
+      [
+        "IC",
+        "YL"
+      ],
+      [
+        "Ondan",
+        "stron"
+      ],
+      [
+        "TH",
+        "OL"
+      ],
+      [
+        "02",
+        "97"
+      ],
+      [
+        "ĠHydrolys",
+        "ate"
+      ],
+      [
+        "orph",
+        "enira"
+      ],
+      [
+        "ETHYL",
+        "AM"
+      ],
+      [
+        "Ġb",
+        "y"
+      ],
+      [
+        "Dex",
+        "alab"
+      ],
+      [
+        "ric",
+        "e"
+      ],
+      [
+        "ĠDI",
+        "ETHYLAM"
+      ],
+      [
+        "DICLOFEN",
+        "AC"
+      ],
+      [
+        "An",
+        "tac"
+      ],
+      [
+        "Ph",
+        "enyle"
+      ],
+      [
+        "ĠAn",
+        "tiga"
+      ],
+      [
+        "GLYCO",
+        "PYR"
+      ],
+      [
+        "340",
+        "6"
+      ],
+      [
+        "Dext",
+        "romethorph"
+      ],
+      [
+        "GT",
+        "F"
+      ],
+      [
+        "Gl",
+        "enma"
+      ],
+      [
+        "JU",
+        "N"
+      ],
+      [
+        "Meth",
+        "otrexate"
+      ],
+      [
+        "Pro",
+        "tein"
+      ],
+      [
+        "brom",
+        "ide"
+      ],
+      [
+        "ĠSAL",
+        "ICYL"
+      ],
+      [
+        "ĠSyru",
+        "p"
+      ],
+      [
+        "ĠMEN",
+        "THOL"
+      ],
+      [
+        "ĠChl",
+        "orphenira"
+      ],
+      [
+        "0024",
+        "8"
+      ],
+      [
+        "ĠHyro",
+        "bromide"
+      ],
+      [
+        "clus",
+        "iv"
+      ],
+      [
+        "Alter",
+        "day"
+      ],
+      [
+        "Ondanstron",
+        "g"
+      ],
+      [
+        "ĠDIETHYLAM",
+        "INE"
+      ],
+      [
+        "Antac",
+        "id"
+      ],
+      [
+        "Phenyle",
+        "phrine"
+      ],
+      [
+        "ĠAntiga",
+        "s"
+      ],
+      [
+        "Dextromethorph",
+        "an"
+      ],
+      [
+        "Glenma",
+        "rk"
+      ],
+      [
+        "ĠSALICYL",
+        "ATE"
+      ],
+      [
+        "ĠChlorphenira",
+        "mine"
+      ],
+      [
+        ".",
+        "/"
+      ],
+      [
+        "0",
+        "5"
+      ],
+      [
+        "0",
+        "12"
+      ],
+      [
+        "1",
+        "8"
+      ],
+      [
+        "1",
+        "08"
+      ],
+      [
+        "3",
+        "15"
+      ],
+      [
+        "B",
+        "ac"
+      ],
+      [
+        "E",
+        "D"
+      ],
+      [
+        "F",
+        "e"
+      ],
+      [
+        "I",
+        "G"
+      ],
+      [
+        "I",
+        "bu"
+      ],
+      [
+        "N",
+        "TACID"
+      ],
+      [
+        "O",
+        "P"
+      ],
+      [
+        "P",
+        "RS"
+      ],
+      [
+        "S",
+        "of"
+      ],
+      [
+        "T",
+        "ramadol"
+      ],
+      [
+        "c",
+        "t"
+      ],
+      [
+        "g",
+        "ed"
+      ],
+      [
+        "m",
+        "f"
+      ],
+      [
+        "o",
+        "te"
+      ],
+      [
+        "p",
+        "en"
+      ],
+      [
+        "v",
+        "ac"
+      ],
+      [
+        "Ġ",
+        "/"
+      ],
+      [
+        "Ġ",
+        "ma"
+      ],
+      [
+        "Ġ",
+        "Ex"
+      ],
+      [
+        "Ġ",
+        "250"
+      ],
+      [
+        "Ġ",
+        "dom"
+      ],
+      [
+        "Ġ",
+        "2520058"
+      ],
+      [
+        "an",
+        "ol"
+      ],
+      [
+        "ĠT",
+        "OP"
+      ],
+      [
+        "ĠS",
+        "IG"
+      ],
+      [
+        "ĠA",
+        "NTACID"
+      ],
+      [
+        "ac",
+        "t"
+      ],
+      [
+        "ĠO",
+        "IL"
+      ],
+      [
+        "ĠR",
+        "esistant"
+      ],
+      [
+        "re",
+        "d"
+      ],
+      [
+        "re",
+        "e"
+      ],
+      [
+        "AL",
+        "BIPRO"
+      ],
+      [
+        "Ġ2",
+        "4"
+      ],
+      [
+        "us",
+        "pen"
+      ],
+      [
+        "ĠAL",
+        "FAKIM"
+      ],
+      [
+        "Dicl",
+        "of"
+      ],
+      [
+        "Dicl",
+        "ote"
+      ],
+      [
+        "24",
+        "012"
+      ],
+      [
+        "ĠINJ",
+        "UC"
+      ],
+      [
+        "Ġt",
+        "ablets"
+      ],
+      [
+        "Ġt",
+        "abs"
+      ],
+      [
+        "ĠIn",
+        "clusiv"
+      ],
+      [
+        "Ġp",
+        "rolon"
+      ],
+      [
+        "tra",
+        "ct"
+      ],
+      [
+        "2500",
+        "3"
+      ],
+      [
+        "ĠLi",
+        "f"
+      ],
+      [
+        "Ġn",
+        "ot"
+      ],
+      [
+        "19",
+        "55"
+      ],
+      [
+        "Ġc",
+        "apsules"
+      ],
+      [
+        "INCLU",
+        "DE"
+      ],
+      [
+        "is",
+        "s"
+      ],
+      [
+        "Ġr",
+        "elease"
+      ],
+      [
+        "ĠMeth",
+        "anol"
+      ],
+      [
+        "ĠLINSE",
+        "ED"
+      ],
+      [
+        "Muc",
+        "aine"
+      ],
+      [
+        ".âĤ¹",
+        "."
+      ],
+      [
+        "ĠMyth",
+        "yel"
+      ],
+      [
+        "118",
+        "12"
+      ],
+      [
+        "18",
+        "5"
+      ],
+      [
+        "Bac",
+        "h"
+      ],
+      [
+        "Sof",
+        "t"
+      ],
+      [
+        "ĠEx",
+        "tract"
+      ],
+      [
+        "Ġdom",
+        "peridone"
+      ],
+      [
+        "ĠTOP",
+        "ICAL"
+      ],
+      [
+        "uspen",
+        "sion"
+      ],
+      [
+        "Diclote",
+        "nac"
+      ],
+      [
+        "ĠINJUC",
+        "TION"
+      ],
+      [
+        "ĠInclusiv",
+        "es"
+      ],
+      [
+        "Ġprolon",
+        "ged"
+      ],
+      [
+        "1955",
+        "24012"
+      ],
+      [
+        "1",
+        "00"
+      ],
+      [
+        "2",
+        "97"
+      ],
+      [
+        "3",
+        "08"
+      ],
+      [
+        "4",
+        "250"
+      ],
+      [
+        "7",
+        "5"
+      ],
+      [
+        "9",
+        "4"
+      ],
+      [
+        "9",
+        "45"
+      ],
+      [
+        "C",
+        "H"
+      ],
+      [
+        "C",
+        "K"
+      ],
+      [
+        "D",
+        "o"
+      ],
+      [
+        "F",
+        "OR"
+      ],
+      [
+        "G",
+        "RA"
+      ],
+      [
+        "I",
+        "T"
+      ],
+      [
+        "I",
+        "ES"
+      ],
+      [
+        "L",
+        "ABORA"
+      ],
+      [
+        "M",
+        "D"
+      ],
+      [
+        "M",
+        "AC"
+      ],
+      [
+        "M",
+        "UC"
+      ],
+      [
+        "N",
+        "B"
+      ],
+      [
+        "P",
+        "RO"
+      ],
+      [
+        "R",
+        "OLATE"
+      ],
+      [
+        "R",
+        "MAC"
+      ],
+      [
+        "S",
+        "t"
+      ],
+      [
+        "T",
+        "D"
+      ],
+      [
+        "T",
+        "ro"
+      ],
+      [
+        "T",
+        "OR"
+      ],
+      [
+        "T",
+        "rama"
+      ],
+      [
+        "T",
+        "CH"
+      ],
+      [
+        "U",
+        "ICAL"
+      ],
+      [
+        "V",
+        "T"
+      ],
+      [
+        "Y",
+        "D"
+      ],
+      [
+        "a",
+        "ic"
+      ],
+      [
+        "a",
+        "rk"
+      ],
+      [
+        "a",
+        "rt"
+      ],
+      [
+        "b",
+        "ust"
+      ],
+      [
+        "g",
+        "ist"
+      ],
+      [
+        "l",
+        "ow"
+      ],
+      [
+        "o",
+        "ur"
+      ],
+      [
+        "p",
+        "ol"
+      ],
+      [
+        "r",
+        "esc"
+      ],
+      [
+        "t",
+        "ter"
+      ],
+      [
+        "t",
+        "ain"
+      ],
+      [
+        "u",
+        "g"
+      ],
+      [
+        "Ġ",
+        "or"
+      ],
+      [
+        "Ġ",
+        "us"
+      ],
+      [
+        "Ġ",
+        "it"
+      ],
+      [
+        "Ġ",
+        "40"
+      ],
+      [
+        "Ġ",
+        "325"
+      ],
+      [
+        "Ġ",
+        "JUL"
+      ],
+      [
+        "ĠD",
+        "ark"
+      ],
+      [
+        "et",
+        "ic"
+      ],
+      [
+        "ol",
+        "d"
+      ],
+      [
+        "ol",
+        "our"
+      ],
+      [
+        "al",
+        "ac"
+      ],
+      [
+        "ĠP",
+        "ra"
+      ],
+      [
+        "ĠP",
+        "rice"
+      ],
+      [
+        "ĠP",
+        "VT"
+      ],
+      [
+        "ĠS",
+        "HA"
+      ],
+      [
+        "ĠS",
+        "YR"
+      ],
+      [
+        "IN",
+        "TI"
+      ],
+      [
+        "IN",
+        "CK"
+      ],
+      [
+        "ĠM",
+        "E"
+      ],
+      [
+        "ĠM",
+        "ed"
+      ],
+      [
+        "ic",
+        "ul"
+      ],
+      [
+        "ĠC",
+        "aps"
+      ],
+      [
+        "ul",
+        "a"
+      ],
+      [
+        "on",
+        "tain"
+      ],
+      [
+        "Ġ1",
+        "2"
+      ],
+      [
+        "Ġ1",
+        "25"
+      ],
+      [
+        "Ġ1",
+        "70"
+      ],
+      [
+        "Ġ1",
+        "945"
+      ],
+      [
+        "eth",
+        "acin"
+      ],
+      [
+        "Ġ0",
+        "7"
+      ],
+      [
+        "Ġ0",
+        "9"
+      ],
+      [
+        "ĠH",
+        "YD"
+      ],
+      [
+        "Ġan",
+        "y"
+      ],
+      [
+        "ĠL",
+        "ic"
+      ],
+      [
+        "ĠL",
+        "IM"
+      ],
+      [
+        "ĠL",
+        "ABORA"
+      ],
+      [
+        "ĠL",
+        "TD"
+      ],
+      [
+        "ma",
+        "dol"
+      ],
+      [
+        "ph",
+        "alac"
+      ],
+      [
+        "Ġ7",
+        "4250"
+      ],
+      [
+        "ITE",
+        "D"
+      ],
+      [
+        "Cal",
+        "pol"
+      ],
+      [
+        "Ġt",
+        "ur"
+      ],
+      [
+        "ĠIn",
+        "dom"
+      ],
+      [
+        "Ġ5",
+        "01"
+      ],
+      [
+        "Ġp",
+        "art"
+      ],
+      [
+        "Ġp",
+        "resc"
+      ],
+      [
+        "BA",
+        "TCH"
+      ],
+      [
+        "250",
+        "12"
+      ],
+      [
+        "02",
+        "1"
+      ],
+      [
+        "Du",
+        "phalac"
+      ],
+      [
+        "Ġs",
+        "alic"
+      ],
+      [
+        "Ġs",
+        "olution"
+      ],
+      [
+        "Ġs",
+        "old"
+      ],
+      [
+        "ĠPHA",
+        "RMAC"
+      ],
+      [
+        "Ondanset",
+        "ron"
+      ],
+      [
+        "Ġc",
+        "olour"
+      ],
+      [
+        "Ġc",
+        "ontain"
+      ],
+      [
+        "rip",
+        "tion"
+      ],
+      [
+        "Ġb",
+        "e"
+      ],
+      [
+        "57",
+        "9"
+      ],
+      [
+        "ĠN",
+        "N"
+      ],
+      [
+        "Ġr",
+        "etail"
+      ],
+      [
+        "ĠLINSE",
+        "D"
+      ],
+      [
+        "Muc",
+        "ain"
+      ],
+      [
+        "GK",
+        "G"
+      ],
+      [
+        "GK",
+        "SO"
+      ],
+      [
+        "Ġ3",
+        "20"
+      ],
+      [
+        "Ġf",
+        "ree"
+      ],
+      [
+        "Ġin",
+        "cl"
+      ],
+      [
+        "Ġl",
+        "i"
+      ],
+      [
+        "GLYCOPYR",
+        "ROLATE"
+      ],
+      [
+        "Fe",
+        "bust"
+      ],
+      [
+        "Ġma",
+        "tter"
+      ],
+      [
+        "Ġ24",
+        "3"
+      ],
+      [
+        "GRA",
+        "CE"
+      ],
+      [
+        "IT",
+        "UICAL"
+      ],
+      [
+        "LABORA",
+        "TE"
+      ],
+      [
+        "MUC",
+        "AINE"
+      ],
+      [
+        "Tro",
+        "madol"
+      ],
+      [
+        "TOR",
+        "IES"
+      ],
+      [
+        "Trama",
+        "zac"
+      ],
+      [
+        "aic",
+        "in"
+      ],
+      [
+        "Ġus",
+        "e"
+      ],
+      [
+        "ĠSHA",
+        "P"
+      ],
+      [
+        "ĠSYR",
+        "UP"
+      ],
+      [
+        "INTI",
+        "GRACE"
+      ],
+      [
+        "INCK",
+        "L"
+      ],
+      [
+        "ĠMed",
+        "ical"
+      ],
+      [
+        "icul",
+        "ate"
+      ],
+      [
+        "ĠCaps",
+        "aicin"
+      ],
+      [
+        "Ġ1945",
+        "037"
+      ],
+      [
+        "ĠLIM",
+        "ITED"
+      ],
+      [
+        "ĠLABORA",
+        "TORIES"
+      ],
+      [
+        "Ġ74250",
+        "5"
+      ],
+      [
+        "Ġtur",
+        "n"
+      ],
+      [
+        "ĠIndom",
+        "ethacin"
+      ],
+      [
+        "Ġpart",
+        "iculate"
+      ],
+      [
+        "Ġpresc",
+        "ription"
+      ],
+      [
+        "ĠPHARMAC",
+        "ITUICAL"
+      ],
+      [
+        "Ġcontain",
+        "s"
+      ],
+      [
+        "Febust",
+        "at"
+      ],
+      [
+        "Ġmatter",
+        "s"
+      ],
+      [
+        "'",
+        "s"
+      ],
+      [
+        "1",
+        "7"
+      ],
+      [
+        "2",
+        "31"
+      ],
+      [
+        "3",
+        "5"
+      ],
+      [
+        "3",
+        "7"
+      ],
+      [
+        "3",
+        "27"
+      ],
+      [
+        "4",
+        "2"
+      ],
+      [
+        "4",
+        "8"
+      ],
+      [
+        "5",
+        "3"
+      ],
+      [
+        "6",
+        "0"
+      ],
+      [
+        "6",
+        "17"
+      ],
+      [
+        "7",
+        "4"
+      ],
+      [
+        "8",
+        "4"
+      ],
+      [
+        "9",
+        "0"
+      ],
+      [
+        "A",
+        "st"
+      ],
+      [
+        "A",
+        "CE"
+      ],
+      [
+        "A",
+        "BA"
+      ],
+      [
+        "B",
+        "PRO"
+      ],
+      [
+        "C",
+        "it"
+      ],
+      [
+        "D",
+        "ab"
+      ],
+      [
+        "E",
+        "r"
+      ],
+      [
+        "E",
+        "THE"
+      ],
+      [
+        "F",
+        "B"
+      ],
+      [
+        "F",
+        "P"
+      ],
+      [
+        "F",
+        "R"
+      ],
+      [
+        "F",
+        "S"
+      ],
+      [
+        "F",
+        "T"
+      ],
+      [
+        "G",
+        "el"
+      ],
+      [
+        "G",
+        "EN"
+      ],
+      [
+        "H",
+        "T"
+      ],
+      [
+        "I",
+        "TRA"
+      ],
+      [
+        "J",
+        "an"
+      ],
+      [
+        "K",
+        "G"
+      ],
+      [
+        "L",
+        "act"
+      ],
+      [
+        "L",
+        "ACE"
+      ],
+      [
+        "M",
+        "E"
+      ],
+      [
+        "M",
+        "G"
+      ],
+      [
+        "M",
+        "an"
+      ],
+      [
+        "M",
+        "UL"
+      ],
+      [
+        "O",
+        "B"
+      ],
+      [
+        "R",
+        "eu"
+      ],
+      [
+        "S",
+        "P"
+      ],
+      [
+        "S",
+        "ch"
+      ],
+      [
+        "S",
+        "QS"
+      ],
+      [
+        "T",
+        "ra"
+      ],
+      [
+        "T",
+        "CL"
+      ],
+      [
+        "U",
+        "SE"
+      ],
+      [
+        "U",
+        "SP"
+      ],
+      [
+        "V",
+        "ol"
+      ],
+      [
+        "V",
+        "PA"
+      ],
+      [
+        "W",
+        "AL"
+      ],
+      [
+        "Y",
+        "el"
+      ],
+      [
+        "Y",
+        "DU"
+      ],
+      [
+        "Z",
+        "YDU"
+      ],
+      [
+        "a",
+        "d"
+      ],
+      [
+        "a",
+        "s"
+      ],
+      [
+        "a",
+        "re"
+      ],
+      [
+        "a",
+        "ed"
+      ],
+      [
+        "a",
+        "yle"
+      ],
+      [
+        "c",
+        "es"
+      ],
+      [
+        "c",
+        "are"
+      ],
+      [
+        "d",
+        "ate"
+      ],
+      [
+        "d",
+        "ia"
+      ],
+      [
+        "e",
+        "o"
+      ],
+      [
+        "e",
+        "St"
+      ],
+      [
+        "e",
+        "gist"
+      ],
+      [
+        "f",
+        "en"
+      ],
+      [
+        "f",
+        "us"
+      ],
+      [
+        "f",
+        "act"
+      ],
+      [
+        "g",
+        "m"
+      ],
+      [
+        "g",
+        "es"
+      ],
+      [
+        "g",
+        "ia"
+      ],
+      [
+        "g",
+        "ula"
+      ],
+      [
+        "h",
+        "etic"
+      ],
+      [
+        "i",
+        "f"
+      ],
+      [
+        "i",
+        "m"
+      ],
+      [
+        "i",
+        "q"
+      ],
+      [
+        "i",
+        "es"
+      ],
+      [
+        "i",
+        "en"
+      ],
+      [
+        "i",
+        "th"
+      ],
+      [
+        "i",
+        "at"
+      ],
+      [
+        "k",
+        "a"
+      ],
+      [
+        "l",
+        "us"
+      ],
+      [
+        "l",
+        "lcohol"
+      ],
+      [
+        "m",
+        "zac"
+      ],
+      [
+        "n",
+        "th"
+      ],
+      [
+        "n",
+        "ion"
+      ],
+      [
+        "o",
+        "o"
+      ],
+      [
+        "o",
+        "u"
+      ],
+      [
+        "o",
+        "ra"
+      ],
+      [
+        "o",
+        "se"
+      ],
+      [
+        "o",
+        "alin"
+      ],
+      [
+        "p",
+        "fizer"
+      ],
+      [
+        "p",
+        "vac"
+      ],
+      [
+        "r",
+        "an"
+      ],
+      [
+        "r",
+        "etail"
+      ],
+      [
+        "s",
+        "f"
+      ],
+      [
+        "t",
+        "or"
+      ],
+      [
+        "u",
+        "e"
+      ],
+      [
+        "u",
+        "u"
+      ],
+      [
+        "u",
+        "ga"
+      ],
+      [
+        "u",
+        "red"
+      ],
+      [
+        "u",
+        "fact"
+      ],
+      [
+        "w",
+        "ith"
+      ],
+      [
+        "y",
+        "ot"
+      ],
+      [
+        "Ġ",
+        "4"
+      ],
+      [
+        "Ġ",
+        "W"
+      ],
+      [
+        "Ġ",
+        "on"
+      ],
+      [
+        "Ġ",
+        "Em"
+      ],
+      [
+        "Ġ",
+        "qu"
+      ],
+      [
+        "Ġ",
+        "400"
+      ],
+      [
+        "Ġ",
+        "45"
+      ],
+      [
+        "Ġ",
+        "chloroquine"
+      ],
+      [
+        "Ġ",
+        "95"
+      ],
+      [
+        "Ġ",
+        "INCLUSIVE"
+      ],
+      [
+        "Ġ",
+        "Jan"
+      ],
+      [
+        "Ġ",
+        "Yel"
+      ],
+      [
+        "Ġ",
+        "date"
+      ],
+      [
+        "Ġ",
+        "gm"
+      ],
+      [
+        "Ġ",
+        "if"
+      ],
+      [
+        "Ġ",
+        "with"
+      ],
+      [
+        "202",
+        "3"
+      ],
+      [
+        "in",
+        "ance"
+      ],
+      [
+        "ĠP",
+        "aed"
+      ],
+      [
+        "ĠP",
+        "lus"
+      ],
+      [
+        "ĠS",
+        "tra"
+      ],
+      [
+        "ĠS",
+        "uspension"
+      ],
+      [
+        "ĠS",
+        "FP"
+      ],
+      [
+        "ĠM",
+        "G"
+      ],
+      [
+        "ĠM",
+        "l"
+      ],
+      [
+        "ĠM",
+        "FT"
+      ],
+      [
+        "ĠC",
+        "iss"
+      ],
+      [
+        "ĠC",
+        "ITRA"
+      ],
+      [
+        "ab",
+        "ora"
+      ],
+      [
+        "00",
+        "2"
+      ],
+      [
+        "00",
+        "6"
+      ],
+      [
+        "er",
+        "gia"
+      ],
+      [
+        "ul",
+        "e"
+      ],
+      [
+        "ul",
+        "sion"
+      ],
+      [
+        "ul",
+        "ose"
+      ],
+      [
+        "ĠA",
+        "qu"
+      ],
+      [
+        "ĠA",
+        "llcohol"
+      ],
+      [
+        "Ġ1",
+        "400383"
+      ],
+      [
+        "eth",
+        "as"
+      ],
+      [
+        "am",
+        "ethas"
+      ],
+      [
+        "OL",
+        "ORIDE"
+      ],
+      [
+        "AN",
+        "TACID"
+      ],
+      [
+        "ĠO",
+        "CT"
+      ],
+      [
+        "ĠR",
+        "etail"
+      ],
+      [
+        "ĠR",
+        "egist"
+      ],
+      [
+        "ĠG",
+        "KG"
+      ],
+      [
+        "ĠF",
+        "EB"
+      ],
+      [
+        "il",
+        "ate"
+      ],
+      [
+        "Ġ2",
+        "6"
+      ],
+      [
+        "Ġ2",
+        "7"
+      ],
+      [
+        "UG",
+        "ABA"
+      ],
+      [
+        "Ġ7",
+        "6"
+      ],
+      [
+        "08",
+        "1"
+      ],
+      [
+        "08",
+        "20"
+      ],
+      [
+        "08",
+        "40"
+      ],
+      [
+        "Ġ15",
+        "4"
+      ],
+      [
+        "NE",
+        "UGABA"
+      ],
+      [
+        "10",
+        "37"
+      ],
+      [
+        "24",
+        "07"
+      ],
+      [
+        "24",
+        "56"
+      ],
+      [
+        "24",
+        "09"
+      ],
+      [
+        "24",
+        "081"
+      ],
+      [
+        "24",
+        "1037"
+      ],
+      [
+        "HC",
+        "SQS"
+      ],
+      [
+        "ĠNo",
+        "t"
+      ],
+      [
+        "ed",
+        "ule"
+      ],
+      [
+        "Diclofen",
+        "ce"
+      ],
+      [
+        "RO",
+        "GEN"
+      ],
+      [
+        "it",
+        "ra"
+      ],
+      [
+        "Ġt",
+        "o"
+      ],
+      [
+        "arac",
+        "etamol"
+      ],
+      [
+        "AP",
+        "S"
+      ],
+      [
+        "ĠIn",
+        "dia"
+      ],
+      [
+        "Ġp",
+        "rice"
+      ],
+      [
+        "Ġp",
+        "aracetamol"
+      ],
+      [
+        "ĠPRES",
+        "RIPTION"
+      ],
+      [
+        "at",
+        "yot"
+      ],
+      [
+        "Pre",
+        "ga"
+      ],
+      [
+        "ĠMethylcobal",
+        "i"
+      ],
+      [
+        "DI",
+        "UM"
+      ],
+      [
+        "DI",
+        "SO"
+      ],
+      [
+        "AR",
+        "VPA"
+      ],
+      [
+        "ction",
+        "er"
+      ],
+      [
+        "250",
+        "10"
+      ],
+      [
+        "PO",
+        "TCL"
+      ],
+      [
+        "ĠDt",
+        "nth"
+      ],
+      [
+        "Ġs",
+        "iss"
+      ],
+      [
+        "Ġs",
+        "uspension"
+      ],
+      [
+        "Ġs",
+        "uga"
+      ],
+      [
+        "Nan",
+        "o"
+      ],
+      [
+        "pro",
+        "fen"
+      ],
+      [
+        "ĠLi",
+        "quid"
+      ],
+      [
+        "GP",
+        "E"
+      ],
+      [
+        "Ġm",
+        "l"
+      ],
+      [
+        "ĠCH",
+        "OLORIDE"
+      ],
+      [
+        "chloro",
+        "uu"
+      ],
+      [
+        "ĠCONCENTRA",
+        "TION"
+      ],
+      [
+        "Hydroxy",
+        "chlorouu"
+      ],
+      [
+        "19",
+        "2"
+      ],
+      [
+        "ral",
+        "ka"
+      ],
+      [
+        "GPD",
+        "OB"
+      ],
+      [
+        "LY",
+        "NE"
+      ],
+      [
+        "Ġ11",
+        "241037"
+      ],
+      [
+        "ALI",
+        "BPRO"
+      ],
+      [
+        "af",
+        "amine"
+      ],
+      [
+        "ĠEu",
+        "atyot"
+      ],
+      [
+        "Ġmyth",
+        "ayle"
+      ],
+      [
+        "Dex",
+        "amethas"
+      ],
+      [
+        "ĠN",
+        "A"
+      ],
+      [
+        "ĠN",
+        "on"
+      ],
+      [
+        "ĠDI",
+        "ETHE"
+      ],
+      [
+        "ĠMeth",
+        "ol"
+      ],
+      [
+        "DICLOFEN",
+        "CE"
+      ],
+      [
+        "DE",
+        "M"
+      ],
+      [
+        "Ġ3",
+        "10"
+      ],
+      [
+        "ĠMyth",
+        "yle"
+      ],
+      [
+        "118",
+        "42"
+      ],
+      [
+        "Max",
+        "im"
+      ],
+      [
+        "Ġa",
+        "ug"
+      ],
+      [
+        "esc",
+        "ien"
+      ],
+      [
+        "GLYCOPYR",
+        "RO"
+      ],
+      [
+        "Ibu",
+        "ges"
+      ],
+      [
+        "Ibu",
+        "profen"
+      ],
+      [
+        "mf",
+        "d"
+      ],
+      [
+        "Diclof",
+        "ance"
+      ],
+      [
+        "Diclof",
+        "inance"
+      ],
+      [
+        "ĠLif",
+        "eSt"
+      ],
+      [
+        "ĠLif",
+        "escien"
+      ],
+      [
+        "Soft",
+        "vac"
+      ],
+      [
+        "Soft",
+        "pvac"
+      ],
+      [
+        "100",
+        "0"
+      ],
+      [
+        "ĠPra",
+        "ctioner"
+      ],
+      [
+        "ĠHYD",
+        "ROGEN"
+      ],
+      [
+        "Ġsalic",
+        "ilate"
+      ],
+      [
+        "Ġli",
+        "mited"
+      ],
+      [
+        "Ġturn",
+        "s"
+      ],
+      [
+        "Ast",
+        "hetic"
+      ],
+      [
+        "Cit",
+        "ralka"
+      ],
+      [
+        "Dab",
+        "ergia"
+      ],
+      [
+        "Er",
+        "is"
+      ],
+      [
+        "FS",
+        "A"
+      ],
+      [
+        "HT",
+        "B"
+      ],
+      [
+        "Lact",
+        "ulose"
+      ],
+      [
+        "Man",
+        "ufact"
+      ],
+      [
+        "Reu",
+        "nion"
+      ],
+      [
+        "Sch",
+        "edule"
+      ],
+      [
+        "Tra",
+        "mzac"
+      ],
+      [
+        "Vol",
+        "itra"
+      ],
+      [
+        "WAL",
+        "LACE"
+      ],
+      [
+        "ZYDU",
+        "S"
+      ],
+      [
+        "ad",
+        "ran"
+      ],
+      [
+        "eo",
+        "us"
+      ],
+      [
+        "fus",
+        "ion"
+      ],
+      [
+        "gula",
+        "is"
+      ],
+      [
+        "iq",
+        "en"
+      ],
+      [
+        "iat",
+        "ric"
+      ],
+      [
+        "ou",
+        "t"
+      ],
+      [
+        "tor",
+        "ies"
+      ],
+      [
+        "ĠEm",
+        "ulsion"
+      ],
+      [
+        "Ġqu",
+        "adran"
+      ],
+      [
+        "ĠYel",
+        "low"
+      ],
+      [
+        "Ġwith",
+        "out"
+      ],
+      [
+        "ĠPaed",
+        "iatric"
+      ],
+      [
+        "ĠSFP",
+        "FB"
+      ],
+      [
+        "ĠCiss",
+        "ue"
+      ],
+      [
+        "ĠCITRA",
+        "TE"
+      ],
+      [
+        "abora",
+        "tories"
+      ],
+      [
+        "ĠAqu",
+        "eous"
+      ],
+      [
+        "ĠRegist",
+        "red"
+      ],
+      [
+        "0840",
+        "13"
+      ],
+      [
+        "2456",
+        "4"
+      ],
+      [
+        "2409",
+        "0820"
+      ],
+      [
+        "Diclofence",
+        "ac"
+      ],
+      [
+        "Prega",
+        "oalin"
+      ],
+      [
+        "DISO",
+        "DIUM"
+      ],
+      [
+        "ĠDtnth",
+        "afamine"
+      ],
+      [
+        "Ġsiss",
+        "oo"
+      ],
+      [
+        "Ġsuga",
+        "r"
+      ],
+      [
+        "Hydroxychlorouu",
+        "iqen"
+      ],
+      [
+        "ĠEuatyot",
+        "us"
+      ],
+      [
+        "Dexamethas",
+        "one"
+      ],
+      [
+        "ĠDIETHE",
+        "LYNE"
+      ],
+      [
+        "Maxim",
+        "um"
+      ],
+      [
+        "Ibuges",
+        "ic"
+      ],
+      [
+        "ĠLifeSt",
+        "yle"
+      ],
+      [
+        "ĠLifescien",
+        "ces"
+      ],
+      [
+        "Manufact",
+        "ured"
+      ],
+      [
+        "Ġquadran",
+        "gulais"
+      ],
+      [
+        "0",
+        "20"
+      ],
+      [
+        "2",
+        "8"
+      ],
+      [
+        "3",
+        "12"
+      ],
+      [
+        "3",
+        "20058"
+      ],
+      [
+        "3",
+        "48"
+      ],
+      [
+        "4",
+        "9"
+      ],
+      [
+        "5",
+        "1"
+      ],
+      [
+        "5",
+        "25"
+      ],
+      [
+        "5",
+        "01"
+      ],
+      [
+        "7",
+        "2"
+      ],
+      [
+        "9",
+        "00"
+      ],
+      [
+        "=",
+        "-"
+      ],
+      [
+        "A",
+        "S"
+      ],
+      [
+        "A",
+        "NO"
+      ],
+      [
+        "A",
+        "FR"
+      ],
+      [
+        "B",
+        "i"
+      ],
+      [
+        "B",
+        "y"
+      ],
+      [
+        "B",
+        "AC"
+      ],
+      [
+        "C",
+        "D"
+      ],
+      [
+        "C",
+        "o"
+      ],
+      [
+        "C",
+        "IP"
+      ],
+      [
+        "D",
+        "A"
+      ],
+      [
+        "D",
+        "M"
+      ],
+      [
+        "D",
+        "e"
+      ],
+      [
+        "D",
+        "TI"
+      ],
+      [
+        "D",
+        "RUG"
+      ],
+      [
+        "F",
+        "TER"
+      ],
+      [
+        "F",
+        "ree"
+      ],
+      [
+        "G",
+        "ent"
+      ],
+      [
+        "I",
+        "K"
+      ],
+      [
+        "I",
+        "TA"
+      ],
+      [
+        "I",
+        "TH"
+      ],
+      [
+        "I",
+        "AS"
+      ],
+      [
+        "L",
+        "UP"
+      ],
+      [
+        "M",
+        "IN"
+      ],
+      [
+        "M",
+        "ethyl"
+      ],
+      [
+        "M",
+        "enthol"
+      ],
+      [
+        "M",
+        "INE"
+      ],
+      [
+        "M",
+        "NB"
+      ],
+      [
+        "M",
+        "IAS"
+      ],
+      [
+        "N",
+        "AL"
+      ],
+      [
+        "N",
+        "ANO"
+      ],
+      [
+        "P",
+        "R"
+      ],
+      [
+        "P",
+        "l"
+      ],
+      [
+        "P",
+        "er"
+      ],
+      [
+        "P",
+        "EN"
+      ],
+      [
+        "R",
+        "es"
+      ],
+      [
+        "R",
+        "OL"
+      ],
+      [
+        "R",
+        "etail"
+      ],
+      [
+        "S",
+        "ATE"
+      ],
+      [
+        "S",
+        "ER"
+      ],
+      [
+        "T",
+        "M"
+      ],
+      [
+        "T",
+        "o"
+      ],
+      [
+        "T",
+        "ON"
+      ],
+      [
+        "V",
+        "ITA"
+      ],
+      [
+        "W",
+        "SC"
+      ],
+      [
+        "X",
+        "DA"
+      ],
+      [
+        "Y",
+        "SATE"
+      ],
+      [
+        "b",
+        "us"
+      ],
+      [
+        "b",
+        "bal"
+      ],
+      [
+        "b",
+        "ia"
+      ],
+      [
+        "c",
+        "ti"
+      ],
+      [
+        "c",
+        "ted"
+      ],
+      [
+        "d",
+        "ust"
+      ],
+      [
+        "e",
+        "al"
+      ],
+      [
+        "g",
+        "h"
+      ],
+      [
+        "i",
+        "al"
+      ],
+      [
+        "i",
+        "ant"
+      ],
+      [
+        "k",
+        "ula"
+      ],
+      [
+        "l",
+        "e"
+      ],
+      [
+        "l",
+        "y"
+      ],
+      [
+        "l",
+        "amine"
+      ],
+      [
+        "n",
+        "a"
+      ],
+      [
+        "n",
+        "o"
+      ],
+      [
+        "o",
+        "st"
+      ],
+      [
+        "o",
+        "tion"
+      ],
+      [
+        "o",
+        "care"
+      ],
+      [
+        "p",
+        "arac"
+      ],
+      [
+        "r",
+        "ated"
+      ],
+      [
+        "r",
+        "ial"
+      ],
+      [
+        "s",
+        "w"
+      ],
+      [
+        "s",
+        "iant"
+      ],
+      [
+        "x",
+        "ost"
+      ],
+      [
+        "y",
+        "ate"
+      ],
+      [
+        "y",
+        "co"
+      ],
+      [
+        "y",
+        "bus"
+      ],
+      [
+        "z",
+        "e"
+      ],
+      [
+        "z",
+        "ybus"
+      ],
+      [
+        "Ġ",
+        "ON"
+      ],
+      [
+        "Ġ",
+        "00"
+      ],
+      [
+        "Ġ",
+        "EX"
+      ],
+      [
+        "Ġ",
+        "re"
+      ],
+      [
+        "Ġ",
+        "RANBAXY"
+      ],
+      [
+        "Ġ",
+        "2029"
+      ],
+      [
+        "Ġ",
+        "92"
+      ],
+      [
+        "Ġ",
+        "yel"
+      ],
+      [
+        "Ġ",
+        "617"
+      ],
+      [
+        "Ġ",
+        "USE"
+      ],
+      [
+        "Ġ",
+        "NEUGABA"
+      ],
+      [
+        "Ġ",
+        "900"
+      ],
+      [
+        "Ġ",
+        "Bi"
+      ],
+      [
+        "20",
+        "8"
+      ],
+      [
+        "20",
+        "15"
+      ],
+      [
+        "in",
+        "clusiv"
+      ],
+      [
+        "ĠD",
+        "o"
+      ],
+      [
+        "ĠD",
+        "op"
+      ],
+      [
+        "ĠD",
+        "AY"
+      ],
+      [
+        "an",
+        "ch"
+      ],
+      [
+        "te",
+        "cted"
+      ],
+      [
+        "ĠP",
+        "re"
+      ],
+      [
+        "ĠP",
+        "anch"
+      ],
+      [
+        "ĠT",
+        "HE"
+      ],
+      [
+        "IN",
+        "G"
+      ],
+      [
+        "IN",
+        "AC"
+      ],
+      [
+        "IN",
+        "ER"
+      ],
+      [
+        "es",
+        "th"
+      ],
+      [
+        "ĠM",
+        "A"
+      ],
+      [
+        "ĠM",
+        "L"
+      ],
+      [
+        "ĠM",
+        "UL"
+      ],
+      [
+        "ĠM",
+        "AR"
+      ],
+      [
+        "ĠM",
+        "RP"
+      ],
+      [
+        "ĠM",
+        "AY"
+      ],
+      [
+        "TE",
+        "IN"
+      ],
+      [
+        "ĠC",
+        "er"
+      ],
+      [
+        "ro",
+        "tected"
+      ],
+      [
+        "00",
+        "3"
+      ],
+      [
+        "00",
+        "01"
+      ],
+      [
+        "00",
+        "57"
+      ],
+      [
+        "er",
+        "id"
+      ],
+      [
+        "ĠA",
+        "U"
+      ],
+      [
+        "ĠA",
+        "re"
+      ],
+      [
+        "ĠA",
+        "ug"
+      ],
+      [
+        "ĠA",
+        "FR"
+      ],
+      [
+        "ĠA",
+        "FTER"
+      ],
+      [
+        "ĠA",
+        "PR"
+      ],
+      [
+        "RA",
+        "L"
+      ],
+      [
+        "TI",
+        "MINE"
+      ],
+      [
+        "TI",
+        "VITA"
+      ],
+      [
+        "NO",
+        "DEM"
+      ],
+      [
+        "el",
+        "l"
+      ],
+      [
+        "el",
+        "ow"
+      ],
+      [
+        "Ġ1",
+        "3"
+      ],
+      [
+        "Ġ1",
+        "6"
+      ],
+      [
+        "eth",
+        "lamine"
+      ],
+      [
+        "25",
+        "320058"
+      ],
+      [
+        "Ġ0",
+        "4"
+      ],
+      [
+        "ĠO",
+        "PEN"
+      ],
+      [
+        "ĠH",
+        "eal"
+      ],
+      [
+        "ti",
+        "fi"
+      ],
+      [
+        "ĠG",
+        "M"
+      ],
+      [
+        "or",
+        "e"
+      ],
+      [
+        "Ġ.",
+        "."
+      ],
+      [
+        "th",
+        "care"
+      ],
+      [
+        "ĠL",
+        "aboratories"
+      ],
+      [
+        "ma",
+        "r"
+      ],
+      [
+        "Al",
+        "bia"
+      ],
+      [
+        "In",
+        "dust"
+      ],
+      [
+        "us",
+        "sw"
+      ],
+      [
+        "AW",
+        "AWIN"
+      ],
+      [
+        "Panto",
+        "pa"
+      ],
+      [
+        "Mf",
+        "d"
+      ],
+      [
+        "ex",
+        "p"
+      ],
+      [
+        "AC",
+        "IN"
+      ],
+      [
+        "SI",
+        "ON"
+      ],
+      [
+        "tion",
+        "er"
+      ],
+      [
+        "24",
+        "525"
+      ],
+      [
+        "ĠSalic",
+        "yate"
+      ],
+      [
+        "12",
+        "6"
+      ],
+      [
+        "Diclofen",
+        "c"
+      ],
+      [
+        "it",
+        "amol"
+      ],
+      [
+        "ĠIn",
+        "fusion"
+      ],
+      [
+        "RIP",
+        "TON"
+      ],
+      [
+        "Ġ5",
+        "7"
+      ],
+      [
+        "Ġp",
+        "rotected"
+      ],
+      [
+        "Parac",
+        "itamol"
+      ],
+      [
+        "inse",
+        "ed"
+      ],
+      [
+        "13",
+        "41"
+      ],
+      [
+        "ĠPRESC",
+        "RIPTON"
+      ],
+      [
+        "ĠPRESCRIPTION",
+        "DRUG"
+      ],
+      [
+        "ĠDi",
+        "ethlamine"
+      ],
+      [
+        "TA",
+        "TION"
+      ],
+      [
+        "TA",
+        "INER"
+      ],
+      [
+        "ĠE",
+        "MUL"
+      ],
+      [
+        "01",
+        "49"
+      ],
+      [
+        "31",
+        "74"
+      ],
+      [
+        "PRA",
+        "CIP"
+      ],
+      [
+        "ĠI",
+        "SO"
+      ],
+      [
+        "APR",
+        "L"
+      ],
+      [
+        "APR",
+        "IL"
+      ],
+      [
+        "ĠCON",
+        "SER"
+      ],
+      [
+        "ĠCON",
+        "TAINER"
+      ],
+      [
+        "LEVOBUP",
+        "INAC"
+      ],
+      [
+        "Ġm",
+        "ethyl"
+      ],
+      [
+        "Ġm",
+        "otion"
+      ],
+      [
+        "19",
+        "3"
+      ],
+      [
+        "ĠNO",
+        "V"
+      ],
+      [
+        "TER",
+        "NAL"
+      ],
+      [
+        "ĠCHL",
+        "OR"
+      ],
+      [
+        "Ġb",
+        "elow"
+      ],
+      [
+        "ĠMeth",
+        "yco"
+      ],
+      [
+        "ĠCAP",
+        "S"
+      ],
+      [
+        "AM",
+        "IK"
+      ],
+      [
+        "An",
+        "esth"
+      ],
+      [
+        "Ph",
+        "ase"
+      ],
+      [
+        "Ġ3",
+        "0"
+      ],
+      [
+        "Ġf",
+        "o"
+      ],
+      [
+        "Ġf",
+        "ab"
+      ],
+      [
+        "Ġf",
+        "rom"
+      ],
+      [
+        "Ġin",
+        "fusion"
+      ],
+      [
+        "GLYCO",
+        "PYROLATE"
+      ],
+      [
+        "bu",
+        "xost"
+      ],
+      [
+        "Ġl",
+        "aboratories"
+      ],
+      [
+        "Ġl",
+        "inseed"
+      ],
+      [
+        "Fe",
+        "buxost"
+      ],
+      [
+        "Ġma",
+        "r"
+      ],
+      [
+        "PRO",
+        "TEIN"
+      ],
+      [
+        "St",
+        "ore"
+      ],
+      [
+        "gist",
+        "rated"
+      ],
+      [
+        "ĠPra",
+        "cti"
+      ],
+      [
+        "ĠHYD",
+        "ROL"
+      ],
+      [
+        "Ġsalic",
+        "ylate"
+      ],
+      [
+        "Ġfree",
+        "ze"
+      ],
+      [
+        "Ġli",
+        "gh"
+      ],
+      [
+        "74",
+        "3174"
+      ],
+      [
+        "MUL",
+        "TIVITA"
+      ],
+      [
+        "ĠW",
+        "TA"
+      ],
+      [
+        "ĠW",
+        "ITH"
+      ],
+      [
+        "Ġon",
+        "ly"
+      ],
+      [
+        "ĠStra",
+        "in"
+      ],
+      [
+        "ĠStra",
+        "ussw"
+      ],
+      [
+        "006",
+        "58"
+      ],
+      [
+        "006",
+        "28"
+      ],
+      [
+        "Ġ26",
+        "4"
+      ],
+      [
+        "020",
+        "3"
+      ],
+      [
+        "BAC",
+        "H"
+      ],
+      [
+        "CD",
+        "DTI"
+      ],
+      [
+        "De",
+        "c"
+      ],
+      [
+        "Gent",
+        "le"
+      ],
+      [
+        "LUP",
+        "IN"
+      ],
+      [
+        "Pl",
+        "ot"
+      ],
+      [
+        "Res",
+        "siant"
+      ],
+      [
+        "bbal",
+        "amin"
+      ],
+      [
+        "parac",
+        "ip"
+      ],
+      [
+        "ĠON",
+        "LY"
+      ],
+      [
+        "ĠEX",
+        "TERNAL"
+      ],
+      [
+        "Ġre",
+        "gistrated"
+      ],
+      [
+        "Ġ92",
+        "3"
+      ],
+      [
+        "Ġyel",
+        "low"
+      ],
+      [
+        "Ġ900",
+        "1"
+      ],
+      [
+        "ĠBi",
+        "ocare"
+      ],
+      [
+        "inclusiv",
+        "e"
+      ],
+      [
+        "ĠDop",
+        "erid"
+      ],
+      [
+        "ĠDAY",
+        "S"
+      ],
+      [
+        "ĠPre",
+        "gabalin"
+      ],
+      [
+        "ĠPanch",
+        "kula"
+      ],
+      [
+        "ĠMUL",
+        "TIMINE"
+      ],
+      [
+        "ĠCer",
+        "tifi"
+      ],
+      [
+        "ĠAre",
+        "a"
+      ],
+      [
+        "NODEM",
+        "M"
+      ],
+      [
+        "ĠOPEN",
+        "ING"
+      ],
+      [
+        "ĠHeal",
+        "thcare"
+      ],
+      [
+        "Indust",
+        "rial"
+      ],
+      [
+        "Pantopa",
+        "zole"
+      ],
+      [
+        "1341",
+        "13"
+      ],
+      [
+        "ĠEMUL",
+        "SION"
+      ],
+      [
+        "ĠCONSER",
+        "TATION"
+      ],
+      [
+        "LEVOBUPINAC",
+        "ANE"
+      ],
+      [
+        "ĠMethyco",
+        "bbalamin"
+      ],
+      [
+        "AMIK",
+        "ACIN"
+      ],
+      [
+        "Anesth",
+        "etic"
+      ],
+      [
+        "Febuxost",
+        "at"
+      ],
+      [
+        "ĠPracti",
+        "tioner"
+      ],
+      [
+        "ĠHYDROL",
+        "YSATE"
+      ],
+      [
+        "Ġligh",
+        "t"
+      ],
+      [
+        "MULTIVITA",
+        "MIN"
+      ],
+      [
+        "ĠWITH",
+        "IN"
+      ],
+      [
+        "ĠStraussw",
+        "ell"
+      ],
+      [
+        "ĠDoperid",
+        "ne"
+      ],
+      [
+        "ĠMULTIMINE",
+        "RAL"
+      ],
+      [
+        "ĠCertifi",
+        "ed"
+      ]
+    ]
+  }
+}
