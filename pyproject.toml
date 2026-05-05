@@ -60,4 +60,7 @@ ignore = ["E501"]  # line length handled by formatter
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-addopts = "-v --tb=short"
+addopts = "-v --tb=short -m 'not colab'"
+markers = [
+    "colab: requires the Colab runtime (torch + ml extras + GPU)",
+]

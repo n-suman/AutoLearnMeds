@@ -219,3 +219,122 @@ def compute_metrics(
         "per_field_f1": per_field,
         "n_examples": len(predictions),
     }
+
+
+# === Image preprocessing ===
+
+# Cached after first call so we don't redownload SigLIP processor each batch.
+_PROCESSOR_CACHE: dict[str, Any] = {}
+
+
+def _get_siglip_processor():
+    """Lazy-load and cache the SigLIP image processor."""
+    if "processor" not in _PROCESSOR_CACHE:
+        from transformers import AutoProcessor
+
+        _PROCESSOR_CACHE["processor"] = AutoProcessor.from_pretrained(
+            "google/siglip-base-patch16-224"
+        )
+    return _PROCESSOR_CACHE["processor"]
+
+
+def preprocess_image(image_path: Path | str):
+    """Resize + letterbox + normalize an image. Returns a (3, IMAGE_SIZE, IMAGE_SIZE) torch tensor.
+
+    Letterboxing preserves aspect ratio with mid-gray padding so non-square
+    medicine boxes don't get squashed.
+    """
+    from PIL import Image
+
+    img = Image.open(str(image_path)).convert("RGB")
+    w, h = img.size
+    scale = IMAGE_SIZE / max(w, h)
+    nw, nh = int(round(w * scale)), int(round(h * scale))
+    img = img.resize((nw, nh), Image.BILINEAR)
+    canvas = Image.new("RGB", (IMAGE_SIZE, IMAGE_SIZE), color=(127, 127, 127))
+    canvas.paste(img, ((IMAGE_SIZE - nw) // 2, (IMAGE_SIZE - nh) // 2))
+
+    proc = _get_siglip_processor()
+    out = proc(images=canvas, return_tensors="pt")
+    return out["pixel_values"].squeeze(0)  # (3, H, W)
+
+
+# === Dataset + DataLoader ===
+
+class PharmaLabelDataset:
+    """Iterates a processed JSONL file. Yields {image, target_text, image_id} dicts.
+
+    `image` is the preprocessed tensor.
+    `target_text` is format_output(record) — the canonical XML decoder target.
+    `image_id` is the record's image_id (for evaluation cross-reference).
+    """
+
+    def __init__(
+        self,
+        jsonl_path: Path | str,
+        images_root: Path | str,
+        path_strip_prefix: str = "raw/raw_images/",
+    ) -> None:
+        self.jsonl_path = Path(jsonl_path)
+        self.images_root = Path(images_root)
+        self.path_strip_prefix = path_strip_prefix
+        self.records: list[dict] = [
+            json.loads(line)
+            for line in self.jsonl_path.read_text().splitlines()
+            if line.strip()
+        ]
+
+    def __len__(self) -> int:
+        return len(self.records)
+
+    def __getitem__(self, idx: int) -> dict[str, Any]:
+        rec = self.records[idx]
+        rel = rec["image_path"]
+        if rel.startswith(self.path_strip_prefix):
+            rel = rel[len(self.path_strip_prefix):]
+        img_path = self.images_root / rel
+        return {
+            "image": preprocess_image(img_path),
+            "target_text": format_output(rec),
+            "image_id": rec["image_id"],
+            "fields_truth": {f: (rec.get("fields") or {}).get(f, {}).get("text")
+                              for f in FIELD_ORDER
+                              if (rec.get("fields") or {}).get(f, {}).get("text") is not None},
+        }
+
+
+def _collate(batch: list[dict[str, Any]]) -> dict[str, Any]:
+    """Default-style collate that stacks tensors and lists everything else."""
+    import torch  # type: ignore[import-not-found]
+
+    out: dict[str, Any] = {}
+    out["image"] = torch.stack([b["image"] for b in batch])
+    out["target_text"] = [b["target_text"] for b in batch]
+    out["image_id"] = [b["image_id"] for b in batch]
+    out["fields_truth"] = [b["fields_truth"] for b in batch]
+    return out
+
+
+def get_dataloader(
+    jsonl_path: Path | str,
+    images_root: Path | str,
+    path_strip_prefix: str = "raw/raw_images/",
+    batch_size: int = 16,
+    shuffle: bool = False,
+    num_workers: int = 0,
+):
+    """PyTorch DataLoader over PharmaLabelDataset."""
+    from torch.utils.data import DataLoader  # type: ignore[import-not-found]
+
+    ds = PharmaLabelDataset(
+        jsonl_path=jsonl_path,
+        images_root=images_root,
+        path_strip_prefix=path_strip_prefix,
+    )
+    return DataLoader(
+        ds,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        num_workers=num_workers,
+        collate_fn=_collate,
+    )
