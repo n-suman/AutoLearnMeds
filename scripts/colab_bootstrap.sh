@@ -150,12 +150,14 @@ nohup cloudflared tunnel --url tcp://localhost:22 \
 CLOUDFLARED_PID=$!
 
 # Wait up to 30s for the tunnel to come up and emit the trycloudflare hostname.
+# Use cat | grep so we don't pick up grep's "filename:" prefix when matching
+# across multiple files; -h would also work but `cat | grep` is unambiguous.
 CLOUDFLARED_HOST=""
 for _ in $(seq 1 15); do
   sleep 2
-  CLOUDFLARED_HOST="$(grep -oE '[a-zA-Z0-9-]+\.trycloudflare\.com' \
-                       /tmp/cloudflared.log /tmp/cloudflared.stdout.log 2>/dev/null \
-                     | head -1 || true)"
+  CLOUDFLARED_HOST="$(cat /tmp/cloudflared.log /tmp/cloudflared.stdout.log 2>/dev/null \
+                      | grep -oE '[a-zA-Z0-9-]+\.trycloudflare\.com' \
+                      | head -1 || true)"
   [[ -n "$CLOUDFLARED_HOST" ]] && break
 done
 
