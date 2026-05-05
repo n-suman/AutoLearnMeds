@@ -120,6 +120,25 @@ if [[ -d /usr/lib64-nvidia ]]; then
   sudo ldconfig 2>/dev/null || true
 fi
 
+# 4.5. Regenerate data/processed/{train,val,test}.jsonl from GCS golden_set if missing.
+# These files are gitignored (large), so a fresh clone won't have them. They're
+# deterministic outputs of build_processed.py — idempotent re-generation is fine.
+if [[ ! -f data/processed/train.jsonl ]] || [[ ! -f data/processed/val.jsonl ]] || [[ ! -f data/processed/test.jsonl ]]; then
+  echo "[4.5/7] Regenerating data/processed/*.jsonl from $BUCKET/raw/golden_set/..."
+  mkdir -p data/processed
+  if [[ -f /mnt/gcs/raw/golden_set/gold_standard.jsonl ]] && [[ -f /mnt/gcs/raw/golden_set/splits.json ]]; then
+    uv run python scripts/build_processed.py \
+      --gold-standard /mnt/gcs/raw/golden_set/gold_standard.jsonl \
+      --splits        /mnt/gcs/raw/golden_set/splits.json \
+      --images-root   /mnt/gcs/raw/raw_images \
+      --out-dir       data/processed \
+      --image-path-prefix raw/raw_images || \
+      echo "  WARN: build_processed failed (training will fail without these files)"
+  else
+    echo "  WARN: golden_set not found in GCS mount; skipping. Training will fail."
+  fi
+fi
+
 # 5. Launch SSH server + Cloudflare Tunnel — pure shell (no colab-ssh).
 # colab-ssh got killed by something (OOM? sandbox?) on the user's last run,
 # and its only value over plain bash is convenience. Bypass it: install
