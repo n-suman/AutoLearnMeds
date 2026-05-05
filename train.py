@@ -513,22 +513,138 @@ class PharmaVLM:
         return outputs
 
 
+# === Training loop ===
+
+def cosine_with_warmup(step: int, warmup_steps: int, max_steps: int, peak_lr: float, min_lr: float) -> float:
+    """Linear warmup over `warmup_steps`, then cosine decay to `min_lr`."""
+    import math
+    if step < warmup_steps:
+        return peak_lr * (step + 1) / max(1, warmup_steps)
+    progress = (step - warmup_steps) / max(1, max_steps - warmup_steps)
+    progress = min(1.0, max(0.0, progress))
+    return min_lr + 0.5 * (peak_lr - min_lr) * (1.0 + math.cos(math.pi * progress))
+
+
+def _infinite(dataloader):
+    while True:
+        for batch in dataloader:
+            yield batch
+
+
+def train_loop(model, cfg: Config, device, wandb_run=None) -> dict[str, Any]:
+    """Run cfg.max_steps of training. Returns the final metrics dict."""
+    import prepare
+    torch = _import_torch()
+
+    train_dl = prepare.get_dataloader(
+        jsonl_path=cfg.train_jsonl,
+        images_root=cfg.images_root,
+        path_strip_prefix=cfg.path_strip_prefix,
+        batch_size=cfg.batch_size,
+        shuffle=True,
+        num_workers=2,
+    )
+
+    optimizer = torch.optim.AdamW(
+        list(model.trainable_parameters()),
+        lr=cfg.peak_lr,
+        betas=cfg.adam_betas,
+        weight_decay=cfg.weight_decay,
+    )
+
+    autocast_dtype = torch.bfloat16 if cfg.precision == "bf16" else torch.float32
+
+    trainable_params = sum(p.numel() for p in model.trainable_parameters())
+    print(f"[train] trainable_params={trainable_params:,}")
+
+    train_iter = _infinite(train_dl)
+    last_metrics: dict[str, Any] = {"macro_f1": 0.0, "per_field_f1": {}, "n_examples": 0}
+    best_macro_f1 = 0.0
+    Path(cfg.checkpoint_dir).mkdir(parents=True, exist_ok=True)
+
+    for step in range(cfg.max_steps):
+        model.train(True)
+        batch = next(train_iter)
+        images = batch["image"].to(device)
+
+        in_ids, lab_ids = encode_targets(model.tokenizer, batch["target_text"], cfg.max_target_length)
+        in_ids = in_ids.to(device)
+        lab_ids = lab_ids.to(device)
+
+        with torch.autocast(
+            device_type="cuda" if device.type == "cuda" else "cpu",
+            dtype=autocast_dtype,
+            enabled=(cfg.precision == "bf16"),
+        ):
+            memory = model._encode_images(images)
+            logits = model.decoder(in_ids, memory)
+            loss = torch.nn.functional.cross_entropy(
+                logits.reshape(-1, logits.size(-1)),
+                lab_ids.reshape(-1),
+                ignore_index=-100,
+            )
+
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(list(model.trainable_parameters()), cfg.grad_clip)
+        lr = cosine_with_warmup(step, cfg.warmup_steps, cfg.max_steps, cfg.peak_lr, cfg.min_lr)
+        for g in optimizer.param_groups:
+            g["lr"] = lr
+        optimizer.step()
+        optimizer.zero_grad(set_to_none=True)
+
+        if step % cfg.log_every == 0:
+            print(f"[train] step={step:5d} loss={loss.item():.4f} lr={lr:.2e}")
+            if wandb_run is not None:
+                wandb_run.log({"train/loss": loss.item(), "train/lr": lr, "step": step})
+
+        if step > 0 and step % cfg.eval_every == 0:
+            model.train(False)
+            with torch.no_grad():
+                metrics = prepare.evaluate(
+                    model=model,
+                    jsonl_path=cfg.val_jsonl,
+                    images_root=cfg.images_root,
+                    path_strip_prefix=cfg.path_strip_prefix,
+                    batch_size=cfg.batch_size,
+                    max_new_tokens=cfg.max_target_length,
+                )
+            print(f"[ val ] step={step:5d} macro_f1={metrics['macro_f1']:.4f} (n={metrics['n_examples']})")
+            if wandb_run is not None:
+                wandb_run.log({
+                    "val/macro_f1": metrics["macro_f1"],
+                    "val/n_examples": metrics["n_examples"],
+                    **{f"val/per_field/{f}": v for f, v in metrics["per_field_f1"].items()},
+                    "step": step,
+                })
+            if metrics["macro_f1"] > best_macro_f1:
+                best_macro_f1 = metrics["macro_f1"]
+                ckpt = {"step": step, "macro_f1": best_macro_f1}
+                torch.save(ckpt, Path(cfg.checkpoint_dir) / "best.meta.pt")
+            last_metrics = metrics
+
+    model.train(False)
+    with torch.no_grad():
+        last_metrics = prepare.evaluate(
+            model=model,
+            jsonl_path=cfg.val_jsonl,
+            images_root=cfg.images_root,
+            path_strip_prefix=cfg.path_strip_prefix,
+            batch_size=cfg.batch_size,
+            max_new_tokens=cfg.max_target_length,
+        )
+    print(f"[final] macro_f1={last_metrics['macro_f1']:.4f}")
+    if wandb_run is not None:
+        wandb_run.log({"final/macro_f1": last_metrics["macro_f1"]})
+    return last_metrics
+
+
 # === Main ===
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    parser.add_argument(
-        "--config",
-        type=Path,
-        default=Path("experiments/configs/baseline.yaml"),
-        help="Path to YAML config",
-    )
-    parser.add_argument(
-        "--seed",
-        type=int,
-        default=None,
-        help="Override seed from the config",
-    )
+    parser.add_argument("--config", type=Path, default=Path("experiments/configs/baseline.yaml"))
+    parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--no-wandb", action="store_true", help="Disable W&B logging")
     args = parser.parse_args(argv)
 
     cfg = Config.from_yaml(args.config)
@@ -537,8 +653,43 @@ def main(argv: list[str] | None = None) -> int:
 
     set_seed(cfg.seed)
 
-    final_macro_f1 = 0.0
-    print(f"final_macro_f1={final_macro_f1:.4f}")
+    import prepare
+    torch = _import_torch()
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"[main] device={device} seed={cfg.seed}")
+
+    tokenizer = prepare.get_tokenizer(cfg.tokenizer_path)
+    model = PharmaVLM(
+        encoder_model=cfg.encoder_model,
+        vocab_size=tokenizer.get_vocab_size(),
+        hidden_dim=cfg.hidden_dim,
+        n_layers=cfg.n_decoder_layers,
+        n_heads=cfg.n_decoder_heads,
+        ffn_ratio=cfg.ffn_ratio,
+        dropout=cfg.dropout,
+        tied_embeddings=cfg.tied_embeddings,
+        tokenizer=tokenizer,
+    ).to(device)
+
+    wandb_run = None
+    if not args.no_wandb:
+        try:
+            import wandb
+            wandb_run = wandb.init(
+                project=cfg.wandb_project,
+                config=dataclasses.asdict(cfg),
+                mode=cfg.wandb_mode,
+            )
+        except Exception as e:
+            print(f"[main] WARN: wandb init failed ({e}); continuing without it")
+
+    final_metrics = train_loop(model, cfg, device, wandb_run=wandb_run)
+
+    if wandb_run is not None:
+        wandb_run.finish()
+
+    print(f"final_macro_f1={final_metrics['macro_f1']:.4f}")
     return 0
 
 
