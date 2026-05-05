@@ -228,11 +228,16 @@ _PROCESSOR_CACHE: dict[str, Any] = {}
 
 
 def _get_siglip_processor():
-    """Lazy-load and cache the SigLIP image processor."""
-    if "processor" not in _PROCESSOR_CACHE:
-        from transformers import AutoProcessor
+    """Lazy-load and cache the SigLIP IMAGE processor only.
 
-        _PROCESSOR_CACHE["processor"] = AutoProcessor.from_pretrained(
+    Use AutoImageProcessor (not AutoProcessor) so we don't drag in the SigLIP
+    tokenizer — that requires SentencePiece, and we have our own BPE for the
+    decoder anyway. Only the visual transform (resize/normalize) is needed.
+    """
+    if "processor" not in _PROCESSOR_CACHE:
+        from transformers import AutoImageProcessor
+
+        _PROCESSOR_CACHE["processor"] = AutoImageProcessor.from_pretrained(
             "google/siglip-base-patch16-224"
         )
     return _PROCESSOR_CACHE["processor"]
