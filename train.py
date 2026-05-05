@@ -487,9 +487,17 @@ class PharmaVLM:
         return loss
 
     def predict_text(self, images, max_new_tokens: int = 256) -> list[str]:
-        """Greedy autoregressive decoding. Returns one decoded string per image."""
+        """Greedy autoregressive decoding. Returns one decoded string per image.
+
+        Auto-moves images to the model's device — prepare.evaluate() passes
+        CPU tensors from the DataLoader and doesn't know the model's device.
+        """
         torch = _import_torch()
         self.train(False)
+        # Infer device from the trainable projection layer; move images to match.
+        model_device = next(self.proj.parameters()).device
+        if images.device != model_device:
+            images = images.to(model_device)
         memory = self._encode_images(images)
         B = images.size(0)
         cur = torch.full((B, 1), self.bos_id, dtype=torch.long, device=images.device)
