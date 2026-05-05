@@ -11,12 +11,16 @@
 #   AUTOLEARNMEDS_GCS_BUCKET    gs://your-bucket-name
 #   AUTOLEARNMEDS_REPO_URL      https://github.com/<user>/<repo>.git
 #   AUTOLEARNMEDS_SSH_PASSWORD  temp password for SSH (use a strong random)
+#   CLOUDFLARED_TUNNEL_CREDS    JSON credentials for the named Cloudflare tunnel
+#                               (read from a Colab Secret in the bootstrap notebook)
 #
 # Optional:
-#   AUTOLEARNMEDS_BRANCH        repo branch to clone (default: main)
-#   AUTOLEARNMEDS_PROJECT_DIR   where to clone (default: /content/AutoLearnMeds
-#                               on local SSD; do NOT put on Drive — uv sync writes
-#                               thousands of files which trip Drive's API quota)
+#   AUTOLEARNMEDS_BRANCH         repo branch to clone (default: main)
+#   AUTOLEARNMEDS_PROJECT_DIR    where to clone (default: /content/AutoLearnMeds
+#                                on local SSD; do NOT put on Drive — uv sync writes
+#                                thousands of files which trip Drive's API quota)
+#   AUTOLEARNMEDS_TUNNEL_HOSTNAME  permanent public hostname (default: colab.capulamedia.com)
+#   AUTOLEARNMEDS_TUNNEL_NAME      named tunnel to run (default: autolearnmeds-colab)
 #
 # Persistence model:
 # - Code: GitHub (committed + pushed; re-cloned on each session — fast).
@@ -32,6 +36,12 @@ SSH_PASSWORD="${AUTOLEARNMEDS_SSH_PASSWORD:?Set AUTOLEARNMEDS_SSH_PASSWORD=...}"
 BRANCH="${AUTOLEARNMEDS_BRANCH:-main}"
 PROJECT_DIR="${AUTOLEARNMEDS_PROJECT_DIR:-/content/AutoLearnMeds}"
 WORKSPACE="/workspace"
+
+# Cloudflare named tunnel (passed in via the bootstrap notebook from Colab Secrets).
+TUNNEL_CREDS="${CLOUDFLARED_TUNNEL_CREDS:?Set CLOUDFLARED_TUNNEL_CREDS=<json from Colab Secret>}"
+# Permanent hostname this tunnel routes to. Override only if you've routed a different DNS name.
+TUNNEL_HOSTNAME="${AUTOLEARNMEDS_TUNNEL_HOSTNAME:-colab.capulamedia.com}"
+TUNNEL_NAME="${AUTOLEARNMEDS_TUNNEL_NAME:-autolearnmeds-colab}"
 
 echo "============================================================"
 echo "AutoLearnMeds bootstrap — $(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -172,41 +182,68 @@ if ! command -v cloudflared >/dev/null 2>&1; then
   sudo chmod +x /usr/local/bin/cloudflared
 fi
 
-# Launch the tunnel in background. cloudflared writes its public hostname
-# (somefoo.trycloudflare.com) to its own stderr; we tail for it.
-echo "  launching cloudflared tunnel..."
+# Set up named tunnel from the Colab Secret.
+echo "  setting up named tunnel $TUNNEL_NAME -> $TUNNEL_HOSTNAME..."
+mkdir -p /root/.cloudflared
+
+# Extract TunnelID from the credentials JSON to know the canonical filename.
+TUNNEL_UUID="$(printf '%s' "$TUNNEL_CREDS" | python3 -c 'import json,sys; print(json.load(sys.stdin)["TunnelID"])')"
+if [[ -z "$TUNNEL_UUID" ]]; then
+  echo "FATAL: could not extract TunnelID from CLOUDFLARED_TUNNEL_CREDS." >&2
+  exit 1
+fi
+
+# Write credentials JSON (cloudflared wants this at /root/.cloudflared/<UUID>.json).
+printf '%s' "$TUNNEL_CREDS" > "/root/.cloudflared/$TUNNEL_UUID.json"
+chmod 600 "/root/.cloudflared/$TUNNEL_UUID.json"
+
+# Write tunnel config: route SSH on localhost:22 to the public hostname.
+cat > /root/.cloudflared/config.yml <<EOF
+tunnel: $TUNNEL_UUID
+credentials-file: /root/.cloudflared/$TUNNEL_UUID.json
+
+ingress:
+  - hostname: $TUNNEL_HOSTNAME
+    service: ssh://localhost:22
+  - service: http_status:404
+EOF
+
+# Launch the named tunnel in the background.
+echo "  launching named tunnel ($TUNNEL_NAME, $TUNNEL_HOSTNAME)..."
 : > /tmp/cloudflared.log
-nohup cloudflared tunnel --url tcp://localhost:22 \
-                         --no-autoupdate \
-                         --logfile /tmp/cloudflared.log \
-                         > /tmp/cloudflared.stdout.log 2>&1 &
+nohup cloudflared tunnel \
+        --config /root/.cloudflared/config.yml \
+        --no-autoupdate \
+        --logfile /tmp/cloudflared.log \
+        run "$TUNNEL_NAME" \
+        > /tmp/cloudflared.stdout.log 2>&1 &
 CLOUDFLARED_PID=$!
 
-# Wait up to 30s for the tunnel to come up and emit the trycloudflare hostname.
-# Use cat | grep so we don't pick up grep's "filename:" prefix when matching
-# across multiple files; -h would also work but `cat | grep` is unambiguous.
-CLOUDFLARED_HOST=""
+# Wait up to 30s for "Registered tunnel connection" — tells us the tunnel is live.
+TUNNEL_OK=""
 for _ in $(seq 1 15); do
   sleep 2
-  CLOUDFLARED_HOST="$(cat /tmp/cloudflared.log /tmp/cloudflared.stdout.log 2>/dev/null \
-                      | grep -oE '[a-zA-Z0-9-]+\.trycloudflare\.com' \
-                      | head -1 || true)"
-  [[ -n "$CLOUDFLARED_HOST" ]] && break
+  if grep -q "Registered tunnel connection" /tmp/cloudflared.log /tmp/cloudflared.stdout.log 2>/dev/null; then
+    TUNNEL_OK="yes"
+    break
+  fi
 done
 
-if [[ -z "$CLOUDFLARED_HOST" ]]; then
-  echo "FATAL: cloudflared tunnel did not establish in 30s." >&2
+if [[ -z "$TUNNEL_OK" ]]; then
+  echo "FATAL: named tunnel did not connect in 30s." >&2
   echo "  Tail of /tmp/cloudflared.log:" >&2
   tail -30 /tmp/cloudflared.log /tmp/cloudflared.stdout.log >&2 || true
   exit 1
 fi
+
+CLOUDFLARED_HOST="$TUNNEL_HOSTNAME"
 
 # Persist the host alongside the legacy /tmp/colab_ssh_output.txt path used
 # by other tooling (and grepped by older docs).
 echo "ssh root@$CLOUDFLARED_HOST" | tee /tmp/colab_ssh_output.txt
 echo "$CLOUDFLARED_HOST" > "$WORKSPACE/.colab_ssh_host"
 gsutil cp "$WORKSPACE/.colab_ssh_host" "$BUCKET/.colab_ssh_host" 2>/dev/null || true
-echo "  cloudflared tunnel ESTABLISHED: $CLOUDFLARED_HOST (pid $CLOUDFLARED_PID)"
+echo "  named tunnel ESTABLISHED: $CLOUDFLARED_HOST (pid $CLOUDFLARED_PID, tunnel=$TUNNEL_NAME, uuid=$TUNNEL_UUID)"
 
 # 6. Background daemons
 echo "[6/7] Starting keepalive + GCS sync daemons..."
@@ -221,10 +258,10 @@ echo "[7/7] READY"
 echo "  Workspace:     $WORKSPACE  ->  $PROJECT_DIR"
 echo "  GCS bucket:    $BUCKET"
 echo "  Branch:        $BRANCH"
-echo "  Cloudflared:   ${CLOUDFLARED_HOST:-<see /tmp/colab_ssh_output.txt>}"
+echo "  Tunnel host:   $CLOUDFLARED_HOST  (permanent — no SSH config update needed)"
 echo ""
-echo "On your Mac, run:"
-echo "  ./scripts/update_ssh_config.sh '${CLOUDFLARED_HOST:-<host>}'"
-echo "Then in VSCode:"
-echo "  Cmd-Shift-P -> Remote-SSH: Connect to Host -> autolearnmeds-colab"
+echo "Connect from your Mac:"
+echo "  ssh autolearnmeds-colab"
+echo "(SSH config already points at $CLOUDFLARED_HOST; only the tunnel UUID may change"
+echo " if you delete + recreate the tunnel via 'cloudflared tunnel create'.)"
 echo "============================================================"

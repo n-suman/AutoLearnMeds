@@ -12,14 +12,14 @@
 set -euo pipefail
 
 HOSTNAME="${1:-}"
-if [[ -z "$HOSTNAME" ]]; then
+if [[ -z "$HOSTNAME" ]] && [[ ! -t 0 ]]; then
   HOSTNAME="$(cat -)"
 fi
 HOSTNAME="$(echo "$HOSTNAME" | tr -d '[:space:]')"
 
 if [[ -z "$HOSTNAME" ]]; then
-  echo "[update_ssh_config] FATAL: no hostname provided (arg or stdin)" >&2
-  exit 1
+  HOSTNAME="colab.capulamedia.com"
+  echo "[update_ssh_config] using default hostname colab.capulamedia.com (override with arg)"
 fi
 
 SSH_CONFIG="$HOME/.ssh/config"

@@ -140,7 +140,8 @@ def test_colab_bootstrap_exists_and_has_required_steps(project_root: Path) -> No
     assert "cloudflared tunnel" in text, "SSH tunnel via cloudflared"
     assert "PermitRootLogin yes" in text, "sshd config: allow root login"
     assert "PasswordAuthentication yes" in text, "sshd config: allow password auth"
-    assert "trycloudflare.com" in text, "Should grep cloudflared output for the public host"
+    assert "colab.capulamedia.com" in text or "AUTOLEARNMEDS_TUNNEL_HOSTNAME" in text, \
+        "Should configure named-tunnel public hostname"
     assert "keepalive.py" in text, "Daemons — keepalive"
     assert "sync_to_gcs.sh" in text, "Daemons — gcs sync"
     assert "AUTOLEARNMEDS_BRANCH" in text, "Branch parameter for git clone"
@@ -254,3 +255,17 @@ def test_update_ssh_config_includes_keepalive(project_root):
     text = (project_root / "scripts" / "update_ssh_config.sh").read_text()
     assert "ServerAliveInterval 60" in text
     assert "ServerAliveCountMax 10" in text
+
+
+def test_bootstrap_uses_named_tunnel(project_root):
+    text = (project_root / "scripts" / "colab_bootstrap.sh").read_text()
+    assert "CLOUDFLARED_TUNNEL_CREDS" in text
+    assert "AUTOLEARNMEDS_TUNNEL_HOSTNAME" in text
+    assert "tunnel" in text and "run" in text
+    # must NOT use the quick-tunnel form anymore
+    assert "tunnel --url" not in text
+
+
+def test_update_ssh_config_defaults_to_persistent_host(project_root):
+    text = (project_root / "scripts" / "update_ssh_config.sh").read_text()
+    assert "colab.capulamedia.com" in text
