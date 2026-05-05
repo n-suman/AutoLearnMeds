@@ -223,3 +223,9 @@ def test_run_experiment_supports_track_arg(project_root):
     assert "train_qwen.py" in text
     assert "train.py" in text
     assert "qwen_baseline.yaml" in text
+
+
+def test_update_ssh_config_includes_keepalive(project_root):
+    text = (project_root / "scripts" / "update_ssh_config.sh").read_text()
+    assert "ServerAliveInterval 60" in text
+    assert "ServerAliveCountMax 10" in text

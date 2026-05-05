@@ -43,6 +43,8 @@ Host autolearnmeds-colab
     StrictHostKeyChecking no
     UserKnownHostsFile /dev/null
     ProxyCommand cloudflared access ssh --hostname %h
+    ServerAliveInterval 60
+    ServerAliveCountMax 10
 EOF
 
 mv "$TMPFILE" "$SSH_CONFIG"
