@@ -103,6 +103,57 @@ def set_seed(seed: int) -> None:
         pass
 
 
+def load_qwen_with_lora(cfg: "QwenConfig") -> dict[str, Any]:
+    """Load Qwen2-VL with optional 4-bit quantization, attach LoRA adapters.
+
+    Returns {'model': PeftModel, 'processor': AutoProcessor}. The model has only
+    LoRA adapter parameters trainable; the base Qwen2-VL weights are frozen
+    (and 4-bit-quantized if cfg.load_in_4bit).
+    """
+    import torch
+    from transformers import (
+        AutoProcessor,
+        Qwen2VLForConditionalGeneration,
+        BitsAndBytesConfig,
+    )
+    from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+
+    bnb_config = None
+    if cfg.load_in_4bit:
+        compute_dtype = getattr(torch, cfg.bnb_4bit_compute_dtype)
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=compute_dtype,
+            bnb_4bit_quant_type=cfg.bnb_4bit_quant_type,
+            bnb_4bit_use_double_quant=True,
+        )
+
+    model = Qwen2VLForConditionalGeneration.from_pretrained(
+        cfg.model_name,
+        quantization_config=bnb_config,
+        torch_dtype=torch.bfloat16,
+        device_map="auto",
+    )
+    processor = AutoProcessor.from_pretrained(cfg.model_name)
+    if cfg.load_in_4bit:
+        model = prepare_model_for_kbit_training(model)
+
+    lora_config = LoraConfig(
+        r=cfg.lora_rank,
+        lora_alpha=cfg.lora_alpha,
+        target_modules=list(cfg.lora_target_modules),
+        lora_dropout=cfg.lora_dropout,
+        bias="none",
+        task_type="CAUSAL_LM",
+    )
+    model = get_peft_model(model, lora_config)
+
+    trainable = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    total = sum(p.numel() for p in model.parameters())
+    print(f"[track-b] LoRA attached: trainable={trainable:,} / total={total:,}")
+    return {"model": model, "processor": processor}
+
+
 # === Main (placeholder — T4-T6 fill in model + training loop + eval) ===
 
 def main() -> int:
