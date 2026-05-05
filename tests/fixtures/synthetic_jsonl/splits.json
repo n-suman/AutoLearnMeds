@@ -1,0 +1,8 @@
+{
+  "train": ["IMG_synth_001.jpeg", "IMG_synth_002.jpeg", "IMG_synth_003.jpeg"],
+  "val": ["IMG_synth_004.jpeg"],
+  "test": ["IMG_synth_005.jpeg"],
+  "seed": 42,
+  "split_ratio": "60/20/20",
+  "stratified_by": "none (synthetic)"
+}
