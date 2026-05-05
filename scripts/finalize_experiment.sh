@@ -49,9 +49,15 @@ else
 fi
 
 # 4. Git commit (the agent / user pushes).
-git add experiments/ledger.jsonl experiments/leaderboard.md \
-        "experiments/runs/$RUN_ID" \
-        checkpoints/best 2>/dev/null || true
+# -f overrides .gitignore: experiments/ledger.jsonl and run-dir metadata files
+# are intentionally tracked despite the parent .gitignore rules.
+git add -f experiments/ledger.jsonl experiments/leaderboard.md \
+           "experiments/runs/$RUN_ID/notes.md" \
+           "experiments/runs/$RUN_ID/config.yaml" \
+           "experiments/runs/$RUN_ID/metrics.json" \
+           "experiments/runs/$RUN_ID/stdout.log" \
+           "experiments/runs/$RUN_ID/train.py" 2>/dev/null || true
+git add checkpoints/best 2>/dev/null || true
 if ! git diff --staged --quiet; then
   git commit -m "experiment $RUN_ID ($PHASE): $(echo "$LEDGER_OUT" | head -1 | sed 's/.*\[append_ledger\] //')"
   echo "[finalize] committed"

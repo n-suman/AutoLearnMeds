@@ -1,0 +1,8 @@
+{
+  "run_id": "randaug-m5-seed42",
+  "git_sha": "ec6c6a746e42f6587cfe49471ba60535c2307e6b",
+  "config": "experiments/configs/baseline.yaml",
+  "final_macro_f1": 0.0679,
+  "wall_clock_seconds": 1674,
+  "exit_code": 0
+}
