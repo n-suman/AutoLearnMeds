@@ -87,3 +87,50 @@ def test_decoder_tied_embeddings_share_weight(train_mod) -> None:
         ffn_ratio=4, dropout=0.0, tied_embeddings=True,
     )
     assert decoder.embedding.weight is decoder.output_proj_weight
+
+
+def test_pharma_vlm_predict_text_returns_strings(train_mod, project_root: Path) -> None:
+    """An untrained model still produces strings of length B (one per image)."""
+    import torch
+    import prepare
+    tok = prepare.get_tokenizer(project_root / "data" / "processed" / "tokenizer.json")
+    model = train_mod.PharmaVLM(
+        encoder_model="google/siglip-base-patch16-224",
+        vocab_size=tok.get_vocab_size(),
+        hidden_dim=128,
+        n_layers=2,
+        n_heads=4,
+        ffn_ratio=4,
+        dropout=0.0,
+        tied_embeddings=True,
+        tokenizer=tok,
+    )
+    model.train(False)
+    x = torch.randn(2, 3, 224, 224)
+    out = model.predict_text(x, max_new_tokens=16)
+    assert isinstance(out, list)
+    assert len(out) == 2
+    assert all(isinstance(s, str) for s in out)
+
+
+def test_pharma_vlm_forward_returns_loss(train_mod, project_root: Path) -> None:
+    """forward(images, target_ids) returns a scalar loss tensor."""
+    import torch
+    import prepare
+    tok = prepare.get_tokenizer(project_root / "data" / "processed" / "tokenizer.json")
+    model = train_mod.PharmaVLM(
+        encoder_model="google/siglip-base-patch16-224",
+        vocab_size=tok.get_vocab_size(),
+        hidden_dim=128,
+        n_layers=2,
+        n_heads=4,
+        ffn_ratio=4,
+        dropout=0.0,
+        tied_embeddings=True,
+        tokenizer=tok,
+    )
+    images = torch.randn(2, 3, 224, 224)
+    target_ids = torch.randint(0, tok.get_vocab_size(), (2, 10))
+    loss = model.forward(images, target_ids)
+    assert loss.ndim == 0
+    assert loss.item() > 0

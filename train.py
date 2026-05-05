@@ -356,6 +356,163 @@ class Decoder:
         return logits
 
 
+
+# === Tokenization helpers ===
+
+def encode_targets(tokenizer, target_texts: list[str], max_length: int):
+    """Encode XML target strings to (input_ids, labels) tensors for teacher forcing.
+
+    target_texts already include BOS and EOS (format_output wraps them).
+    input_ids = ids[:-1] (teacher input).
+    labels    = ids[1:]  (next-token target), with -100 where padded.
+    """
+    torch = _import_torch()
+    pad_id = tokenizer.token_to_id("<pad>")
+    if pad_id is None:
+        pad_id = 0
+
+    bos_id = tokenizer.token_to_id("<s>")
+    eos_id = tokenizer.token_to_id("</s>")
+
+    encs = [tokenizer.encode(t).ids for t in target_texts]
+    encs = [ids[: max_length] for ids in encs]
+    encs = [ids if len(ids) >= 2 else [bos_id, eos_id] for ids in encs]
+
+    input_ids: list[list[int]] = []
+    labels: list[list[int]] = []
+    max_t = 0
+    for ids in encs:
+        in_ids = ids[:-1]
+        lab = ids[1:]
+        input_ids.append(in_ids)
+        labels.append(lab)
+        max_t = max(max_t, len(in_ids))
+
+    for i in range(len(input_ids)):
+        pad_n = max_t - len(input_ids[i])
+        input_ids[i] = input_ids[i] + [pad_id] * pad_n
+        labels[i] = labels[i] + [-100] * pad_n
+
+    return (
+        torch.tensor(input_ids, dtype=torch.long),
+        torch.tensor(labels, dtype=torch.long),
+    )
+
+
+# === Model (encoder + projection + decoder + predict_text) ===
+
+class PharmaVLM:
+    """Frozen SigLIP encoder + projection + Donut-style decoder.
+
+    Public methods:
+      forward(images, target_ids) -> scalar loss (teacher-forced cross-entropy)
+      predict_text(images, max_new_tokens) -> list[str] (greedy decoding)
+
+    The autoresearch agent's predict_text is what plugs into prepare.evaluate().
+    """
+
+    def __init__(
+        self,
+        encoder_model: str,
+        vocab_size: int,
+        hidden_dim: int,
+        n_layers: int,
+        n_heads: int,
+        ffn_ratio: int,
+        dropout: float,
+        tied_embeddings: bool,
+        tokenizer,
+    ) -> None:
+        torch = _import_torch()
+        nn = torch.nn
+
+        self.encoder = Encoder(encoder_model)
+        encoder_hidden = self.encoder.model.config.hidden_size
+        self.proj = nn.Linear(encoder_hidden, hidden_dim, bias=False)
+        self.decoder = Decoder(
+            vocab_size=vocab_size,
+            hidden_dim=hidden_dim,
+            n_layers=n_layers,
+            n_heads=n_heads,
+            ffn_ratio=ffn_ratio,
+            dropout=dropout,
+            tied_embeddings=tied_embeddings,
+        )
+        self.tokenizer = tokenizer
+        self.bos_id = tokenizer.token_to_id("<s>")
+        self.eos_id = tokenizer.token_to_id("</s>")
+        self._device = None
+
+    def trainable_parameters(self):
+        """Yields only parameters with requires_grad=True (proj + decoder)."""
+        for p in self.proj.parameters():
+            yield p
+        for p in self.decoder.parameters():
+            yield p
+
+    def parameters(self):
+        yield from self.encoder.parameters()
+        yield from self.proj.parameters()
+        yield from self.decoder.parameters()
+
+    def to(self, device):
+        self.encoder.to(device)
+        self.proj.to(device)
+        self.decoder.to(device)
+        self._device = device
+        return self
+
+    def train(self, mode: bool = True):
+        self.proj.train(mode)
+        self.decoder.train(mode)
+        self.encoder.train(False)  # encoder always in inference mode
+        return self
+
+    def _encode_images(self, images):
+        feats = self.encoder(images)
+        return self.proj(feats)
+
+    def forward(self, images, target_ids):
+        """Teacher-forced training step. target_ids: (B, T). Returns scalar loss."""
+        torch = _import_torch()
+        memory = self._encode_images(images)
+        in_ids = target_ids[:, :-1].contiguous()
+        lab_ids = target_ids[:, 1:].contiguous()
+        logits = self.decoder(in_ids, memory)
+        loss = torch.nn.functional.cross_entropy(
+            logits.reshape(-1, logits.size(-1)),
+            lab_ids.reshape(-1),
+            ignore_index=-100,
+        )
+        return loss
+
+    def predict_text(self, images, max_new_tokens: int = 256) -> list[str]:
+        """Greedy autoregressive decoding. Returns one decoded string per image."""
+        torch = _import_torch()
+        self.train(False)
+        memory = self._encode_images(images)
+        B = images.size(0)
+        cur = torch.full((B, 1), self.bos_id, dtype=torch.long, device=images.device)
+        finished = torch.zeros(B, dtype=torch.bool, device=images.device)
+        for _ in range(max_new_tokens):
+            logits = self.decoder(cur, memory)
+            next_ids = logits[:, -1, :].argmax(dim=-1, keepdim=True)
+            cur = torch.cat([cur, next_ids], dim=1)
+            finished |= next_ids.squeeze(-1) == self.eos_id
+            if finished.all():
+                break
+
+        outputs: list[str] = []
+        for row in cur.tolist():
+            trimmed = []
+            for tok_id in row:
+                trimmed.append(tok_id)
+                if tok_id == self.eos_id and len(trimmed) > 1:
+                    break
+            outputs.append(self.tokenizer.decode(trimmed, skip_special_tokens=False))
+        return outputs
+
+
 # === Main ===
 
 def main(argv: list[str] | None = None) -> int:
