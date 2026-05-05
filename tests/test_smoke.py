@@ -203,3 +203,15 @@ def test_promote_script_exists_and_executable(project_root: Path) -> None:
     assert text.startswith("#!/")
     assert "set -euo pipefail" in text
     assert "checkpoints/best" in text
+
+
+def test_finalize_experiment_script_exists_and_calls_subscripts(project_root: Path) -> None:
+    p = project_root / "scripts" / "finalize_experiment.sh"
+    assert p.is_file()
+    assert os.access(p, os.X_OK)
+    text = p.read_text()
+    assert text.startswith("#!/")
+    assert "set -euo pipefail" in text
+    assert "scripts/append_ledger.py" in text
+    assert "scripts/leaderboard.py" in text
+    assert "scripts/promote.sh" in text
