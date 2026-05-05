@@ -116,6 +116,7 @@ def append_ledger(
         "wall_clock_min": round(metrics.get("wall_clock_seconds", 0) / 60.0, 2),
         "metrics": {
             "final_macro_f1": f1,
+            "final_macro_edit_f1": float(metrics.get("final_macro_edit_f1", -1.0)),
             "wall_clock_seconds": metrics.get("wall_clock_seconds"),
             "exit_code": metrics.get("exit_code"),
         },

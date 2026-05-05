@@ -49,8 +49,11 @@ set -e
 END_TS=$(date -u +%s)
 WALL_CLOCK=$((END_TS - START_TS))
 
-FINAL_F1="$(grep -oE 'final_macro_f1=[0-9.]+' "$RUN_DIR/stdout.log" | tail -1 | cut -d= -f2 || echo '-1.0')"
+FINAL_F1="$(grep -oE '^final_macro_f1=[0-9.]+' "$RUN_DIR/stdout.log" | tail -1 | cut -d= -f2 || echo '-1.0')"
 [[ -z "$FINAL_F1" ]] && FINAL_F1="-1.0"
+# Secondary lenient metric (edit-distance F1). Absent on old runs; defaults to -1.0.
+FINAL_EDIT_F1="$(grep -oE '^final_macro_edit_f1=[0-9.]+' "$RUN_DIR/stdout.log" | tail -1 | cut -d= -f2 || echo '-1.0')"
+[[ -z "$FINAL_EDIT_F1" ]] && FINAL_EDIT_F1="-1.0"
 
 cat > "$RUN_DIR/metrics.json" <<EOF
 {
@@ -58,6 +61,7 @@ cat > "$RUN_DIR/metrics.json" <<EOF
   "git_sha": "$GIT_SHA",
   "config": "$CONFIG",
   "final_macro_f1": $FINAL_F1,
+  "final_macro_edit_f1": $FINAL_EDIT_F1,
   "wall_clock_seconds": $WALL_CLOCK,
   "exit_code": $EXIT_CODE
 }

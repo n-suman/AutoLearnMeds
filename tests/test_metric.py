@@ -150,3 +150,119 @@ def test_compute_metrics_macro_excludes_quantity_and_manufacturer(prepare_mod) -
     m = prepare_mod.compute_metrics(preds, truths)
     assert m["macro_f1"] == 0.0
     assert m["per_field_f1"].get("quantity") == 1.0
+
+
+# --- _levenshtein (edit distance) ---
+
+def test_levenshtein_identical(prepare_mod) -> None:
+    assert prepare_mod._levenshtein("hello", "hello") == 0
+
+
+def test_levenshtein_one_substitution(prepare_mod) -> None:
+    assert prepare_mod._levenshtein("kitten", "sitten") == 1
+
+
+def test_levenshtein_classic_kitten_sitting(prepare_mod) -> None:
+    # k → s (sub), e → i (sub), append g (insert) = 3
+    assert prepare_mod._levenshtein("kitten", "sitting") == 3
+
+
+def test_levenshtein_empty_string(prepare_mod) -> None:
+    assert prepare_mod._levenshtein("", "abc") == 3
+    assert prepare_mod._levenshtein("abc", "") == 3
+    assert prepare_mod._levenshtein("", "") == 0
+
+
+# --- normalized_edit_score ---
+
+def test_edit_score_exact_match_is_one(prepare_mod) -> None:
+    assert prepare_mod.normalized_edit_score("Pantocid DSR", "Pantocid DSR") == 1.0
+
+
+def test_edit_score_normalization_applied(prepare_mod) -> None:
+    """Casing + whitespace differences should yield 1.0 after normalize."""
+    assert prepare_mod.normalized_edit_score("PANTOCID  DSR", "pantocid dsr") == 1.0
+
+
+def test_edit_score_partial_credit(prepare_mod) -> None:
+    """'B.No.: 123' vs 'B.No.:123' (one space removed) — high but not 1.0."""
+    score = prepare_mod.normalized_edit_score("B.No.: 123", "B.No.:123")
+    assert 0.85 <= score < 1.0  # one char different out of ~10
+
+
+def test_edit_score_complete_mismatch(prepare_mod) -> None:
+    """Totally different strings of equal length give exactly 0.0."""
+    score = prepare_mod.normalized_edit_score("aaaaa", "bbbbb")
+    assert score == 0.0
+
+
+def test_edit_score_handles_none_and_empty(prepare_mod) -> None:
+    assert prepare_mod.normalized_edit_score(None, None) == 1.0  # both empty after normalize
+    assert prepare_mod.normalized_edit_score("", "") == 1.0
+    assert prepare_mod.normalized_edit_score("foo", "") == 0.0
+    assert prepare_mod.normalized_edit_score("", "foo") == 0.0
+
+
+# --- compute_field_edit_f1 ---
+
+def test_field_edit_f1_perfect(prepare_mod) -> None:
+    """All-exact predictions → 1.0."""
+    preds = [{"brand_name": "Pantocid"}, {"brand_name": "Synthacid"}]
+    truths = [{"brand_name": "Pantocid"}, {"brand_name": "Synthacid"}]
+    assert prepare_mod.compute_field_edit_f1(preds, truths, "brand_name") == 1.0
+
+
+def test_field_edit_f1_lenient_vs_strict(prepare_mod) -> None:
+    """A near-miss that exact-F1 scores 0 but edit-F1 scores >0.8."""
+    preds = [{"brand_name": "B.No.: 123"}]
+    truths = [{"brand_name": "B.No.:123"}]
+    strict = prepare_mod.compute_field_f1(preds, truths, "brand_name")
+    lenient = prepare_mod.compute_field_edit_f1(preds, truths, "brand_name")
+    assert strict == 0.0
+    assert lenient > 0.8
+
+
+def test_field_edit_f1_skips_no_truth(prepare_mod) -> None:
+    """Records where truth lacks the field don't contribute to the average."""
+    preds = [{"brand_name": "X"}, {"brand_name": "Y"}]
+    truths = [{"brand_name": "X"}, {}]  # second has no truth
+    score = prepare_mod.compute_field_edit_f1(preds, truths, "brand_name")
+    # First: exact match → 1.0. Second: skipped. Mean = 1.0.
+    assert score == 1.0
+
+
+def test_field_edit_f1_missing_pred_is_zero(prepare_mod) -> None:
+    """Truth has the field but pred doesn't → score 0 for that record."""
+    preds = [{}]
+    truths = [{"brand_name": "X"}]
+    score = prepare_mod.compute_field_edit_f1(preds, truths, "brand_name")
+    assert score == 0.0
+
+
+# --- compute_metrics now returns BOTH metric families ---
+
+def test_compute_metrics_returns_edit_metrics_too(prepare_mod) -> None:
+    """compute_metrics should return both strict and lenient macro/per-field."""
+    preds = [{"brand_name": "B.No.: 123"}]
+    truths = [{"brand_name": "B.No.:123"}]
+    m = prepare_mod.compute_metrics(preds, truths)
+    assert "macro_f1" in m
+    assert "macro_edit_f1" in m
+    assert "per_field_f1" in m
+    assert "per_field_edit_f1" in m
+    # Strict says 0; lenient says ~0.9
+    assert m["macro_f1"] == 0.0
+    assert m["macro_edit_f1"] > 0.05  # at least one field of 10 contributes ~0.9
+
+
+def test_compute_metrics_macro_edit_excludes_low_freq_fields(prepare_mod) -> None:
+    """macro_edit_f1, like macro_f1, averages only HIGH_FREQUENCY_FIELDS."""
+    # Perfect quantity + manufacturer (NOT in HIGH_FREQUENCY_FIELDS); empty for others.
+    preds = [{"quantity": "x", "manufacturer": "y"}] * 3
+    truths = [{"quantity": "x", "manufacturer": "y"}] * 3
+    m = prepare_mod.compute_metrics(preds, truths)
+    # macro_edit_f1 averages over the 10 high-freq fields, none of which are present.
+    # Per-field edit_f1 for high-freq fields with no truth = 0.0 (empty scores list).
+    assert m["macro_edit_f1"] == 0.0
+    # But the per-field dict still records quantity's perfect score.
+    assert m["per_field_edit_f1"]["quantity"] == 1.0

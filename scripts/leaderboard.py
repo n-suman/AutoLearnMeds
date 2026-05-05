@@ -57,17 +57,20 @@ def regenerate(workspace: Path | str, out_path: Path | str | None = None) -> Pat
                  f"current floor: {entries_sorted[0]['metrics']['final_macro_f1']:.4f}**")
     lines.append("")
 
-    lines.append("| rank | run_id | phase | macro_f1 | kept | wall (min) | hypothesis |")
-    lines.append("|---|---|---|---|---|---|---|")
+    lines.append("| rank | run_id | phase | macro_f1 | edit_f1 | kept | wall (min) | hypothesis |")
+    lines.append("|---|---|---|---|---|---|---|---|")
     for rank, e in enumerate(entries_sorted, start=1):
-        f1 = (e.get("metrics") or {}).get("final_macro_f1", -1.0)
+        m = e.get("metrics") or {}
+        f1 = m.get("final_macro_f1", -1.0)
+        edit_f1 = m.get("final_macro_edit_f1", -1.0)
+        edit_str = f"{edit_f1:.4f}" if edit_f1 >= 0 else "—"
         kept = "✓" if e.get("kept") else "✗"
         wall = e.get("wall_clock_min", "?")
         hyp_lines = (e.get("hypothesis") or "").splitlines()
         hyp = (hyp_lines[0] if hyp_lines else "")[:60]
         lines.append(
             f"| {rank} | {e.get('run_id', '?')} | {e.get('phase', '?')} | "
-            f"{f1:.4f} | {kept} | {wall} | {hyp} |"
+            f"{f1:.4f} | {edit_str} | {kept} | {wall} | {hyp} |"
         )
     lines.append("")
     out_path.parent.mkdir(parents=True, exist_ok=True)

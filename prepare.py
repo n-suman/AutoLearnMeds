@@ -198,25 +198,110 @@ def compute_field_f1(
     return 2 * precision * recall / (precision + recall)
 
 
+def _levenshtein(s1: str, s2: str) -> int:
+    """Standard Levenshtein edit distance (insert/delete/substitute = cost 1)."""
+    if len(s1) < len(s2):
+        s1, s2 = s2, s1
+    if not s2:
+        return len(s1)
+    prev_row = list(range(len(s2) + 1))
+    for i, c1 in enumerate(s1):
+        cur_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            ins = prev_row[j + 1] + 1
+            dele = cur_row[j] + 1
+            sub = prev_row[j] + (c1 != c2)
+            cur_row.append(min(ins, dele, sub))
+        prev_row = cur_row
+    return prev_row[-1]
+
+
+def normalized_edit_score(pred: str | None, truth: str | None) -> float:
+    """Edit-distance similarity in [0, 1]. 1.0 = exact-match; 0.0 = total mismatch.
+
+    Both inputs are run through normalize_field_value first (lowercase + strip
+    + whitespace collapse). Score = 1 - distance/max(len(pred), len(truth)).
+    """
+    pn = normalize_field_value(pred)
+    tn = normalize_field_value(truth)
+    if not pn and not tn:
+        return 1.0
+    if not pn or not tn:
+        return 0.0
+    dist = _levenshtein(pn, tn)
+    max_len = max(len(pn), len(tn))
+    return max(0.0, 1.0 - dist / max_len) if max_len > 0 else 0.0
+
+
+def compute_field_edit_f1(
+    predictions: list[dict[str, str]],
+    truths: list[dict[str, str]],
+    field: str,
+) -> float:
+    """Lenient per-field "F1" — actually mean normalized_edit_score across records.
+
+    For each record where truth has the field, score = normalized_edit_score
+    between predicted and truth (or 0 if pred is missing). Records where truth
+    has no value for the field contribute nothing. Returns the mean of those
+    scores in [0, 1].
+
+    Behavioral diff vs compute_field_f1: this is partial-credit. "B.No.: 123"
+    vs "B.No.:123" yields ~0.95 here vs 0.0 under exact-match.
+    """
+    if len(predictions) != len(truths):
+        raise ValueError(f"len mismatch: {len(predictions)} vs {len(truths)}")
+    scores: list[float] = []
+    for pred, truth in zip(predictions, truths):
+        t = truth.get(field)
+        if t is None:
+            continue
+        p = pred.get(field)
+        if p is None:
+            scores.append(0.0)
+            continue
+        scores.append(normalized_edit_score(p, t))
+    return sum(scores) / len(scores) if scores else 0.0
+
+
 def compute_metrics(
     predictions: list[dict[str, str]],
     truths: list[dict[str, str]],
 ) -> dict[str, Any]:
-    """Compute macro_f1 (over HIGH_FREQUENCY_FIELDS) + per-field F1 (over all 12).
+    """Compute the autoresearch metric bundle.
 
     Returns:
         {
-            "macro_f1": float in [0, 1],
-            "per_field_f1": {field: float, ...} for ALL 12 fields,
-            "n_examples": int,
+            "macro_f1":          float in [0, 1] — primary, exact-match F1
+                                 averaged over HIGH_FREQUENCY_FIELDS.
+                                 This is what train.py prints as final_macro_f1
+                                 and what the autoresearch agent optimizes.
+            "per_field_f1":      {field: float, ...} for ALL 12 fields, exact-match.
+            "macro_edit_f1":     float in [0, 1] — secondary, edit-distance-based
+                                 partial-credit metric averaged over
+                                 HIGH_FREQUENCY_FIELDS. Reported for the paper;
+                                 NOT the optimization target.
+            "per_field_edit_f1": {field: float, ...} for ALL 12 fields, edit-dist.
+            "n_examples":        int.
         }
+
+    Both metric families share the same record-level normalization
+    (normalize_field_value: lowercase + strip + whitespace collapse). They
+    differ in match criterion: macro_f1 needs exact-string match; macro_edit_f1
+    awards partial credit by character-level edit distance.
     """
     per_field = {f: compute_field_f1(predictions, truths, f) for f in FIELD_ORDER}
     high_freq = [v for f, v in per_field.items() if f in HIGH_FREQUENCY_FIELDS]
     macro = sum(high_freq) / len(high_freq) if high_freq else 0.0
+
+    per_field_edit = {f: compute_field_edit_f1(predictions, truths, f) for f in FIELD_ORDER}
+    high_freq_edit = [v for f, v in per_field_edit.items() if f in HIGH_FREQUENCY_FIELDS]
+    macro_edit = sum(high_freq_edit) / len(high_freq_edit) if high_freq_edit else 0.0
+
     return {
         "macro_f1": macro,
         "per_field_f1": per_field,
+        "macro_edit_f1": macro_edit,
+        "per_field_edit_f1": per_field_edit,
         "n_examples": len(predictions),
     }
 

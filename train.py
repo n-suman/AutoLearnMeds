@@ -740,7 +740,10 @@ def main(argv: list[str] | None = None) -> int:
     if wandb_run is not None:
         wandb_run.finish()
 
+    # Primary metric (autoresearch optimization target).
     print(f"final_macro_f1={final_metrics['macro_f1']:.4f}")
+    # Secondary metric (paper-grade lenient F1; partial credit via edit distance).
+    print(f"final_macro_edit_f1={final_metrics.get('macro_edit_f1', 0.0):.4f}")
     return 0
 
 
