@@ -19,8 +19,18 @@ set -euo pipefail
 BUCKET="${AUTOLEARNMEDS_GCS_BUCKET:?Set AUTOLEARNMEDS_GCS_BUCKET=gs://your-bucket}"
 WORKSPACE="${AUTOLEARNMEDS_WORKSPACE:-/workspace}"
 
-if ! command -v gsutil >/dev/null 2>&1; then
-  echo "[disaster_recover] FATAL: gsutil not on PATH (install google-cloud-sdk)" >&2
+# gsutil discovery: Colab has it at /tools/google-cloud-sdk/bin/ but not on PATH.
+GSUTIL="$(command -v gsutil 2>/dev/null || true)"
+if [[ -z "$GSUTIL" ]]; then
+  for candidate in /tools/google-cloud-sdk/bin/gsutil /opt/google-cloud-sdk/bin/gsutil /usr/lib/google-cloud-sdk/bin/gsutil; do
+    if [[ -x "$candidate" ]]; then
+      GSUTIL="$candidate"
+      break
+    fi
+  done
+fi
+if [[ -z "$GSUTIL" ]]; then
+  echo "[disaster_recover] FATAL: gsutil not found on PATH or in /tools/google-cloud-sdk/bin" >&2
   exit 1
 fi
 
@@ -34,19 +44,19 @@ cd "$WORKSPACE"
 # We DO NOT use -d here because the local copy might have *newer* files (uncommitted runs).
 echo "[disaster_recover] restoring experiments/..."
 mkdir -p experiments
-gsutil -m rsync -r "$BUCKET/experiments" experiments 2>&1 | tail -8 || \
+"$GSUTIL" -m rsync -r "$BUCKET/experiments" experiments 2>&1 | tail -8 || \
   echo "  WARN: experiments rsync had issues"
 
 # checkpoints/ — same pattern. Big files; -m parallel transfers.
 echo "[disaster_recover] restoring checkpoints/..."
 mkdir -p checkpoints
-gsutil -m rsync -r "$BUCKET/checkpoints" checkpoints 2>&1 | tail -8 || \
+"$GSUTIL" -m rsync -r "$BUCKET/checkpoints" checkpoints 2>&1 | tail -8 || \
   echo "  WARN: checkpoints rsync had issues"
 
 # Active-experiment marker — tiny, sync directly.
-if gsutil ls "$BUCKET/experiments/_active.json" >/dev/null 2>&1; then
+if "$GSUTIL" ls "$BUCKET/experiments/_active.json" >/dev/null 2>&1; then
   echo "[disaster_recover] restoring experiments/_active.json..."
-  gsutil cp "$BUCKET/experiments/_active.json" experiments/_active.json 2>&1 | tail -1 || true
+  "$GSUTIL" cp "$BUCKET/experiments/_active.json" experiments/_active.json 2>&1 | tail -1 || true
 fi
 
 # Report what we restored.

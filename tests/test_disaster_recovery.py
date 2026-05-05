@@ -22,6 +22,21 @@ import pytest
 pytestmark = pytest.mark.colab
 
 
+def _find_gsutil() -> str:
+    """Locate gsutil. Colab has it at /tools/google-cloud-sdk/bin/, not on PATH."""
+    p = shutil.which("gsutil")
+    if p:
+        return p
+    for candidate in (
+        "/tools/google-cloud-sdk/bin/gsutil",
+        "/opt/google-cloud-sdk/bin/gsutil",
+        "/usr/lib/google-cloud-sdk/bin/gsutil",
+    ):
+        if Path(candidate).is_file() and os.access(candidate, os.X_OK):
+            return candidate
+    raise FileNotFoundError("gsutil not found on PATH or in standard Colab locations")
+
+
 def _sha256_file(p: Path) -> str:
     h = hashlib.sha256()
     with p.open("rb") as fh:
@@ -54,8 +69,9 @@ def test_disaster_recovery_restores_experiments_runs(project_root: Path) -> None
 
     # 2. Force a sync to GCS so it has the latest. Direct gsutil call mirrors
     # what sync_to_gcs.sh does in its loop.
+    gsutil_bin = _find_gsutil()
     sync_result = subprocess.run(
-        ["gsutil", "-m", "rsync", "-r", "-d",
+        [gsutil_bin, "-m", "rsync", "-r", "-d",
          str(runs_dir),
          f"{bucket.rstrip('/')}/experiments/runs"],
         capture_output=True, text=True, timeout=120,
