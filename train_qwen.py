@@ -154,6 +154,100 @@ def load_qwen_with_lora(cfg: "QwenConfig") -> dict[str, Any]:
     return {"model": model, "processor": processor}
 
 
+PHARMA_SYSTEM_PROMPT = (
+    "You are a pharmaceutical-label structured-information extractor. "
+    "Given an image of a medicine product label, output the structured fields as XML "
+    "in the form: <s><brand_name>...</brand_name><generic_name>...</generic_name>...</s>. "
+    "Emit only fields you can read confidently. Field names: brand_name, drug_name, "
+    "generic_name, strength, quantity, company, manufacturer, batch_number, "
+    "mfg_date, expiry_date, mrp, warnings."
+)
+
+
+def build_qwen_chat(image_pil) -> list[dict[str, Any]]:
+    """Build a 2-turn chat for Qwen2-VL: system prompt + user image."""
+    return [
+        {"role": "system", "content": [{"type": "text", "text": PHARMA_SYSTEM_PROMPT}]},
+        {"role": "user", "content": [{"type": "image", "image": image_pil}]},
+    ]
+
+
+class QwenWrapper:
+    """Adapter so QwenVL plugs into prepare.evaluate alongside Track A's PharmaVLM.
+
+    Exposes predict_text(images: torch.Tensor, max_new_tokens: int) -> list[str], the
+    same contract as PharmaVLM. Internally: reverses SigLIP normalization to PIL, runs
+    Qwen's processor + chat template, generates with do_sample=False, decodes the new
+    tokens (excluding prompt), returns the strings.
+    """
+
+    def __init__(self, model, processor, cfg: "QwenConfig") -> None:
+        self.model = model
+        self.processor = processor
+        self.cfg = cfg
+
+    def parameters(self):
+        return self.model.parameters()
+
+    def to(self, device):
+        # bnb 4-bit handles its own device placement via device_map="auto".
+        return self
+
+    def train(self, mode: bool = True):
+        self.model.train(mode)
+        return self
+
+    def predict_text(self, images, max_new_tokens: int = 256) -> list[str]:
+        import torch
+        from PIL import Image
+        from qwen_vl_utils import process_vision_info
+
+        if images.dtype != torch.float32:
+            images = images.float()
+
+        outputs: list[str] = []
+        for i in range(images.shape[0]):
+            # Reverse SigLIP normalization: [-1, 1] → [0, 255] uint8 PIL.
+            arr = (
+                images[i]
+                .clamp(-1, 1)
+                .add(1)
+                .mul(127.5)
+                .byte()
+                .permute(1, 2, 0)
+                .cpu()
+                .numpy()
+            )
+            img_pil = Image.fromarray(arr)
+
+            messages = build_qwen_chat(img_pil)
+            text = self.processor.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True
+            )
+            image_inputs, video_inputs = process_vision_info(messages)
+            inputs = self.processor(
+                text=[text],
+                images=image_inputs,
+                videos=video_inputs,
+                padding=True,
+                return_tensors="pt",
+            ).to(self.model.device)
+
+            self.train(False)
+            with torch.no_grad():
+                generated = self.model.generate(
+                    **inputs, max_new_tokens=max_new_tokens, do_sample=False
+                )
+            generated_trim = generated[:, inputs["input_ids"].size(1):]
+            decoded = self.processor.batch_decode(
+                generated_trim,
+                skip_special_tokens=True,
+                clean_up_tokenization_spaces=False,
+            )
+            outputs.append(decoded[0] if decoded else "")
+        return outputs
+
+
 # === Main (placeholder — T4-T6 fill in model + training loop + eval) ===
 
 def main() -> int:
