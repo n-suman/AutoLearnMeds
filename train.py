@@ -539,6 +539,30 @@ def _infinite(dataloader):
             yield batch
 
 
+def self_named_params(module) -> list[tuple[str, Any]]:
+    """Yield (name, tensor) for every parameter in `module`. Works for both
+    nn.Modules (uses .named_parameters()) and our DecoderBlock pseudo-module
+    (synthesizes names from _modules + their attributes).
+    """
+    if hasattr(module, "named_parameters") and callable(module.named_parameters):
+        return list(module.named_parameters())
+    # DecoderBlock case: walk _modules with stable names per spec.
+    out: list[tuple[str, Any]] = []
+    name_map = {
+        id(module.ln1): "ln1", id(module.q_proj): "q_proj",
+        id(module.k_proj): "k_proj", id(module.v_proj): "v_proj",
+        id(module.o_proj): "o_proj", id(module.ln2): "ln2",
+        id(module.xq_proj): "xq_proj", id(module.xk_proj): "xk_proj",
+        id(module.xv_proj): "xv_proj", id(module.xo_proj): "xo_proj",
+        id(module.ln3): "ln3", id(module.fc1): "fc1", id(module.fc2): "fc2",
+    }
+    for m in module._modules:
+        prefix = name_map.get(id(m), m.__class__.__name__.lower())
+        for pname, p in m.named_parameters() if hasattr(m, "named_parameters") else []:
+            out.append((f"{prefix}.{pname}", p))
+    return out
+
+
 def train_loop(model, cfg: Config, device, wandb_run=None) -> dict[str, Any]:
     """Run cfg.max_steps of training. Returns the final metrics dict."""
     import prepare
@@ -626,8 +650,27 @@ def train_loop(model, cfg: Config, device, wandb_run=None) -> dict[str, Any]:
                 })
             if metrics["macro_f1"] > best_macro_f1:
                 best_macro_f1 = metrics["macro_f1"]
-                ckpt = {"step": step, "macro_f1": best_macro_f1}
-                torch.save(ckpt, Path(cfg.checkpoint_dir) / "best.meta.pt")
+                # Full state dict for proj + decoder (encoder is frozen — re-load
+                # from HF on resume). Saved as a regular torch dict so confirm-
+                # phase / paper-prep can load even from a different machine.
+                full_ckpt = {
+                    "step": step,
+                    "macro_f1": best_macro_f1,
+                    "proj_state_dict": model.proj.state_dict(),
+                    "decoder_blocks_state_dicts": [
+                        {n: p.detach().cpu() for n, p in self_named_params(b)}
+                        for b in model.decoder.blocks
+                    ],
+                    "decoder_embedding_state_dict": model.decoder.embedding.state_dict(),
+                    "decoder_final_ln_state_dict": model.decoder.final_ln.state_dict(),
+                    "config": dataclasses.asdict(cfg),
+                }
+                torch.save(full_ckpt, Path(cfg.checkpoint_dir) / "best.pt")
+                # Also keep the lightweight meta for backward compatibility
+                torch.save(
+                    {"step": step, "macro_f1": best_macro_f1},
+                    Path(cfg.checkpoint_dir) / "best.meta.pt",
+                )
             last_metrics = metrics
 
     model.train(False)
