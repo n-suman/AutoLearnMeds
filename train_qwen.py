@@ -416,7 +416,8 @@ def train_qwen_loop(bundle: dict, cfg: "QwenConfig", wandb_run) -> dict:
         if step % cfg.log_every == 0:
             eff_loss = loss_value * cfg.grad_accum_steps
             print(
-                f"[track-b] step={step} loss={eff_loss:.4f} lr={cur_lr:.2e}"
+                f"[track-b] step={step} loss={eff_loss:.4f} lr={cur_lr:.2e}",
+                flush=True,
             )
             if wandb_run is not None:
                 wandb_run.log(
@@ -439,7 +440,8 @@ def train_qwen_loop(bundle: dict, cfg: "QwenConfig", wandb_run) -> dict:
             last_metrics = {"macro_f1": macro, "macro_edit_f1": macro_edit}
             print(
                 f"[track-b] step={step} val_macro_f1={macro:.4f} "
-                f"val_macro_edit_f1={macro_edit:.4f}"
+                f"val_macro_edit_f1={macro_edit:.4f}",
+                flush=True,
             )
             if wandb_run is not None:
                 wandb_run.log(
@@ -457,12 +459,13 @@ def train_qwen_loop(bundle: dict, cfg: "QwenConfig", wandb_run) -> dict:
                 model.save_pretrained(ckpt_dir)
                 print(
                     f"[track-b] saved best LoRA adapters to {ckpt_dir} "
-                    f"(macro_f1={macro:.4f})"
+                    f"(macro_f1={macro:.4f})",
+                    flush=True,
                 )
             model.train(True)
 
     wall = time.time() - start
-    print(f"[track-b] DONE wall={wall:.1f}s last_macro_f1={last_metrics['macro_f1']:.4f} best_macro_f1={best_metrics['macro_f1']:.4f}")
+    print(f"[track-b] DONE wall={wall:.1f}s last_macro_f1={last_metrics['macro_f1']:.4f} best_macro_f1={best_metrics['macro_f1']:.4f}", flush=True)
     return last_metrics
 
 
@@ -514,8 +517,8 @@ def main(argv: list[str] | None = None) -> int:
     if wandb_run is not None:
         wandb_run.finish()
 
-    print(f"final_macro_f1={metrics['macro_f1']:.4f}")
-    print(f"final_macro_edit_f1={metrics['macro_edit_f1']:.4f}")
+    print(f"final_macro_f1={metrics['macro_f1']:.4f}", flush=True)
+    print(f"final_macro_edit_f1={metrics['macro_edit_f1']:.4f}", flush=True)
     return 0
 
 

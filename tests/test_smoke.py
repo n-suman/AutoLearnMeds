@@ -225,6 +225,31 @@ def test_run_experiment_supports_track_arg(project_root):
     assert "qwen_baseline.yaml" in text
 
 
+def test_run_experiment_sets_pythonunbuffered(project_root):
+    text = (project_root / "scripts" / "run_experiment.sh").read_text()
+    assert "PYTHONUNBUFFERED=1" in text
+
+
+def test_run_experiment_auto_finalizes_on_success(project_root):
+    text = (project_root / "scripts" / "run_experiment.sh").read_text()
+    assert "finalize_experiment.sh" in text
+    # The auto-finalize must be guarded by exit-code check.
+    assert 'EXIT_CODE" -eq 0' in text or 'EXIT_CODE -eq 0' in text
+
+
+def test_run_experiment_pushes_gcs_on_success(project_root):
+    text = (project_root / "scripts" / "run_experiment.sh").read_text()
+    assert "gsutil" in text and "rsync" in text
+
+
+def test_train_qwen_critical_prints_use_flush(project_root):
+    text = (project_root / "train_qwen.py").read_text()
+    # All step-log and final-line prints should have flush=True.
+    # Loose check: count flush=True occurrences; should be at least 4 (step log,
+    # eval log, save-best log, final-summary line).
+    assert text.count("flush=True") >= 4
+
+
 def test_update_ssh_config_includes_keepalive(project_root):
     text = (project_root / "scripts" / "update_ssh_config.sh").read_text()
     assert "ServerAliveInterval 60" in text

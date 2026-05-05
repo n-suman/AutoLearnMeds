@@ -50,7 +50,7 @@ GIT_SHA="$(git rev-parse HEAD 2>/dev/null || echo unknown)"
 START_TS=$(date -u +%s)
 
 set +e
-uv run python "$TRAINER" --config "$CONFIG" $SEED_ARG "${EXTRA_ARGS[@]}" \
+PYTHONUNBUFFERED=1 uv run python "$TRAINER" --config "$CONFIG" $SEED_ARG "${EXTRA_ARGS[@]}" \
     > "$RUN_DIR/stdout.log" 2>&1
 EXIT_CODE=$?
 set -e
@@ -76,6 +76,42 @@ cat > "$RUN_DIR/metrics.json" <<EOF
   "exit_code": $EXIT_CODE
 }
 EOF
+
+# --- Auto-finalize: only if training exited cleanly ---
+if [[ "$EXIT_CODE" -eq 0 ]]; then
+  echo "[run_experiment] auto-finalizing run $RUN_ID..."
+  # finalize_experiment.sh already does: append_ledger -> leaderboard -> promote-if-kept -> git commit
+  # We default to phase=explore; user can pass --phase via FINALIZE_PHASE env var if they want baseline/confirm.
+  FINALIZE_PHASE="${FINALIZE_PHASE:-explore}"
+  if bash scripts/finalize_experiment.sh "$RUN_ID" --phase "$FINALIZE_PHASE"; then
+    echo "[run_experiment] finalize_experiment.sh DONE (phase=$FINALIZE_PHASE)"
+  else
+    FCODE=$?
+    echo "[run_experiment] WARNING: finalize_experiment.sh failed (exit=$FCODE); manual finalize needed"
+  fi
+
+  # Push the run dir + checkpoints/runs/<run_id>/* to GCS within seconds, not whenever the daemon polls.
+  export PATH="$PATH:/usr/local/google-cloud-sdk/bin:/snap/bin"
+  if command -v gsutil >/dev/null 2>&1; then
+    BUCKET="${AUTOLEARNMEDS_GCS_BUCKET:-gs://auto_learn_meds}"
+    echo "[run_experiment] explicit GCS push: $BUCKET/experiments/runs/$RUN_ID/ ..."
+    gsutil -m rsync -r "$RUN_DIR/" "$BUCKET/experiments/runs/$RUN_ID/" 2>&1 | tail -5 || \
+      echo "[run_experiment] WARNING: gsutil rsync of run dir failed; sync daemon will retry"
+    # checkpoints/runs/<run_id>/ may or may not exist depending on whether the trainer saved one.
+    CKPT_LOCAL="checkpoints/runs/$RUN_ID"
+    if [[ -d "$CKPT_LOCAL" ]]; then
+      echo "[run_experiment] explicit GCS push: $BUCKET/$CKPT_LOCAL/ ..."
+      gsutil -m rsync -r "$CKPT_LOCAL/" "$BUCKET/$CKPT_LOCAL/" 2>&1 | tail -5 || \
+        echo "[run_experiment] WARNING: gsutil rsync of checkpoints failed; sync daemon will retry"
+    fi
+    # ledger.jsonl + leaderboard.md were updated by finalize_experiment.sh; sync those too.
+    gsutil -m cp experiments/ledger.jsonl experiments/leaderboard.md \
+      "$BUCKET/experiments/" 2>&1 | tail -3 || \
+      echo "[run_experiment] WARNING: ledger/leaderboard cp failed; sync daemon will retry"
+  else
+    echo "[run_experiment] gsutil not on PATH; skipping explicit GCS push (daemon should pick up)"
+  fi
+fi
 
 echo "[run_experiment] DONE final_macro_f1=$FINAL_F1 wall_clock=${WALL_CLOCK}s exit=$EXIT_CODE"
 echo "[run_experiment] artifacts at $RUN_DIR/"
