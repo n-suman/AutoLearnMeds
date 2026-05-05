@@ -49,6 +49,7 @@ nohup.out
 # data + checkpoints — large; live on GDrive/GCS, not git
 data/raw/
 data/processed/
+!data/processed/.gitignore
 checkpoints/
 experiments/runs/*/checkpoints/
 wandb/
