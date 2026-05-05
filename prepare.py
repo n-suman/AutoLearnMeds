@@ -338,3 +338,87 @@ def get_dataloader(
         num_workers=num_workers,
         collate_fn=_collate,
     )
+
+
+# === Public eval API ===
+
+def evaluate(
+    model,
+    jsonl_path: Path | str,
+    images_root: Path | str,
+    path_strip_prefix: str = "raw/raw_images/",
+    batch_size: int = 16,
+    max_new_tokens: int = 256,
+) -> dict[str, Any]:
+    """Run `model.predict_text(batch_images, max_new_tokens) -> list[str]`
+    over the given JSONL split, parse the predicted XML, compute
+    {macro_f1, per_field_f1, n_examples}.
+
+    `model` must implement `predict_text(batch_images, max_new_tokens)` returning
+    a list of strings (one per image). The model itself is opaque — train.py
+    decides how to wrap its decoder behind this method.
+    """
+    dl = get_dataloader(
+        jsonl_path=jsonl_path,
+        images_root=images_root,
+        path_strip_prefix=path_strip_prefix,
+        batch_size=batch_size,
+        shuffle=False,
+    )
+    predictions: list[dict[str, str]] = []
+    truths: list[dict[str, str]] = []
+    for batch in dl:
+        outputs = model.predict_text(batch["image"], max_new_tokens=max_new_tokens)
+        for out_text, fields_truth in zip(outputs, batch["fields_truth"]):
+            predictions.append(parse_output(out_text))
+            truths.append(fields_truth)
+    return compute_metrics(predictions, truths)
+
+
+_TEST_FIREWALL_CONSENT = "i_understand_this_consumes_the_test_set"
+
+
+def evaluate_test(
+    model,
+    jsonl_path: Path | str,
+    images_root: Path | str,
+    path_strip_prefix: str = "raw/raw_images/",
+    batch_size: int = 16,
+    max_new_tokens: int = 256,
+    explicit_consent: str = "",
+    audit_log: Path | str | None = None,
+) -> dict[str, Any]:
+    """Gated wrapper around evaluate() for the held-out TEST split.
+
+    Refuses to run unless `explicit_consent == "i_understand_this_consumes_the_test_set"`.
+    Every successful call appends a timestamped line to `audit_log`
+    (default: ./experiments/evaluate_test_audit.log).
+    """
+    import datetime as _dt
+
+    if explicit_consent != _TEST_FIREWALL_CONSENT:
+        raise RuntimeError(
+            "evaluate_test requires explicit_consent="
+            f"{_TEST_FIREWALL_CONSENT!r}. Test-set evals must be rare and intentional."
+        )
+
+    audit_path = Path(audit_log) if audit_log else Path("experiments/evaluate_test_audit.log")
+    audit_path.parent.mkdir(parents=True, exist_ok=True)
+
+    metrics = evaluate(
+        model=model,
+        jsonl_path=jsonl_path,
+        images_root=images_root,
+        path_strip_prefix=path_strip_prefix,
+        batch_size=batch_size,
+        max_new_tokens=max_new_tokens,
+    )
+
+    line = (
+        f"{_dt.datetime.now(_dt.UTC).isoformat()} evaluate_test invoked "
+        f"jsonl={jsonl_path} macro_f1={metrics['macro_f1']:.4f} "
+        f"n={metrics['n_examples']}\n"
+    )
+    with audit_path.open("a") as fh:
+        fh.write(line)
+    return metrics
