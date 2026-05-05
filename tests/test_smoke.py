@@ -193,3 +193,13 @@ def test_program_md_has_full_contract(project_root: Path) -> None:
     # Must declare the test-set firewall
     assert "test.jsonl" in text
     assert "evaluate_test" in text
+
+
+def test_promote_script_exists_and_executable(project_root: Path) -> None:
+    p = project_root / "scripts" / "promote.sh"
+    assert p.is_file()
+    assert os.access(p, os.X_OK)
+    text = p.read_text()
+    assert text.startswith("#!/")
+    assert "set -euo pipefail" in text
+    assert "checkpoints/best" in text
