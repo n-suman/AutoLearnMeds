@@ -19,6 +19,7 @@ dev = [
     "pytest>=8.0",
     "pytest-cov>=5.0",
     "ruff>=0.5",
+    "tokenizers>=0.19",
 ]
 
 # Heavy ML deps — installed on Colab only via `uv sync --extra ml`

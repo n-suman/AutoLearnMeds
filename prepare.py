@@ -94,3 +94,45 @@ def parse_output(text: str) -> dict[str, str]:
     (where the closing </name> is missing).
     """
     return {m.group(1): m.group(2) for m in _FIELD_TAG_RE.finditer(text)}
+
+
+# === Tokenizer ===
+
+def train_tokenizer(
+    corpus: list[str],
+    out_path: Path | str,
+    vocab_size: int = TOKENIZER_VOCAB_SIZE,
+) -> None:
+    """Train a BPE tokenizer on `corpus` and save to `out_path` (tokenizer.json).
+
+    All SPECIAL_TOKENS are registered as added_tokens (single-id, not splittable
+    by BPE), so they survive encode/decode unchanged.
+
+    `corpus` is a list of strings — typically the field text values from
+    train.jsonl (NOT the XML-formatted output, since SPECIAL_TOKENS handle the
+    structural part).
+    """
+    from tokenizers import Tokenizer
+    from tokenizers.models import BPE
+    from tokenizers.pre_tokenizers import ByteLevel
+    from tokenizers.trainers import BpeTrainer
+
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    tok = Tokenizer(BPE(unk_token="<unk>"))
+    tok.pre_tokenizer = ByteLevel(add_prefix_space=False)
+    trainer = BpeTrainer(
+        vocab_size=vocab_size,
+        special_tokens=["<unk>", "<pad>", *SPECIAL_TOKENS],
+        show_progress=False,
+    )
+    tok.train_from_iterator(corpus, trainer=trainer)
+    tok.save(str(out_path))
+
+
+def get_tokenizer(path: Path | str):
+    """Load a saved tokenizer.json from `path`. Returns a tokenizers.Tokenizer."""
+    from tokenizers import Tokenizer
+
+    return Tokenizer.from_file(str(Path(path)))
