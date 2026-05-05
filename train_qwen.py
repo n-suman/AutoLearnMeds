@@ -328,8 +328,9 @@ def train_qwen_loop(bundle: dict, cfg: "QwenConfig", wandb_run) -> dict:
     steps via `prepare.evaluate(QwenWrapper(...), ...)` and saves best LoRA
     adapters to `cfg.checkpoint_dir/best_lora`.
 
-    Returns the best-by-macro-f1 metrics dict, regardless of whether the final
-    step happened to be the best.
+    Returns the LAST-eval metrics dict (matching Track A's contract in
+    ``train.py``); the best-by-macro-f1 LoRA adapters are still saved to
+    ``cfg.checkpoint_dir/best_lora`` for checkpoint promotion.
     """
     import math
     import time
@@ -362,6 +363,7 @@ def train_qwen_loop(bundle: dict, cfg: "QwenConfig", wandb_run) -> dict:
 
     best_f1 = 0.0
     best_metrics = {"macro_f1": 0.0, "macro_edit_f1": 0.0}
+    last_metrics = {"macro_f1": 0.0, "macro_edit_f1": 0.0}
     start = time.time()
 
     model.train(True)
@@ -434,6 +436,7 @@ def train_qwen_loop(bundle: dict, cfg: "QwenConfig", wandb_run) -> dict:
             )
             macro = metrics["macro_f1"]
             macro_edit = metrics.get("macro_edit_f1", 0.0)
+            last_metrics = {"macro_f1": macro, "macro_edit_f1": macro_edit}
             print(
                 f"[track-b] step={step} val_macro_f1={macro:.4f} "
                 f"val_macro_edit_f1={macro_edit:.4f}"
@@ -459,12 +462,8 @@ def train_qwen_loop(bundle: dict, cfg: "QwenConfig", wandb_run) -> dict:
             model.train(True)
 
     wall = time.time() - start
-    print(
-        f"[track-b] DONE wall={wall:.1f}s "
-        f"best_macro_f1={best_metrics['macro_f1']:.4f} "
-        f"best_macro_edit_f1={best_metrics['macro_edit_f1']:.4f}"
-    )
-    return best_metrics
+    print(f"[track-b] DONE wall={wall:.1f}s last_macro_f1={last_metrics['macro_f1']:.4f} best_macro_f1={best_metrics['macro_f1']:.4f}")
+    return last_metrics
 
 
 # === Main ===
