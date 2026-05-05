@@ -215,3 +215,11 @@ def test_finalize_experiment_script_exists_and_calls_subscripts(project_root: Pa
     assert "scripts/append_ledger.py" in text
     assert "scripts/leaderboard.py" in text
     assert "scripts/promote.sh" in text
+
+
+def test_run_experiment_supports_track_arg(project_root):
+    text = (project_root / "scripts" / "run_experiment.sh").read_text()
+    assert "--track" in text
+    assert "train_qwen.py" in text
+    assert "train.py" in text
+    assert "qwen_baseline.yaml" in text

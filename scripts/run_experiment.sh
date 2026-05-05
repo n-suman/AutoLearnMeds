@@ -18,30 +18,39 @@ set -euo pipefail
 RUN_ID="${1:-$(date -u +%Y%m%dT%H%M%S)-$(printf '%04x' $RANDOM)}"
 shift || true
 
-CONFIG="experiments/configs/baseline.yaml"
+CONFIG=""           # blank means "use track default"
 SEED_ARG=""
+TRACK="A"
 EXTRA_ARGS=()
 while (($#)); do
   case "$1" in
     --config) CONFIG="$2"; shift 2;;
     --seed) SEED_ARG="--seed $2"; shift 2;;
+    --track) TRACK="$2"; shift 2;;
     *) EXTRA_ARGS+=("$1"); shift;;
   esac
 done
 
+case "$TRACK" in
+  A) TRAINER="train.py"; DEFAULT_CONFIG="experiments/configs/baseline.yaml" ;;
+  B) TRAINER="train_qwen.py"; DEFAULT_CONFIG="experiments/configs/qwen_baseline.yaml" ;;
+  *) echo "[run_experiment] FATAL: unknown track $TRACK (expected A or B)" >&2; exit 2 ;;
+esac
+[[ -z "$CONFIG" ]] && CONFIG="$DEFAULT_CONFIG"
+
 RUN_DIR="experiments/runs/${RUN_ID}"
 mkdir -p "$RUN_DIR"
 
-echo "[run_experiment] run_id=$RUN_ID config=$CONFIG ${SEED_ARG}"
+echo "[run_experiment] run_id=$RUN_ID track=$TRACK trainer=$TRAINER config=$CONFIG ${SEED_ARG}"
 
-cp train.py "$RUN_DIR/train.py"
+cp "$TRAINER" "$RUN_DIR/$TRAINER"
 cp "$CONFIG" "$RUN_DIR/config.yaml"
 
 GIT_SHA="$(git rev-parse HEAD 2>/dev/null || echo unknown)"
 START_TS=$(date -u +%s)
 
 set +e
-uv run python train.py --config "$CONFIG" $SEED_ARG "${EXTRA_ARGS[@]}" \
+uv run python "$TRAINER" --config "$CONFIG" $SEED_ARG "${EXTRA_ARGS[@]}" \
     > "$RUN_DIR/stdout.log" 2>&1
 EXIT_CODE=$?
 set -e
@@ -58,6 +67,7 @@ FINAL_EDIT_F1="$(grep -oE '^final_macro_edit_f1=[0-9.]+' "$RUN_DIR/stdout.log" |
 cat > "$RUN_DIR/metrics.json" <<EOF
 {
   "run_id": "$RUN_ID",
+  "track": "$TRACK",
   "git_sha": "$GIT_SHA",
   "config": "$CONFIG",
   "final_macro_f1": $FINAL_F1,
