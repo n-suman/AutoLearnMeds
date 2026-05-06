@@ -1,0 +1,37 @@
+{
+  "track": "B",
+  "ckpt": "/workspace/checkpoints/runs/qwen_baseline/best_lora",
+  "config": "experiments/configs/qwen_baseline.yaml",
+  "val_jsonl": "data/processed/val.jsonl",
+  "n_samples": 111,
+  "macro_f1": 0.019493102834375938,
+  "macro_edit_f1": 0.12760168519961268,
+  "per_field_f1": {
+    "brand_name": 0.043795620437956206,
+    "drug_name": 0.10975609756097561,
+    "generic_name": 0.04137931034482759,
+    "strength": 0.0,
+    "quantity": 0.0,
+    "company": 0.0,
+    "manufacturer": 0.0,
+    "batch_number": 0.0,
+    "mfg_date": 0.0,
+    "expiry_date": 0.0,
+    "mrp": 0.0,
+    "warnings": 0.0
+  },
+  "per_field_edit_f1": {
+    "brand_name": 0.21084528897028895,
+    "drug_name": 0.2837926623640909,
+    "generic_name": 0.24595932926103684,
+    "strength": 0.0,
+    "quantity": 0.0,
+    "company": 0.0,
+    "manufacturer": 0.0,
+    "batch_number": 0.11310160427807488,
+    "mfg_date": 0.1386490960020372,
+    "expiry_date": 0.16172572283683395,
+    "mrp": 0.121943148283764,
+    "warnings": 0.0
+  }
+}
