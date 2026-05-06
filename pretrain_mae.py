@@ -483,12 +483,20 @@ def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
         edge_cache_path = ckpt_dir / "edge_cache.npy"
         n_images = len(image_paths)
         if edge_cache_path.is_file():
-            edge_cache_array = np.load(edge_cache_path, mmap_mode="r")
-            if edge_cache_array.shape[0] != n_images or edge_cache_array.shape[1] != cfg.num_patches:
-                print(f"[mae] edge_cache shape mismatch (got {edge_cache_array.shape}, expected ({n_images}, {cfg.num_patches})); recomputing", flush=True)
+            try:
+                edge_cache_array = np.load(edge_cache_path, mmap_mode="r")
+                if edge_cache_array.shape[0] != n_images or edge_cache_array.shape[1] != cfg.num_patches:
+                    print(f"[mae] edge_cache shape mismatch (got {edge_cache_array.shape}, expected ({n_images}, {cfg.num_patches})); recomputing", flush=True)
+                    edge_cache_array = None
+                else:
+                    print(f"[mae] loaded edge_cache from {edge_cache_path} shape={edge_cache_array.shape}", flush=True)
+            except (ValueError, OSError) as e:
+                # File exists but is in an incompatible format (e.g. raw memmap
+                # without .npy header from an older precompute_edge_cache.py).
+                # Recompute fresh.
+                print(f"[mae] edge_cache at {edge_cache_path} is malformed ({type(e).__name__}: {e}); deleting and recomputing", flush=True)
+                edge_cache_path.unlink(missing_ok=True)
                 edge_cache_array = None
-            else:
-                print(f"[mae] loaded edge_cache from {edge_cache_path} shape={edge_cache_array.shape}", flush=True)
         if edge_cache_array is None:
             print(f"[mae] computing edge_cache for {n_images} images...", flush=True)
             t0 = time.time()

@@ -86,7 +86,12 @@ def main() -> int:
     num_patches = (args.image_size // args.patch_size) ** 2
     args.out.parent.mkdir(parents=True, exist_ok=True)
 
-    cache = np.memmap(args.out, dtype=np.float32, mode="w+", shape=(len(paths), num_patches))
+    # Use a regular in-memory ndarray and np.save() at the end — produces a
+    # standard .npy file (with header) that pretrain_mae.py can read via
+    # np.load(...mmap_mode="r"). The earlier raw-memmap approach wrote bytes
+    # without the .npy header so np.load failed at startup. 2787 x 196 x 4
+    # bytes = 2.18 MB — fits in RAM trivially at our scale.
+    cache = np.zeros((len(paths), num_patches), dtype=np.float32)
 
     start = time.time()
     for i, p in enumerate(paths):
@@ -97,8 +102,7 @@ def main() -> int:
             eta = (len(paths) - i - 1) / rate
             print(f"[edge_cache] {i+1}/{len(paths)} elapsed={elapsed:.0f}s rate={rate:.1f}/s eta={eta:.0f}s", flush=True)
 
-    cache.flush()
-    del cache  # close memmap
+    np.save(args.out, cache)
 
     # Also write a paths.json sidecar so the consumer can verify image-order alignment.
     paths_json = args.out.with_suffix(".paths.json")
