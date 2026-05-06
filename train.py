@@ -741,9 +741,9 @@ def main(argv: list[str] | None = None) -> int:
         wandb_run.finish()
 
     # Primary metric (autoresearch optimization target).
-    print(f"final_macro_f1={final_metrics['macro_f1']:.4f}")
+    print(f"final_macro_f1={final_metrics['macro_f1']:.4f}", flush=True)
     # Secondary metric (paper-grade lenient F1; partial credit via edit distance).
-    print(f"final_macro_edit_f1={final_metrics.get('macro_edit_f1', 0.0):.4f}")
+    print(f"final_macro_edit_f1={final_metrics.get('macro_edit_f1', 0.0):.4f}", flush=True)
     return 0
 
 

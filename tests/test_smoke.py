@@ -269,3 +269,23 @@ def test_bootstrap_uses_named_tunnel(project_root):
 def test_update_ssh_config_defaults_to_persistent_host(project_root):
     text = (project_root / "scripts" / "update_ssh_config.sh").read_text()
     assert "colab.capulamedia.com" in text
+
+
+def test_sync_to_gcs_does_not_use_delete_flag(project_root):
+    """Regression test for the 2026-05-06 incident where -d destroyed Track A checkpoints."""
+    text = (project_root / "scripts" / "sync_to_gcs.sh").read_text()
+    # Look for the rsync command line(s); must not contain `-d` between rsync and the path.
+    lines = [ln for ln in text.splitlines() if "gsutil" in ln and "rsync" in ln]
+    assert lines, "no rsync line found"
+    for ln in lines:
+        assert " -d " not in ln, f"rsync line still uses destructive -d: {ln}"
+
+
+def test_bootstrap_calls_disaster_recover(project_root):
+    text = (project_root / "scripts" / "colab_bootstrap.sh").read_text()
+    assert "disaster_recover.sh" in text, "bootstrap must repopulate from GCS via disaster_recover.sh"
+
+
+def test_train_main_prints_final_macro_edit_f1(project_root):
+    text = (project_root / "train.py").read_text()
+    assert "final_macro_edit_f1=" in text, "train.py main() must print the edit_f1 final-line"

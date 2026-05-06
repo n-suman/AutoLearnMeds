@@ -2,6 +2,12 @@
 # Periodic differential sync of experiments/ + checkpoints/ to GCS.
 # Designed to run forever in the background on Colab.
 #
+# IMPORTANT: rsync uses NO -d (delete) flag. This is intentional —
+# checkpoints + experiments are append-only; we never want a fresh-bootstrap
+# session to wipe the historical archive. (See incident 2026-05-06: -d
+# silently destroyed Track A's checkpoints/best/best.pt when a new session
+# started with an empty workspace.)
+#
 # Env vars:
 #   AUTOLEARNMEDS_GCS_BUCKET  (required) — gs://bucket-name
 #   AUTOLEARNMEDS_WORKSPACE   (default: /workspace)
@@ -36,7 +42,7 @@ while true; do
     src="$WORKSPACE/$src_rel"
     dst="$BUCKET/$src_rel"
     if [[ -d "$src" ]]; then
-      gsutil -m rsync -r -d "$src" "$dst" 2>&1 | tail -5 || \
+      gsutil -m rsync -r "$src" "$dst" 2>&1 | tail -5 || \
         echo "[sync_to_gcs] WARN: rsync $src failed (non-fatal)"
     fi
   done

@@ -108,6 +108,15 @@ fi
 ln -sfn "$PROJECT_DIR" "$WORKSPACE"
 cd "$WORKSPACE"
 
+# 3.5. Repopulate experiments/ + checkpoints/ from GCS (in case this is a
+# fresh runtime without local copies). Idempotent: if local already has
+# them, this is essentially a no-op refresh.
+echo "[3.5/7] Repopulating experiments/ + checkpoints/ from $BUCKET (disaster_recover)..."
+AUTOLEARNMEDS_GCS_BUCKET="$BUCKET" \
+AUTOLEARNMEDS_WORKSPACE="$WORKSPACE" \
+bash scripts/disaster_recover.sh 2>&1 | tail -10 || \
+  echo "  WARN: disaster_recover.sh failed (continuing — first-ever bootstrap is OK to skip)"
+
 # 4. Install uv + sync deps (full ml + colab extras on Colab)
 echo "[4/7] Installing uv and syncing deps..."
 if ! command -v uv >/dev/null 2>&1; then
