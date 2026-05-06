@@ -42,3 +42,19 @@ _None - Track A wins or ties on every field._
 ## What this tells the paper
 
 Track A wins both macro metrics (f1 0.0741 vs 0.0195; edit_f1 0.3225 vs 0.1276). At the per-field grain, Track A wins or ties Track B on every field for both metrics; the macro gap is uniform, not driven by a few OCR-heavy fields.
+
+## Citations
+
+**Per-field evaluation methodology:**
+- Sang & De Meulder (2003). "Introduction to the CoNLL-2003 Shared Task: Language-Independent Named Entity Recognition." — canonical convention for per-entity-type F1 reporting in span/field extraction.
+- Lipton (2014). "Optimal Thresholding of Classifiers to Maximize F1 Measure." arXiv:1402.1892. — discusses F1's brittleness on small per-class supports (esp. relevant for our `manufacturer`, `quantity`, `warnings` fields with very few positives) and motivates complementing with edit-distance metrics.
+- Levenshtein (1966). "Binary codes capable of correcting deletions, insertions, and reversals." — basis of our partial-credit `macro_edit_f1`.
+
+**Track A architecture:**
+- Zhai, Mustafa, Kolesnikov, Beyer (2023). "Sigmoid Loss for Language Image Pre-training." arXiv:2303.15343. — SigLIP, the frozen vision encoder.
+- Kim et al. (2022). "OCR-free Document Understanding Transformer." arXiv:2111.15664. — Donut-style autoregressive XML decoder, our decoder choice.
+
+**Track B architecture:**
+- Wang et al. (2024). "Qwen2-VL: Enhancing Vision-Language Model's Perception of the World at Any Resolution." arXiv:2409.12191. — base VLM we LoRA-finetune.
+- Hu et al. (2021). "LoRA: Low-Rank Adaptation of Large Language Models." arXiv:2106.09685. — adapter method.
+- Dettmers et al. (2023). "QLoRA: Efficient Finetuning of Quantized LLMs." arXiv:2305.14314. — 4-bit nf4 + LoRA recipe we used.
