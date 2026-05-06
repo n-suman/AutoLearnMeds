@@ -174,3 +174,49 @@ The Phase 7 self-supervised pretraining (MAE on 2223 unlabeled images) remains i
 - T1–T8 complete; ledger entry written; leaderboard regenerated.
 - T9 = this document.
 - Next: tag `track-b-baseline-complete`, push, then schedule (1)–(3) above.
+
+---
+
+## Postscript — 2026-05-06: Track A edit_f1 backfill changes the conclusion
+
+After this review was written, we re-ran Track A baseline-seed44 (run_id `baseline-seed44-rerun`) to capture `macro_edit_f1` for the same model — necessary because Track A's original Phase 2 runs predate the edit metric. The result substantially revises the comparative framing above.
+
+**Re-run result:** `macro_f1=0.0804` (byte-identical to original; deterministic seed reproduced exactly), `macro_edit_f1=0.4094`.
+
+**Updated comparative table:**
+
+| Method | macro_f1 (strict) | macro_edit_f1 (lenient) | edit/strict ratio |
+|---|---|---|---|
+| **Track A** baseline-seed44 | **0.0804** | **0.4094** | **5.1×** |
+| Track B step 300 (peak edit) | 0.0123 | 0.2167 | 17.6× |
+| Track B step 400 (peak strict so far) | 0.0159 | 0.1165 | 7.3× |
+
+**Track A wins on BOTH metrics.** Strict: by 5.1× (0.0804 vs 0.0159). Lenient: by 1.9× (0.4094 vs Track B's peak 0.2167). The "Track B wins lenient" claim earlier in this review was based on the unstated assumption that Track A's edit_f1 was much lower — it isn't.
+
+**Refined narrative:**
+
+The original framing (sections "Paper-relevant findings" #1 and "Decision tree" above) treated this as a "method-by-metric tradeoff" — Track A wins strict, Track B wins lenient, choose your weapon. That framing is now wrong. The corrected framing:
+
+1. **Track A wins by every metric we can measure in the 500–5000 image regime.**
+2. **Track B's much-larger backbone (2.2B vs 26.5M params) does NOT compensate for its overfitting-to-format dynamic in this small-data regime.**
+3. **The strict-vs-lenient gap is real, but it's about METRIC SENSITIVITY, not about which method to pick.** Both methods produce content with formatting drift; lenient matching always rewards both more generously than strict; the LENIENT/STRICT RATIO measures how aggressive the formatting-drift overhead is.
+4. **Track B at step 300 is in a genuinely degenerate regime** — 17.6× ratio is much higher than Track A's 5.1× because Track B is outputting "almost-right content in completely-wrong format". Step 400 is recovering toward a more typical 7.3× ratio.
+
+The decision tree above still stands for one specific recommendation: **early-stop on edit_f1, not strict_f1, when fine-tuning a pretrained VLM with LoRA on small data.** That's still useful guidance for practitioners. But the broader "use Track B for lenient quality" claim is retracted.
+
+**What this means for the paper:**
+
+The paper's contribution is now subtler than "the choice of stopping metric matters more than the choice of method" — that statement IS still true (within Track B), but at the method level, Track A unambiguously wins. The paper's headline result becomes:
+
+> **In the 500–5000 image small-data pharma regime, a custom hybrid model trained from scratch on top of a frozen pretrained vision encoder (SigLIP+Donut, 26.5M trainable params) outperforms LoRA-fine-tuned pretrained VLMs (Qwen2-VL-2B, ~5M trainable LoRA params) on every metric. The pretrained-VLM approach exhibits a non-monotonic eval trajectory under lenient metrics that requires careful early-stopping but does not change the relative ordering.**
+
+That's still a publishable finding — it's a useful negative result for practitioners who would otherwise default to "just LoRA-fine-tune a big VLM" thinking. And the per-field breakdown (queued experiment #4 in this review) may yet reveal field-specific wins for Track B that change the picture.
+
+**Re-prioritized next experiments:**
+
+1. **Per-field breakdown of Track A vs Track B** — same models, same val set, broken down by field. Find any fields where Track B beats Track A. Likely candidates: `batch_number`, `expiry_date`, `mrp` (OCR-heavy fields where Qwen's pretrained vision encoder might shine on small text).
+2. **`qwen-r16-seed42`** — Track B with `lora_rank=16`, max_steps=500. Tests if higher rank closes the strict gap to under 0.05 — even partial closure makes the per-field story more interesting.
+3. **`qwen-edit-stop-seed42`** — Track B with `max_steps=300` to verify the step-300 edit_f1=0.2167 is reproducible. Now also tests whether stopping at the edit peak yields a *useful* model (vs just a peak-on-this-metric one).
+4. (Lower priority, was previously priority 3) Backfill Track A baseline-seed42, baseline-seed43 with edit_f1. Confirms the 5.1× ratio is consistent across seeds. Less urgent now that we have one clean apples-to-apples data point.
+
+The Phase 7 self-supervised pretraining (MAE on 2223 unlabeled images) becomes more relevant under this revised framing — if Track A is the strong baseline, an MAE-pretrained Track A is the natural next move, expected to push macro_f1 from 0.080 toward 0.10+.
