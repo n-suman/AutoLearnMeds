@@ -1,0 +1,41 @@
+phase: 7
+run_kind: mae_pretrain
+encoder_init: "google/siglip-base-patch16-224"
+
+# Image preprocessing
+image_size: 224
+patch_size: 16
+num_patches: 196   # (224/16)^2
+
+# MAE
+mask_ratio: 0.75
+decoder_depth: 4
+decoder_dim: 512
+decoder_heads: 16
+norm_pix_loss: true   # per-patch norm before MSE; standard in MAE paper
+
+# Training
+seed: 44
+batch_size: 32
+grad_accum_steps: 2   # effective batch 64
+peak_lr: 1.5e-4
+min_lr: 0.0
+warmup_epochs: 20
+total_epochs: 200      # 200 * ceil(3061/64) ~= 9600 steps
+weight_decay: 0.05
+adam_betas: [0.9, 0.95]
+grad_clip: 1.0
+log_every: 50
+save_every_epoch: 50    # checkpoint at 50, 100, 150, 200
+precision: "bf16"
+
+# Image augmentation (minimal — preserve text legibility)
+random_resized_crop_scale: [0.5, 1.0]
+random_horizontal_flip: 0.5
+# NO color jitter — would destroy text features which are exactly what we want to learn
+
+# I/O
+images_root: "/mnt/gcs/raw/raw_images"
+checkpoint_dir: "checkpoints/mae/run-seed44"
+wandb_project: "autolearnmeds"
+wandb_mode: "online"
