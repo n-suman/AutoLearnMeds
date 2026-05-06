@@ -57,7 +57,6 @@ class MAEConfig:
     adam_betas: tuple[float, float]
     grad_clip: float
     log_every: int
-    save_every_epoch: int
     precision: str
     random_resized_crop_scale: tuple[float, float]
     random_horizontal_flip: float
@@ -82,6 +81,16 @@ class MAEConfig:
     # jsonl (inverse of exclude_jsonls). When both include and exclude are
     # set, include is applied first then exclude.
     include_jsonls: tuple[str, ...] = ()
+    # Phase 7c — resumable checkpointing (F8a). Default 10 (was effectively 50
+    # via yaml override) to bound worst-case interruption loss to ~5 minutes
+    # of A100 time. Existing yamls (mae_pretrain.yaml, mae_pretrain_text_aware.yaml,
+    # mae_pretrain_tapt.yaml) all set this explicitly, so they keep their
+    # current cadence; new configs that omit the field inherit 10.
+    save_every_epoch: int = 10
+    # Phase 7c — when True, every per-epoch save also mirrors to
+    # {checkpoint_dir}/latest/ so resume-on-launch finds it. Disable for
+    # tiny/test runs where the mirror would be wasted disk I/O.
+    save_to_latest: bool = True
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> "MAEConfig":
@@ -337,6 +346,62 @@ def build_pretrain_dataset(cfg: "MAEConfig") -> list[Path]:
     return paths
 
 
+# === Phase 7c — resumable checkpointing helpers (F8a) ===
+
+def _save_full_state(epoch_dir, encoder, decoder, optimizer, step: int, last_loss: float, cfg: "MAEConfig") -> None:
+    """Save encoder (HF format) + decoder weights + optimizer state + step + last_loss + cfg snapshot.
+
+    The encoder is written via HuggingFace `save_pretrained` (config.json +
+    model.safetensors) so the result is loadable with
+    `SiglipVisionModel.from_pretrained(epoch_dir)`. Everything else lives
+    in `trainer_state.pt` next to the encoder files.
+
+    Module-level (not nested) so unit tests can call it with a stand-in
+    encoder/decoder/optimizer.
+    """
+    import torch
+    epoch_dir = Path(epoch_dir)
+    epoch_dir.mkdir(parents=True, exist_ok=True)
+    encoder.save_pretrained(epoch_dir)
+    torch.save({
+        "decoder_state_dict": decoder.state_dict(),
+        "optimizer_state_dict": optimizer.state_dict(),
+        "step": step,
+        "last_loss": last_loss,
+        "cfg": dataclasses.asdict(cfg),
+    }, epoch_dir / "trainer_state.pt")
+
+
+def _try_push_checkpoint_to_gcs(cfg: "MAEConfig", latest_dir, epoch_dir) -> None:
+    """Best-effort gsutil rsync of checkpoint dirs to GCS.
+
+    Failures are swallowed silently — the persistent sync_to_gcs daemon
+    will retry on its own cadence. Bucket is configurable via the
+    AUTOLEARNMEDS_GCS_BUCKET env var (defaults to gs://auto_learn_meds).
+
+    No-ops if gsutil isn't on PATH and isn't at the standard Colab location.
+    """
+    import os
+    import shutil
+    import subprocess
+    bucket = os.environ.get("AUTOLEARNMEDS_GCS_BUCKET", "gs://auto_learn_meds")
+    gsutil = shutil.which("gsutil") or "/tools/google-cloud-sdk/bin/gsutil"
+    if not Path(gsutil).is_file():
+        return
+    for src in (epoch_dir, latest_dir):
+        src = Path(src)
+        if not src.is_dir():
+            continue
+        dst = f"{bucket}/{src}"
+        try:
+            subprocess.run(
+                [gsutil, "-m", "rsync", "-r", str(src), dst],
+                check=False, capture_output=True, timeout=120,
+            )
+        except Exception:
+            pass  # silent — sync_to_gcs daemon will retry
+
+
 # === Training loop ===
 
 def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
@@ -363,6 +428,31 @@ def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
     encoder = bundle["encoder"].to(device).train()
     decoder = bundle["decoder"].to(device).train()
     # decoder.mask_token is a registered Parameter; decoder.to(device) moved it.
+
+    # Phase 7c — resumable checkpointing (F8a). Look for a previous run's
+    # latest/ mirror and reload encoder + decoder + optimizer state if found.
+    # Optimizer state is loaded LATER (after the optimizer is constructed
+    # from cfg.peak_lr/betas/etc.); we stash it in `_resume_optim_state`.
+    start_step = 1
+    last_loss = 0.0
+    _resume_optim_state = None
+    latest_dir = Path(cfg.checkpoint_dir) / "latest"
+    state_path = latest_dir / "trainer_state.pt"
+    if state_path.is_file():
+        print(f"[mae] RESUME: found {state_path}; loading...", flush=True)
+        from transformers import SiglipVisionModel
+        encoder = SiglipVisionModel.from_pretrained(latest_dir).to(device).train()
+        bundle["encoder"] = encoder  # downstream code reads via local `encoder`, but keep bundle consistent
+
+        state = torch.load(state_path, map_location=device, weights_only=False)
+        decoder.load_state_dict(state["decoder_state_dict"])
+        _resume_optim_state = state["optimizer_state_dict"]
+        start_step = int(state["step"]) + 1
+        last_loss = float(state.get("last_loss", 0.0))
+        print(
+            f"[mae] RESUME: starting from step={start_step} last_loss={last_loss:.4f}",
+            flush=True,
+        )
 
     image_paths = build_pretrain_dataset(cfg)
     print(f"[mae] dataset n={len(image_paths)} (using all images, no label needed)", flush=True)
@@ -448,6 +538,12 @@ def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
         betas=tuple(cfg.adam_betas),
         weight_decay=cfg.weight_decay,
     )
+    # Phase 7c — resume optimizer state if a checkpoint was loaded above.
+    # AdamW state (running m/v moments, step counters per param) is what we
+    # care about; loading it preserves momentum so we don't waste warmup.
+    if _resume_optim_state is not None:
+        optim.load_state_dict(_resume_optim_state)
+        print(f"[mae] RESUME: optimizer state loaded ({len(optim.state)} param entries)", flush=True)
 
     # Each loader iteration yields one batch; with grad_accum we consume grad_accum_steps
     # batches per optimizer step.
@@ -465,11 +561,14 @@ def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
         cos = 0.5 * (1.0 + math.cos(math.pi * progress))
         return cfg.min_lr + (cfg.peak_lr - cfg.min_lr) * cos
 
-    last_loss = 0.0
+    # `last_loss` may have been seeded from a resumed checkpoint above; only
+    # overwrite if we did NOT resume.
+    if _resume_optim_state is None:
+        last_loss = 0.0
     start = time.time()
     loader_iter = iter(loader)
 
-    for step in range(1, total_steps + 1):
+    for step in range(start_step, total_steps + 1):
         optim.zero_grad(set_to_none=True)
         loss_accum = 0.0
 
@@ -551,13 +650,30 @@ def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
             if wandb_run is not None:
                 wandb_run.log({"train/loss": last_loss, "train/lr": cur_lr, "step": step})
 
-        # Save encoder every save_every_epoch epochs.
+        # Phase 7c — save FULL state every save_every_epoch epochs (encoder +
+        # decoder + optimizer + step + last_loss + cfg snapshot). Mirror to
+        # latest/ so a fresh launch can resume. Best-effort GCS push so we
+        # don't have to wait for the sync_to_gcs daemon's poll cycle.
         if step % (cfg.save_every_epoch * steps_per_epoch) == 0:
             epoch = step // steps_per_epoch
             ckpt_dir = Path(cfg.checkpoint_dir) / f"epoch-{epoch:04d}"
-            ckpt_dir.mkdir(parents=True, exist_ok=True)
-            encoder.save_pretrained(ckpt_dir)  # HF format
-            print(f"[mae] saved encoder to {ckpt_dir} (epoch={epoch})", flush=True)
+            _save_full_state(ckpt_dir, encoder, decoder, optim, step, last_loss, cfg)
+            if cfg.save_to_latest:
+                latest_dir = Path(cfg.checkpoint_dir) / "latest"
+                _save_full_state(latest_dir, encoder, decoder, optim, step, last_loss, cfg)
+                print(
+                    f"[mae] saved full state to {ckpt_dir} (epoch={epoch} step={step}); "
+                    f"latest mirror at {latest_dir}",
+                    flush=True,
+                )
+                _try_push_checkpoint_to_gcs(cfg, latest_dir, ckpt_dir)
+            else:
+                print(
+                    f"[mae] saved full state to {ckpt_dir} (epoch={epoch} step={step}); "
+                    f"latest mirror disabled",
+                    flush=True,
+                )
+                _try_push_checkpoint_to_gcs(cfg, ckpt_dir, ckpt_dir)
 
     # Save final encoder.
     final_dir = Path(cfg.checkpoint_dir) / "final"

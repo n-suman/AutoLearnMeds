@@ -138,3 +138,61 @@ def test_tapt_yaml_loads(pretrain_mae_mod, project_root: Path) -> None:
     assert cfg.include_jsonls == ("data/processed/train.jsonl",)
     assert cfg.total_epochs == 50
     assert cfg.text_aware_masking is False
+
+
+# === Phase 7c (F8a) — resumable checkpointing ===
+
+def test_mae_config_save_every_epoch_default(pretrain_mae_mod) -> None:
+    """save_every_epoch should default to 10 (more frequent than the literal yaml values)."""
+    import dataclasses
+    fields = {f.name: f for f in dataclasses.fields(pretrain_mae_mod.MAEConfig)}
+    assert fields["save_every_epoch"].default == 10
+    assert fields["save_to_latest"].default is True
+
+
+def test_mae_config_yamls_still_load_with_save_every_epoch(pretrain_mae_mod, project_root):
+    """The three existing yamls all set save_every_epoch explicitly; verify they still parse."""
+    for yaml_name in ("mae_pretrain.yaml", "mae_pretrain_text_aware.yaml", "mae_pretrain_tapt.yaml"):
+        cfg = pretrain_mae_mod.MAEConfig.from_yaml(
+            project_root / "experiments" / "configs" / yaml_name
+        )
+        assert cfg.save_every_epoch in (50, 25), f"{yaml_name}: unexpected save_every_epoch={cfg.save_every_epoch}"
+        assert cfg.save_to_latest is True
+
+
+def test_save_full_state_writes_loadable_files(pretrain_mae_mod, tmp_path):
+    """The save helper produces files that can be loaded back."""
+    torch = pytest.importorskip("torch")
+    import dataclasses
+
+    # Minimal cfg-shaped object (the helper only reads cfg via dataclasses.asdict).
+    @dataclasses.dataclass
+    class _MiniCfg:
+        save_every_epoch: int = 10
+
+    pytest.importorskip("transformers")
+    # Don't actually load SigLIP in the unit test; use a tiny stand-in.
+    import torch.nn as nn
+    class _StubEncoder(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.lin = nn.Linear(4, 4)
+        def save_pretrained(self, path):
+            # Mimic HF's save_pretrained: just write a sentinel file.
+            Path(path).mkdir(parents=True, exist_ok=True)
+            torch.save(self.state_dict(), Path(path) / "weights.pt")
+
+    enc = _StubEncoder()
+    dec = nn.Linear(8, 8)
+    optim = torch.optim.AdamW(list(enc.parameters()) + list(dec.parameters()), lr=1e-4)
+
+    epoch_dir = tmp_path / "epoch-test"
+    pretrain_mae_mod._save_full_state(epoch_dir, enc, dec, optim, step=42, last_loss=0.123, cfg=_MiniCfg())
+
+    assert (epoch_dir / "weights.pt").is_file()
+    assert (epoch_dir / "trainer_state.pt").is_file()
+    state = torch.load(epoch_dir / "trainer_state.pt", weights_only=False)
+    assert state["step"] == 42
+    assert abs(state["last_loss"] - 0.123) < 1e-9
+    assert "decoder_state_dict" in state
+    assert "optimizer_state_dict" in state
