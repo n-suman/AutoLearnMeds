@@ -32,7 +32,7 @@ def test_build_mae_model_runs_forward(project_root):
     visible_proj = bundle["decoder"].proj(visible)
     B, L_visible, D = visible_proj.shape
     num_masked = cfg.num_patches - L_visible
-    mask_tokens = bundle["mask_token"].expand(B, num_masked, -1)
+    mask_tokens = bundle["decoder"].mask_token.expand(B, num_masked, -1)
     full = torch.cat([visible_proj, mask_tokens], dim=1)
     full = torch.gather(
         full,

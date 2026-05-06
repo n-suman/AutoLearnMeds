@@ -122,7 +122,8 @@ def build_mae_model(cfg: "MAEConfig") -> dict[str, Any]:
     mask_token: learnable (1, 1, decoder_dim) parameter inserted at masked
         positions before unshuffling.
 
-    Returns: {"encoder": ..., "decoder": ..., "mask_token": ...}.
+    Returns: {"encoder": ..., "decoder": ...}. (decoder.mask_token is registered
+    as a Parameter so .to(device) and .parameters() handle it correctly.)
     """
     import torch
     import torch.nn as nn
@@ -137,6 +138,12 @@ def build_mae_model(cfg: "MAEConfig") -> dict[str, Any]:
             self.proj = nn.Linear(encoder_hidden, cfg.decoder_dim)
             self.pos_embed = nn.Parameter(torch.zeros(1, cfg.num_patches, cfg.decoder_dim))
             nn.init.trunc_normal_(self.pos_embed, std=0.02)
+            # mask_token registered as a Parameter on the decoder so .to(device)
+            # moves it AND .parameters() includes it AND it stays a leaf tensor
+            # (passing a .to(device)'d non-Module Parameter to AdamW fails with
+            # "can't optimize a non-leaf Tensor" — the .to() call detaches it).
+            self.mask_token = nn.Parameter(torch.zeros(1, 1, cfg.decoder_dim))
+            nn.init.trunc_normal_(self.mask_token, std=0.02)
             layer = nn.TransformerEncoderLayer(
                 d_model=cfg.decoder_dim,
                 nhead=cfg.decoder_heads,
@@ -157,10 +164,7 @@ def build_mae_model(cfg: "MAEConfig") -> dict[str, Any]:
 
     decoder = ViTDecoder(encoder_hidden, cfg)
 
-    mask_token = nn.Parameter(torch.zeros(1, 1, cfg.decoder_dim))
-    nn.init.trunc_normal_(mask_token, std=0.02)
-
-    return {"encoder": encoder, "decoder": decoder, "mask_token": mask_token}
+    return {"encoder": encoder, "decoder": decoder}
 
 
 def patchify(images, patch_size: int):
@@ -273,7 +277,7 @@ def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     encoder = bundle["encoder"].to(device).train()
     decoder = bundle["decoder"].to(device).train()
-    mask_token = bundle["mask_token"].to(device)
+    # decoder.mask_token is a registered Parameter; decoder.to(device) moved it.
 
     image_paths = build_pretrain_dataset(cfg)
     print(f"[mae] dataset n={len(image_paths)} (using all images, no label needed)", flush=True)
@@ -286,7 +290,8 @@ def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
     ])
 
-    params = list(encoder.parameters()) + list(decoder.parameters()) + [mask_token]
+    # decoder.parameters() now includes decoder.mask_token (registered as Parameter)
+    params = list(encoder.parameters()) + list(decoder.parameters())
     optim = torch.optim.AdamW(
         params,
         lr=cfg.peak_lr,
@@ -343,7 +348,7 @@ def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
 
                 # Project visible (encoder_dim) → decoder_dim BEFORE concat.
                 visible_proj = decoder.proj(visible)
-                mask_tokens = mask_token.expand(B, num_masked, -1)
+                mask_tokens = decoder.mask_token.expand(B, num_masked, -1)
                 full = torch.cat([visible_proj, mask_tokens], dim=1)
                 # Unshuffle so positions are correct.
                 full = torch.gather(
