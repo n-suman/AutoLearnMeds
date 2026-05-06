@@ -41,6 +41,7 @@ ml = [
     "peft>=0.13",  # LoRA
     "bitsandbytes>=0.44",  # 4-bit quantization
     "qwen-vl-utils>=0.0.10",  # Qwen2-VL helpers
+    "opencv-python-headless>=4.10",  # Sobel edges for Phase 7b text-aware MAE masking
 ]
 
 # Colab-specific. SSH tunnel is set up by direct cloudflared + sshd invocation
