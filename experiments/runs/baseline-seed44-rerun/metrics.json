@@ -1,0 +1,10 @@
+{
+  "run_id": "baseline-seed44-rerun",
+  "track": "A",
+  "git_sha": "75e9ad21f7aad5528442eeba7d29dc28a79aaf4d",
+  "config": "experiments/configs/baseline.yaml",
+  "final_macro_f1": 0.0804,
+  "final_macro_edit_f1": 0.4094,
+  "wall_clock_seconds": 3393,
+  "exit_code": 0
+}

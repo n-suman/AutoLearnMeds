@@ -1,0 +1,51 @@
+[main] device=cuda seed=44
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/408 [00:00<?, ?it/s]Loading weights: 100%|██████████| 408/408 [00:00<00:00, 5409.52it/s]
+[train] trainable_params=26,542,592
+[train] step=    0 loss=382.2167 lr=3.00e-06
+[train] step=   25 loss=59.0081 lr=7.80e-05
+[train] step=   50 loss=19.1413 lr=1.53e-04
+[train] step=   75 loss=9.9144 lr=2.28e-04
+[train] step=  100 loss=8.3568 lr=3.00e-04
+[train] step=  125 loss=6.0904 lr=2.99e-04
+[train] step=  150 loss=5.2339 lr=2.98e-04
+[train] step=  175 loss=3.2551 lr=2.95e-04
+[train] step=  200 loss=2.5344 lr=2.92e-04
+[ val ] step=  200 macro_f1=0.0038 (n=111)
+[train] step=  225 loss=3.2492 lr=2.87e-04
+[train] step=  250 loss=1.7482 lr=2.82e-04
+[train] step=  275 loss=1.2394 lr=2.76e-04
+[train] step=  300 loss=2.0066 lr=2.68e-04
+[train] step=  325 loss=0.8340 lr=2.60e-04
+[train] step=  350 loss=1.1544 lr=2.52e-04
+[train] step=  375 loss=0.3912 lr=2.42e-04
+[train] step=  400 loss=0.2447 lr=2.32e-04
+[ val ] step=  400 macro_f1=0.0374 (n=111)
+[train] step=  425 loss=0.7001 lr=2.22e-04
+[train] step=  450 loss=0.3384 lr=2.11e-04
+[train] step=  475 loss=0.2015 lr=2.00e-04
+[train] step=  500 loss=0.3081 lr=1.88e-04
+[train] step=  525 loss=0.2620 lr=1.77e-04
+[train] step=  550 loss=0.2516 lr=1.65e-04
+[train] step=  575 loss=0.0262 lr=1.53e-04
+[train] step=  600 loss=0.1811 lr=1.42e-04
+[ val ] step=  600 macro_f1=0.0683 (n=111)
+[train] step=  625 loss=0.1191 lr=1.30e-04
+[train] step=  650 loss=0.1489 lr=1.19e-04
+[train] step=  675 loss=0.0505 lr=1.08e-04
+[train] step=  700 loss=0.0414 lr=9.75e-05
+[train] step=  725 loss=0.0452 lr=8.76e-05
+[train] step=  750 loss=0.0043 lr=7.82e-05
+[train] step=  775 loss=0.0190 lr=6.95e-05
+[train] step=  800 loss=0.0348 lr=6.16e-05
+[ val ] step=  800 macro_f1=0.0741 (n=111)
+[train] step=  825 loss=0.0660 lr=5.44e-05
+[train] step=  850 loss=0.0096 lr=4.81e-05
+[train] step=  875 loss=0.0007 lr=4.26e-05
+[train] step=  900 loss=0.0322 lr=3.81e-05
+[train] step=  925 loss=0.0020 lr=3.46e-05
+[train] step=  950 loss=0.0024 lr=3.21e-05
+[train] step=  975 loss=0.0002 lr=3.05e-05
+[final] macro_f1=0.0804
+final_macro_f1=0.0804
+final_macro_edit_f1=0.4094
