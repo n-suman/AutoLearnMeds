@@ -29,6 +29,8 @@ This is the canonical citation registry for the AutoLearnMeds project. Every pap
 | mitchell2019modelcards | Mitchell, Wu, Zaldivar, Barnes, Vasserman, Hutchinson, Spitzer, Raji, Gebru | 2019 | Model Cards for Model Reporting | `mitchell_2019_model_cards.pdf` | [1810.03993](https://arxiv.org/abs/1810.03993) | §8.6 — model card template |
 | gebru2018datasheets | Gebru, Morgenstern, Vecchione, Vaughan, Wallach, Daumé III, Crawford | 2018 | Datasheets for Datasets | `gebru_2018_datasheets.pdf` | [1803.09010](https://arxiv.org/abs/1803.09010) | §3.7, §8.6 — data card template |
 | hunter2007matplotlib | Hunter | 2007 | Matplotlib: A 2D Graphics Environment | n/a (paywalled DOI) | n/a (DOI: 10.1109/MCSE.2007.55) | §8.3 — figure tooling citation |
+| malepati2026sahi | Malepati, Nandamury, Manjunath, Rajan, Prabhune | 2026 | Comparative Evaluation of YOLOv12 and SAHI for Medication Identification in Hospital Pharmacies | `Comparative_Evaluation_of_YOLOv12_and_SAHI_for_Medication_Identification_in_Hospital_Pharmacies.pdf` | n/a (DOI: 10.1109/IITCEE67948.2026.11394638) | §2 (related work, same dataset), §6 (Track D = SAHI+OCR pipeline as competitor track) |
+| akyon2022sahi | Akyon, Altinuc, Temizel | 2022 | Slicing Aided Hyper Inference and Fine-tuning for Small Object Detection | n/a (paywalled DOI) | n/a (DOI: 10.1109/ICIP46576.2022.9897990) | §2 (related work, SAHI primary reference), §6 (Track D inference recipe) |
 
 ## Notes
 

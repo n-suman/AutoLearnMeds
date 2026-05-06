@@ -212,6 +212,10 @@ The paper's contribution is now subtler than "the choice of stopping metric matt
 
 That's still a publishable finding — it's a useful negative result for practitioners who would otherwise default to "just LoRA-fine-tune a big VLM" thinking. And the per-field breakdown (queued experiment #4 in this review) may yet reveal field-specific wins for Track B that change the picture.
 
+**Important prior-work connection (added 2026-05-07):**
+
+Malepati, Nandamury, Manjunath, Rajan, Prabhune (2026), "Comparative Evaluation of YOLOv12 and SAHI for Medication Identification in Hospital Pharmacies" (IITCEE 2026, IEEE), is on the SAME 48 MP smartphone-photo dataset that our 564/111/111 split is drawn from, and reports a 17× lift on the four OCR-critical classes (Batch, MRP, Manufacturing Date, Expiry) from 0.035 to 0.609 macro AP@0.5 by adding SAHI tiled inference (1024-px tiles, 0.35 overlap, base 1280) on top of YOLOv12. This is direct empirical evidence that the small-text-at-low-resolution problem we observe in Tracks A and B is **solvable by resolution-aware inference, not just better representation**. Three new entries added to research_directions.md (#11 SAHI tiled inference for Track A at inference time; #12 multi-tile MAE pretraining; #13 Track D = full SAHI+OCR pipeline as a competitor track). Track D is the largest paper-realignment move and reframes the contribution from "Track A vs Track B vs Track C end-to-end" to "end-to-end VLMs vs modular SAHI+OCR pipeline." The Malepati 2026 paper becomes our published prior-work baseline.
+
 **Re-prioritized next experiments:**
 
 1. **Per-field breakdown of Track A vs Track B** — same models, same val set, broken down by field. Find any fields where Track B beats Track A. Likely candidates: `batch_number`, `expiry_date`, `mrp` (OCR-heavy fields where Qwen's pretrained vision encoder might shine on small text).

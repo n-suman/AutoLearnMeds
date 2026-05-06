@@ -97,6 +97,48 @@ Why it's better:
 
 ---
 
+## Highest-priority creative reuses from prior published work on THIS dataset
+
+### 11. SAHI-style tiled inference for Track A — Malepati et al. 2026 IITCEE, direct application
+
+**Headline finding from Malepati 2026 (co-authored by us):** YOLOv12 + Sliced Aided Hyper Inference (SAHI; Akyon et al. 2022) on 1024-px tiles with 0.35 overlap and base inference size 1280 lifted macro AP@0.5 on the four OCR-critical classes (Batch, MRP, Manufacturing Date, Expiry) from **0.035 → 0.609** — a **17× gain** — over the same YOLOv12 model without tiling. This is on the SAME 837-image dataset that our 564+111+111 train/val/test split is drawn from.
+
+**Repurposable for Track A inference (no retraining required):**
+
+At inference, slice the high-res input photo into N overlapping 224×224 tiles, run frozen-encoder + Donut decoder per tile, merge per-field predictions:
+
+- For each field, take the highest-confidence prediction across tiles (NMS-style, but on the *XML field* axis rather than spatial bounding box).
+- Track-A's decoder already outputs autoregressive tag-value pairs; per-tile we get a partial XML; we union the partial XMLs with confidence-tiebreak.
+- Tile geometry: copy Malepati 2026's 1024×1024 tiles with 0.35 overlap, downsampled to 224 each. On a 4032×3024 native photo that's a 4×3 grid of overlapping tiles.
+
+**Expected:** macro_f1 lift on OCR-critical fields proportional to Malepati 2026's 17× detection gain; we predict our current Track A field-level f1=0.0 → 0.10–0.20 on Batch/MRP/Mfg/Expiry, and macro_f1 0.0741 → ~0.10–0.13.
+
+**Effort:** 1 day (inference-time-only change to per_field_eval.py; no retraining). Highest leverage in the queue.
+
+### 12. Multi-tile MAE pretraining — same paper, repurposed for our Phase 7
+
+**Repurposable for MAE training (replaces the current single-random-crop recipe):**
+
+Currently `_ImagePathDataset.__getitem__` returns one random 224×224 crop per image per epoch. Replace with N tiles per image per epoch, computed via the same SAHI tiling scheme (1024-px tiles → 224 each). Each training step sees more native-resolution patch coverage, especially of small text. Forces the encoder to see the same image at multiple zoom levels, similar to how SAHI gives YOLOv12 17× lift via the inference-time analog.
+
+**Expected:** smaller marginal lift than #11 because pretraining is already learning multi-scale via random_resized_crop, but cleaner small-text feature learning. Combine with text-aware masking (#1) for the strongest in-domain encoder.
+
+**Effort:** 2 days (dataset rewrite + a separate Phase 7d MAE run).
+
+### 13. Track D = YOLOv12+SAHI pipeline as a competitor track — full paper realignment
+
+**The biggest creative move:** replicate Malepati 2026's YOLOv12+SAHI pipeline as **Track D** in our comparative paper. The pipeline is detect → crop → small text recognizer (TrOCR or similar) → aggregate into XML. Evaluate via the SAME `prepare.evaluate()` we use for Tracks A/B/C, on the SAME val/test split.
+
+**Why this changes the paper:**
+
+The current paper framing is "Track A (custom hybrid) vs Track B (Qwen+LoRA) vs Track C (MAE-init)." Every one of these is end-to-end. Adding Track D reframes the contribution as **"end-to-end VLMs vs modular detection-then-extraction in small-data pharma extraction"** — a more honest, more paper-grade framing.
+
+Malepati 2026 publishes AP@0.5 = 0.61 macro for SAHI on the OCR-critical classes. If our end-to-end approaches match or beat this on per-field strict F1 we have a clear "end-to-end is competitive even at small data" story; if not, we have a clear "modular wins for OCR-critical fields, end-to-end wins for content fields" story. **Either way the paper is stronger.**
+
+**Effort:** ~1 day to wire YOLOv12+SAHI inference + add a TrOCR or SigLIP-text-head per-region recognizer. ~6 hours A100 to retrain YOLOv12 if Malepati's weights aren't reusable; if they are, just inference. **Phase 8.**
+
+---
+
 ## How this list updates
 
 After each experiment lands:

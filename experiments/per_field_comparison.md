@@ -45,6 +45,12 @@ Track A wins both macro metrics (f1 0.0741 vs 0.0195; edit_f1 0.3225 vs 0.1276).
 
 ## Citations
 
+**Direct prior work on the same dataset (load-bearing for the paper):**
+- Malepati, Nandamury, Manjunath, Rajan, Prabhune (2026). "Comparative Evaluation of YOLOv12 and SAHI for Medication Identification in Hospital Pharmacies." *2026 International Conference on Intelligent and Innovative Technologies in Computing, Electrical and Electronics (IITCEE)*, IEEE. DOI: 10.1109/IITCEE67948.2026.11394638. — establishes that on **the same 48 MP smartphone-photo dataset our 564/111/111 split is drawn from**, YOLOv12 + Sliced Aided Hyper Inference (1024-px tiles, 0.35 overlap, base 1280) lifted macro AP@0.5 on the four OCR-critical classes (Batch, MRP, Manufacturing Date, Expiry) from 0.035 to 0.609 — a 17× gain. This identifies SAME failure mode our per-field analysis observes (small-text fields scoring 0.0 strict for both Tracks A and B at 224×224) and proves it can be solved by tiled inference. Naturally pairs with end-to-end approaches as the modular-pipeline baseline; see research_directions.md #11–#13 for our reuse strategy.
+
+**SAHI primary reference:**
+- Akyon, Altinuc, Temizel (2022). "Slicing Aided Hyper Inference and Fine-tuning for Small Object Detection." *2022 IEEE International Conference on Image Processing (ICIP)*, pp. 966–970. DOI: 10.1109/ICIP46576.2022.9897990. — introduces SAHI for tiled inference over high-resolution imagery.
+
 **Per-field evaluation methodology:**
 - Sang & De Meulder (2003). "Introduction to the CoNLL-2003 Shared Task: Language-Independent Named Entity Recognition." — canonical convention for per-entity-type F1 reporting in span/field extraction.
 - Lipton (2014). "Optimal Thresholding of Classifiers to Maximize F1 Measure." arXiv:1402.1892. — discusses F1's brittleness on small per-class supports (esp. relevant for our `manufacturer`, `quantity`, `warnings` fields with very few positives) and motivates complementing with edit-distance metrics.

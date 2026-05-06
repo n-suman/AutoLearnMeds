@@ -39,6 +39,10 @@ Key knobs (all from the He et al. recipe):
 
 ## Citation
 
+**Direct prior work on the same dataset (added 2026-05-07 after Malepati 2026 was added to papers/):**
+
+- Malepati, Nandamury, Manjunath, Rajan, Prabhune (2026). "Comparative Evaluation of YOLOv12 and SAHI for Medication Identification in Hospital Pharmacies." *2026 IITCEE*, IEEE. DOI: 10.1109/IITCEE67948.2026.11394638. — same 48 MP smartphone-photo dataset (837 annotated images; our 564/111/111 split is the same set). Establishes that the four OCR-critical classes (Batch, MRP, Manufacturing Date, Expiry) cannot be reliably extracted at standard YOLOv12 resolution (mAP@0.5=0.035) but recover dramatically (0.609 = 17× lift) via SAHI tiled inference at 1024-px tiles. **This is the prior work our Phase 7 MAE pretraining is implicitly competing with**: SAHI gets there via *resolution* (tile and merge); we are trying to get there via *representation* (better encoder features from in-domain pretraining). Both target the same root cause — small text is unreadable at 224×224 SigLIP input. See research_directions.md #11–#13 for SAHI-style ideas now queued as a result.
+
 **Primary:**
 
 - He, Chen, Xie, Li, Dollár, Girshick (2021). "Masked Autoencoders Are Scalable Vision Learners." arXiv:2111.06377. CVPR 2022. — **mask ratio 0.75, asymmetric encoder-decoder, pixel-MSE per masked patch, per-patch normalization, small-decoder design — every architectural choice traces here.**
