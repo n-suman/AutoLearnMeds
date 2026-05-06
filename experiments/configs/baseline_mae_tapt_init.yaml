@@ -1,0 +1,32 @@
+# Phase 7b Track A baseline with TAPT-on-DAPT MAE-pretrained encoder init.
+# Identical to baseline_mae_init.yaml except encoder_init_path points at
+# the TAPT MAE pretraining output dir.
+seed: 42
+encoder_model: "google/siglip-base-patch16-224"
+encoder_init_path: "checkpoints/mae/tapt-seed44/final"
+hidden_dim: 512
+n_decoder_layers: 6
+n_decoder_heads: 8
+ffn_ratio: 4
+dropout: 0.1
+tied_embeddings: true
+max_target_length: 256
+batch_size: 16
+peak_lr: 3.0e-4
+min_lr: 3.0e-5
+warmup_steps: 100
+max_steps: 1000
+weight_decay: 0.05
+adam_betas: [0.9, 0.95]
+grad_clip: 1.0
+eval_every: 200
+log_every: 25
+precision: "bf16"
+train_jsonl: "data/processed/train.jsonl"
+val_jsonl: "data/processed/val.jsonl"
+images_root: "/mnt/gcs/raw/raw_images"
+path_strip_prefix: "raw/raw_images/"
+tokenizer_path: "data/processed/tokenizer.json"
+checkpoint_dir: "checkpoints/runs/baseline"
+wandb_project: "autolearnmeds"
+wandb_mode: "online"

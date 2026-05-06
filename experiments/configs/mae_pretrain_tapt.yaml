@@ -1,0 +1,46 @@
+# TAPT — task-adaptive MAE pretraining on labeled train images only.
+# Initialized from the DAPT-MAE checkpoint. Continues for 50 more epochs.
+phase: 7
+run_kind: mae_pretrain
+encoder_init: "checkpoints/mae/run-seed44/final"   # DAPT output
+
+image_size: 224
+patch_size: 16
+num_patches: 196
+
+mask_ratio: 0.75
+text_aware_masking: false   # TAPT uses uniform masking; the variation is the data.
+
+decoder_depth: 4
+decoder_dim: 512
+decoder_heads: 16
+norm_pix_loss: true
+
+seed: 44
+batch_size: 32
+grad_accum_steps: 2
+peak_lr: 5.0e-5             # 1/3 of DAPT's peak — we're already in a good basin
+min_lr: 0.0
+warmup_epochs: 5
+total_epochs: 50            # 1/4 of DAPT
+weight_decay: 0.05
+adam_betas: [0.9, 0.95]
+grad_clip: 1.0
+log_every: 50
+save_every_epoch: 25
+precision: "bf16"
+
+random_resized_crop_scale: [0.5, 1.0]
+random_horizontal_flip: 0.5
+
+# TAPT-specific: pretrain on the LABELED train images only — supplies the strongest
+# domain-relevant signal because these are the exact images we'll be extracting from.
+images_root: "/content/raw_images_local"
+checkpoint_dir: "checkpoints/mae/tapt-seed44"
+wandb_project: "autolearnmeds"
+wandb_mode: "online"
+
+# TAPT inverts the exclusion: only INCLUDE train.jsonl images.
+include_jsonls:
+  - "data/processed/train.jsonl"
+exclude_jsonls: []

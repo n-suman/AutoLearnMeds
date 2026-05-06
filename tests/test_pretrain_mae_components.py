@@ -80,3 +80,61 @@ def test_build_pretrain_dataset_filters_excluded(pretrain_mae_mod, tmp_path: Pat
     paths = pretrain_mae_mod.build_pretrain_dataset(cfg)
     names = sorted(p.name for p in paths)
     assert names == ["a.jpg", "d.jpg", "e.jpg"], f"expected b.jpg+c.jpg excluded, got {names}"
+
+
+# === Phase 7b — text-aware MAE + TAPT ===
+
+def test_edge_density_per_patch_shape(pretrain_mae_mod, tmp_path: Path) -> None:
+    """Sobel edges + per-patch mean produces shape (num_patches,) with no NaN, all positive."""
+    cv2 = pytest.importorskip("cv2")
+    import numpy as np
+    # Synthetic 224x224 image with vertical lines every 8 px — yields edges in
+    # every 16x16 patch.
+    img = np.full((224, 224), 255, dtype=np.uint8)
+    img[:, ::8] = 0
+    img_path = tmp_path / "synth.png"
+    cv2.imwrite(str(img_path), img)
+    edges = pretrain_mae_mod.compute_edge_density_per_patch(img_path, 224, 16)
+    assert edges.shape == (196,)
+    assert np.all(edges > 0)
+    assert not np.isnan(edges).any()
+
+
+def test_random_masking_with_weights_biases_high_weight(pretrain_mae_mod) -> None:
+    """High-weight patches should be masked at higher rate; low-weight at lower rate.
+
+    Per the Phase 7b spec: weight=1 (text-like) should be masked > 0.75 average,
+    weight=0 (bg-like) should be masked < 0.75 average, total mean ~ 0.75.
+    """
+    torch = pytest.importorskip("torch")
+    torch.manual_seed(42)
+    B, L, D = 100, 196, 16
+    x = torch.randn(B, L, D)
+    weights = torch.cat([torch.ones(B, 50), torch.zeros(B, 146)], dim=1)
+    visible, mask, _ = pretrain_mae_mod.random_masking(x, mask_ratio=0.75, weights=weights)
+    text_mask_rate = mask[:, :50].mean().item()
+    bg_mask_rate = mask[:, 50:].mean().item()
+    assert text_mask_rate > 0.75, f"text patches not masked enough: {text_mask_rate}"
+    assert bg_mask_rate < 0.75, f"bg patches over-masked: {bg_mask_rate}"
+    assert text_mask_rate > bg_mask_rate
+    assert abs(mask.mean().item() - 0.75) < 0.05, f"total mean drifted: {mask.mean().item()}"
+
+
+def test_text_aware_yaml_loads(pretrain_mae_mod, project_root: Path) -> None:
+    """The text-aware MAE pretraining yaml loads with the expected fields set."""
+    cfg = pretrain_mae_mod.MAEConfig.from_yaml(
+        project_root / "experiments" / "configs" / "mae_pretrain_text_aware.yaml"
+    )
+    assert cfg.text_aware_masking is True
+    assert cfg.text_mask_rate == 0.90
+    assert cfg.bg_mask_rate == 0.60
+
+
+def test_tapt_yaml_loads(pretrain_mae_mod, project_root: Path) -> None:
+    """The TAPT MAE pretraining yaml loads include_jsonls + 50 epochs + uniform masking."""
+    cfg = pretrain_mae_mod.MAEConfig.from_yaml(
+        project_root / "experiments" / "configs" / "mae_pretrain_tapt.yaml"
+    )
+    assert cfg.include_jsonls == ("data/processed/train.jsonl",)
+    assert cfg.total_epochs == 50
+    assert cfg.text_aware_masking is False

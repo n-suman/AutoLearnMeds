@@ -323,3 +323,19 @@ def test_disaster_recover_uses_skip_older_flag(project_root):
     for ln in rsync_lines:
         assert " -u " in ln or ln.rstrip().endswith(" -u"), \
             f"rsync line missing -u (skip-if-not-newer): {ln}"
+
+
+def test_baseline_mae_text_aware_init_yaml_loads(project_root):
+    import yaml
+    p = project_root / "experiments" / "configs" / "baseline_mae_text_aware_init.yaml"
+    assert p.is_file()
+    cfg = yaml.safe_load(p.read_text())
+    assert "text-aware-seed44" in cfg.get("encoder_init_path", "")
+
+
+def test_baseline_mae_tapt_init_yaml_loads(project_root):
+    import yaml
+    p = project_root / "experiments" / "configs" / "baseline_mae_tapt_init.yaml"
+    assert p.is_file()
+    cfg = yaml.safe_load(p.read_text())
+    assert "tapt-seed44" in cfg.get("encoder_init_path", "")

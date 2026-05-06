@@ -1,0 +1,45 @@
+# Text-aware MAE pretraining — variant of mae_pretrain.yaml.
+# Differences from mae_pretrain.yaml: text_aware_masking=true + text/bg rates.
+phase: 7
+run_kind: mae_pretrain
+encoder_init: "google/siglip-base-patch16-224"
+
+image_size: 224
+patch_size: 16
+num_patches: 196
+
+mask_ratio: 0.75
+text_aware_masking: true
+text_mask_rate: 0.90
+bg_mask_rate: 0.60
+
+decoder_depth: 4
+decoder_dim: 512
+decoder_heads: 16
+norm_pix_loss: true
+
+seed: 44
+batch_size: 32
+grad_accum_steps: 2
+peak_lr: 1.5e-4
+min_lr: 0.0
+warmup_epochs: 20
+total_epochs: 200
+weight_decay: 0.05
+adam_betas: [0.9, 0.95]
+grad_clip: 1.0
+log_every: 50
+save_every_epoch: 50
+precision: "bf16"
+
+random_resized_crop_scale: [0.5, 1.0]
+random_horizontal_flip: 0.5
+
+images_root: "/content/raw_images_local"   # local SSD path (set on Colab)
+checkpoint_dir: "checkpoints/mae/text-aware-seed44"
+wandb_project: "autolearnmeds"
+wandb_mode: "online"
+
+exclude_jsonls:
+  - "data/processed/val.jsonl"
+  - "data/processed/test.jsonl"

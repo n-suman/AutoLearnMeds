@@ -69,6 +69,19 @@ class MAEConfig:
     # the pretraining pool. Used to keep val/test image PIXELS out of MAE
     # pretraining for a cleaner paper claim ("zero leakage at any level").
     exclude_jsonls: tuple[str, ...] = ()
+    # Phase 7b — text-aware (edge-density-weighted) masking. When True the
+    # dataset computes a per-patch Sobel-edge density per image and the
+    # mask sampler in random_masking() biases mask probability toward
+    # high-edge ("text/graphic") patches. Default False keeps Phase 7
+    # uniform-random behavior.
+    text_aware_masking: bool = False
+    text_mask_rate: float = 0.90
+    bg_mask_rate: float = 0.60
+    # Phase 7b — TAPT support. When non-empty, build_pretrain_dataset filters
+    # the image pool to ONLY images whose basename appears in any include
+    # jsonl (inverse of exclude_jsonls). When both include and exclude are
+    # set, include is applied first then exclude.
+    include_jsonls: tuple[str, ...] = ()
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> "MAEConfig":
@@ -79,6 +92,8 @@ class MAEConfig:
             data["random_resized_crop_scale"] = tuple(data["random_resized_crop_scale"])
         if isinstance(data.get("exclude_jsonls"), list):
             data["exclude_jsonls"] = tuple(data["exclude_jsonls"])
+        if isinstance(data.get("include_jsonls"), list):
+            data["include_jsonls"] = tuple(data["include_jsonls"])
         return cls(**data)
 
 
@@ -182,12 +197,46 @@ def patchify(images, patch_size: int):
     return x
 
 
-def random_masking(x, mask_ratio: float):
-    """Random masking per He et al. 2021.
+def compute_edge_density_per_patch(
+    image_path: "Path",
+    image_size: int,
+    patch_size: int,
+):
+    """Returns (num_patches,) float32 ndarray of mean Sobel edge magnitude per patch.
+
+    High edge magnitude => text / graphic boundaries / informative content.
+    Low edge magnitude => uniform background, blurred regions.
+
+    Used by text-aware MAE masking (Phase 7b) to bias toward masking
+    informative patches more aggressively.
+    """
+    import cv2
+    import numpy as np
+    img = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        # corrupt/missing file — return uniform "informative" for safety
+        n = (image_size // patch_size) ** 2
+        return np.full(n, 0.5, dtype=np.float32)
+    img = cv2.resize(img, (image_size, image_size))
+    sobelx = cv2.Sobel(img, cv2.CV_32F, 1, 0, ksize=3)
+    sobely = cv2.Sobel(img, cv2.CV_32F, 0, 1, ksize=3)
+    edges = np.sqrt(sobelx ** 2 + sobely ** 2)
+    h = image_size // patch_size
+    # Reshape (H, W) -> (h, patch_size, h, patch_size) -> mean per patch.
+    edges = edges.reshape(h, patch_size, h, patch_size).transpose(0, 2, 1, 3)
+    per_patch = edges.mean(axis=(2, 3))  # (h, h)
+    return per_patch.flatten().astype(np.float32)
+
+
+def random_masking(x, mask_ratio: float, weights=None):
+    """Random masking per He et al. 2021, with optional per-patch weights.
 
     Args:
         x: (B, L, D) token features.
-        mask_ratio: fraction of tokens to mask out.
+        mask_ratio: target average mask ratio across the batch.
+        weights: optional (B, L) per-patch weights in [0, 1]. Higher weight
+            => higher P(mask). If None, fall back to uniform random
+            (original He 2021 recipe).
 
     Returns:
         visible_x: (B, L_keep, D) the kept tokens (in shuffle order).
@@ -199,7 +248,20 @@ def random_masking(x, mask_ratio: float):
     import torch
     B, L, D = x.shape
     keep = int(L * (1 - mask_ratio))
-    noise = torch.rand(B, L, device=x.device)
+    if weights is None:
+        # Original He 2021 recipe — uniform Bernoulli via argsort of uniform noise.
+        noise = torch.rand(B, L, device=x.device)
+    else:
+        # Weighted: ids_shuffle[:keep] = LOWEST-noise positions become VISIBLE
+        # (kept). So to bias high-weight patches toward being MASKED, give
+        # them HIGH noise. Formula: noise = weights + (1-weights)*uniform
+        # gives: weight=1 → noise=1 (max → masked), weight=0 → noise~U(0,1)
+        # (regular random). Preserves uniform-random fallback when all
+        # weights are zero, and respects the documented semantic: higher
+        # weight => higher P(mask).
+        w = weights.to(x.device)
+        noise = w + (1.0 - w) * torch.rand(B, L, device=x.device)
+
     ids_shuffle = torch.argsort(noise, dim=1)
     ids_restore = torch.argsort(ids_shuffle, dim=1)
     ids_keep = ids_shuffle[:, :keep]
@@ -212,38 +274,61 @@ def random_masking(x, mask_ratio: float):
 
 # === Dataset ===
 
+def _basenames_from_jsonls(jsonl_paths: tuple[str, ...]) -> set[str]:
+    """Read each JSONL and return the union of `image_path` basenames.
+
+    Tolerant of malformed lines / missing files: WARN-only, skip silently.
+    """
+    names: set[str] = set()
+    for jsonl_path in jsonl_paths:
+        jp = Path(jsonl_path)
+        if not jp.is_file():
+            print(f"[mae] WARN: jsonl {jp} not found; skipping", flush=True)
+            continue
+        for line in jp.read_text().splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                entry = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            img_path = entry.get("image_path") or entry.get("image") or ""
+            if img_path:
+                names.add(Path(img_path).name)
+    return names
+
+
 def build_pretrain_dataset(cfg: "MAEConfig") -> list[Path]:
-    """List image files under cfg.images_root, excluding any in cfg.exclude_jsonls.
+    """List image files under cfg.images_root, applying include/exclude jsonl filters.
 
     No labels needed — MAE self-supervised pretraining only consumes pixels.
 
-    The exclude mechanism reads each path in cfg.exclude_jsonls (each is a JSONL
-    file with `image_path` entries — same format as data/processed/{train,val,
-    test}.jsonl) and filters out images whose basename appears in the exclude
-    set. This keeps val/test pixels out of MAE pretraining so the paper can
-    claim zero leakage at any level (label OR pixel).
+    Filter pipeline (applied in order):
+      1. cfg.include_jsonls (Phase 7b TAPT): when non-empty, KEEP ONLY images
+         whose basename appears in any include jsonl. This is the inverse of
+         exclude — used by TAPT to restrict pretraining to the labeled
+         train.jsonl images.
+      2. cfg.exclude_jsonls (Phase 7 strict-paper): drop images whose basename
+         appears in any exclude jsonl. Used to keep val/test pixels out of
+         MAE pretraining for the "zero leakage at any level" claim.
+
+    Both filters use JSONL with `image_path` entries — same format as
+    data/processed/{train,val,test}.jsonl.
     """
     root = Path(cfg.images_root)
     paths = sorted(p for p in root.glob("**/*") if p.suffix.lower() in {".jpeg", ".jpg", ".png"})
 
+    include_jsonls = getattr(cfg, "include_jsonls", ()) or ()
+    if include_jsonls:
+        included = _basenames_from_jsonls(tuple(include_jsonls))
+        if included:
+            before = len(paths)
+            paths = [p for p in paths if p.name in included]
+            print(f"[mae] included {len(paths)}/{before} images via {len(include_jsonls)} include jsonl(s)", flush=True)
+
     if cfg.exclude_jsonls:
-        excluded_basenames: set[str] = set()
-        for jsonl_path in cfg.exclude_jsonls:
-            jp = Path(jsonl_path)
-            if not jp.is_file():
-                print(f"[mae] WARN: exclude_jsonl {jp} not found; skipping (no exclusion applied)", flush=True)
-                continue
-            for line in jp.read_text().splitlines():
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    entry = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                img_path = entry.get("image_path") or entry.get("image") or ""
-                if img_path:
-                    excluded_basenames.add(Path(img_path).name)
+        excluded_basenames = _basenames_from_jsonls(tuple(cfg.exclude_jsonls))
         if excluded_basenames:
             before = len(paths)
             paths = [p for p in paths if p.name not in excluded_basenames]
@@ -296,18 +381,55 @@ def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
     # GPU stays well-fed (50-90% util on A100 for SigLIP-base + small ViT decoder).
     from torch.utils.data import Dataset, DataLoader
 
+    # Phase 7b — for text-aware masking we precompute per-patch edge density
+    # for every image once, store in a NumPy memmap, and serve from it in
+    # the dataset. ~10-15s init for 2787 images at 224x224. Eliminates
+    # per-step CPU edge-detect cost.
+    edge_cache_array = None
+    if cfg.text_aware_masking:
+        import numpy as np
+        ckpt_dir = Path(cfg.checkpoint_dir)
+        ckpt_dir.mkdir(parents=True, exist_ok=True)
+        edge_cache_path = ckpt_dir / "edge_cache.npy"
+        n_images = len(image_paths)
+        if edge_cache_path.is_file():
+            edge_cache_array = np.load(edge_cache_path, mmap_mode="r")
+            if edge_cache_array.shape[0] != n_images or edge_cache_array.shape[1] != cfg.num_patches:
+                print(f"[mae] edge_cache shape mismatch (got {edge_cache_array.shape}, expected ({n_images}, {cfg.num_patches})); recomputing", flush=True)
+                edge_cache_array = None
+            else:
+                print(f"[mae] loaded edge_cache from {edge_cache_path} shape={edge_cache_array.shape}", flush=True)
+        if edge_cache_array is None:
+            print(f"[mae] computing edge_cache for {n_images} images...", flush=True)
+            t0 = time.time()
+            arr = np.zeros((n_images, cfg.num_patches), dtype=np.float32)
+            for i, p in enumerate(image_paths):
+                arr[i] = compute_edge_density_per_patch(p, cfg.image_size, cfg.patch_size)
+            np.save(edge_cache_path, arr)
+            edge_cache_array = np.load(edge_cache_path, mmap_mode="r")
+            print(f"[mae] edge_cache saved to {edge_cache_path} ({time.time()-t0:.1f}s)", flush=True)
+
     class _ImagePathDataset(Dataset):
-        def __init__(self, paths: list, transform) -> None:
+        def __init__(self, paths: list, transform, cfg, edge_cache=None) -> None:
             self.paths = paths
             self.transform = transform
+            self.cfg = cfg
+            self.edge_cache = edge_cache  # NumPy memmap (N, num_patches) or None
 
         def __len__(self) -> int:
             return len(self.paths)
 
         def __getitem__(self, idx: int):
-            return self.transform(Image.open(self.paths[idx]).convert("RGB"))
+            img = self.transform(Image.open(self.paths[idx]).convert("RGB"))
+            if self.cfg.text_aware_masking and self.edge_cache is not None:
+                # Convert memmap row to a regular tensor (avoids mmap pickling issues
+                # across DataLoader worker boundary).
+                import torch
+                w = torch.from_numpy(self.edge_cache[idx].copy())
+                return img, w
+            return img
 
-    pretrain_ds = _ImagePathDataset(image_paths, aug)
+    pretrain_ds = _ImagePathDataset(image_paths, aug, cfg, edge_cache=edge_cache_array)
     loader = DataLoader(
         pretrain_ds,
         batch_size=cfg.batch_size,
@@ -353,10 +475,16 @@ def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
 
         for _ in range(cfg.grad_accum_steps):
             try:
-                imgs = next(loader_iter)
+                batch = next(loader_iter)
             except StopIteration:
                 loader_iter = iter(loader)  # next epoch
-                imgs = next(loader_iter)
+                batch = next(loader_iter)
+            if cfg.text_aware_masking:
+                imgs, batch_weights = batch
+                batch_weights = batch_weights.to(device, non_blocking=True)
+            else:
+                imgs = batch
+                batch_weights = None
             imgs = imgs.to(device, non_blocking=True)
 
             with torch.autocast(device_type="cuda" if device.type == "cuda" else "cpu", dtype=torch.bfloat16):
@@ -369,8 +497,18 @@ def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
                 # Encoder sees ALL patches; we then mask in token space.
                 enc_out = encoder(pixel_values=imgs).last_hidden_state  # (B, L, D)
 
-                # Random mask in patch space.
-                visible, mask, ids_restore = random_masking(enc_out, cfg.mask_ratio)
+                # Random mask in patch space (uniform OR text-aware-weighted).
+                if cfg.text_aware_masking:
+                    # Normalize per-image to [0, 1].
+                    weights = batch_weights.float()
+                    w_min = weights.min(dim=1, keepdim=True).values
+                    w_max = weights.max(dim=1, keepdim=True).values
+                    weights = (weights - w_min) / (w_max - w_min + 1e-6)
+                    # Map to [bg_mask_rate, text_mask_rate].
+                    weights = cfg.bg_mask_rate + weights * (cfg.text_mask_rate - cfg.bg_mask_rate)
+                    visible, mask, ids_restore = random_masking(enc_out, cfg.mask_ratio, weights=weights)
+                else:
+                    visible, mask, ids_restore = random_masking(enc_out, cfg.mask_ratio)
                 B, L_visible, _D_enc = visible.shape
                 num_masked = cfg.num_patches - L_visible
 
