@@ -290,6 +290,34 @@ def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
     ])
 
+    # Use a proper DataLoader with workers for parallel image decode + augmentation —
+    # without this the GPU sits at 0% util while a single Python thread bottlenecks
+    # on JPEG decode + torchvision resize. With 4 workers + persistent_workers the
+    # GPU stays well-fed (50-90% util on A100 for SigLIP-base + small ViT decoder).
+    from torch.utils.data import Dataset, DataLoader
+
+    class _ImagePathDataset(Dataset):
+        def __init__(self, paths: list, transform) -> None:
+            self.paths = paths
+            self.transform = transform
+
+        def __len__(self) -> int:
+            return len(self.paths)
+
+        def __getitem__(self, idx: int):
+            return self.transform(Image.open(self.paths[idx]).convert("RGB"))
+
+    pretrain_ds = _ImagePathDataset(image_paths, aug)
+    loader = DataLoader(
+        pretrain_ds,
+        batch_size=cfg.batch_size,
+        shuffle=True,
+        num_workers=4,
+        pin_memory=True,
+        persistent_workers=True,
+        drop_last=True,
+    )
+
     # decoder.parameters() now includes decoder.mask_token (registered as Parameter)
     params = list(encoder.parameters()) + list(decoder.parameters())
     optim = torch.optim.AdamW(
@@ -299,10 +327,12 @@ def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
         weight_decay=cfg.weight_decay,
     )
 
-    effective_batch = cfg.batch_size * cfg.grad_accum_steps
-    steps_per_epoch = (len(image_paths) + effective_batch - 1) // effective_batch
+    # Each loader iteration yields one batch; with grad_accum we consume grad_accum_steps
+    # batches per optimizer step.
+    batches_per_epoch = len(loader)  # already accounts for drop_last
+    steps_per_epoch = batches_per_epoch // cfg.grad_accum_steps
     total_steps = steps_per_epoch * cfg.total_epochs
-    print(f"[mae] steps_per_epoch={steps_per_epoch} total_steps={total_steps}", flush=True)
+    print(f"[mae] batches_per_epoch={batches_per_epoch} steps_per_epoch={steps_per_epoch} total_steps={total_steps}", flush=True)
 
     def lr_at(step: int, steps_per_epoch: int) -> float:
         epoch = step / steps_per_epoch
@@ -313,23 +343,21 @@ def pretrain_mae_loop(bundle: dict, cfg: "MAEConfig", wandb_run) -> dict:
         cos = 0.5 * (1.0 + math.cos(math.pi * progress))
         return cfg.min_lr + (cfg.peak_lr - cfg.min_lr) * cos
 
-    indices = list(range(len(image_paths)))
-    random.shuffle(indices)
-    cursor = 0
     last_loss = 0.0
     start = time.time()
+    loader_iter = iter(loader)
 
     for step in range(1, total_steps + 1):
         optim.zero_grad(set_to_none=True)
         loss_accum = 0.0
 
         for _ in range(cfg.grad_accum_steps):
-            if cursor + cfg.batch_size > len(indices):
-                random.shuffle(indices)
-                cursor = 0
-            batch_paths = [image_paths[indices[cursor + i]] for i in range(cfg.batch_size)]
-            cursor += cfg.batch_size
-            imgs = torch.stack([aug(Image.open(p).convert("RGB")) for p in batch_paths]).to(device)
+            try:
+                imgs = next(loader_iter)
+            except StopIteration:
+                loader_iter = iter(loader)  # next epoch
+                imgs = next(loader_iter)
+            imgs = imgs.to(device, non_blocking=True)
 
             with torch.autocast(device_type="cuda" if device.type == "cuda" else "cpu", dtype=torch.bfloat16):
                 target = patchify(imgs, cfg.patch_size)  # (B, L, p*p*3)
