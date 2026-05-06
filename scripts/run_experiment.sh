@@ -91,7 +91,7 @@ if [[ "$EXIT_CODE" -eq 0 ]]; then
   fi
 
   # Push the run dir + checkpoints/runs/<run_id>/* to GCS within seconds, not whenever the daemon polls.
-  export PATH="$PATH:/usr/local/google-cloud-sdk/bin:/snap/bin"
+  export PATH="$PATH:/tools/google-cloud-sdk/bin:/usr/local/google-cloud-sdk/bin:/opt/google-cloud-sdk/bin:/snap/bin"
   if command -v gsutil >/dev/null 2>&1; then
     BUCKET="${AUTOLEARNMEDS_GCS_BUCKET:-gs://auto_learn_meds}"
     echo "[run_experiment] explicit GCS push: $BUCKET/experiments/runs/$RUN_ID/ ..."

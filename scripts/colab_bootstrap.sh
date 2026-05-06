@@ -37,6 +37,14 @@ BRANCH="${AUTOLEARNMEDS_BRANCH:-main}"
 PROJECT_DIR="${AUTOLEARNMEDS_PROJECT_DIR:-/content/AutoLearnMeds}"
 WORKSPACE="/workspace"
 
+# Configure git identity so auto-finalize's `git commit` doesn't fail.
+# Colab's runtime ships without a global git config; finalize_experiment.sh
+# calls `git commit` which requires user.email + user.name. Override only
+# for the local repo to avoid leaking runtime-machine names into other repos.
+GIT_USER_EMAIL="${AUTOLEARNMEDS_GIT_USER_EMAIL:-autolearnmeds-colab@noreply.local}"
+GIT_USER_NAME="${AUTOLEARNMEDS_GIT_USER_NAME:-AutoLearnMeds Colab}"
+echo "[bootstrap] git identity: $GIT_USER_NAME <$GIT_USER_EMAIL>"
+
 # Cloudflare named tunnel (passed in via the bootstrap notebook from Colab Secrets).
 TUNNEL_CREDS="${CLOUDFLARED_TUNNEL_CREDS:?Set CLOUDFLARED_TUNNEL_CREDS=<json from Colab Secret>}"
 # Permanent hostname this tunnel routes to. Override only if you've routed a different DNS name.
@@ -107,6 +115,11 @@ else
 fi
 ln -sfn "$PROJECT_DIR" "$WORKSPACE"
 cd "$WORKSPACE"
+
+# Set git identity for THIS repo only (--local). Required for auto-finalize's
+# git commit step. Idempotent: re-running the bootstrap is a no-op for this.
+git config --local user.email "$GIT_USER_EMAIL"
+git config --local user.name  "$GIT_USER_NAME"
 
 # 3.5. Repopulate experiments/ + checkpoints/ from GCS (in case this is a
 # fresh runtime without local copies). Idempotent: if local already has

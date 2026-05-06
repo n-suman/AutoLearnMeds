@@ -291,6 +291,19 @@ def test_train_main_prints_final_macro_edit_f1(project_root):
     assert "final_macro_edit_f1=" in text, "train.py main() must print the edit_f1 final-line"
 
 
+def test_run_experiment_path_includes_tools_gcloud(project_root):
+    """Regression: 2026-05-06 run skipped GCS push because PATH didn't include /tools/google-cloud-sdk/bin."""
+    text = (project_root / "scripts" / "run_experiment.sh").read_text()
+    assert "/tools/google-cloud-sdk/bin" in text
+
+
+def test_bootstrap_sets_git_config(project_root):
+    """Regression: 2026-05-06 auto-finalize's git commit failed because Colab had no git config."""
+    text = (project_root / "scripts" / "colab_bootstrap.sh").read_text()
+    assert "git config --local user.email" in text
+    assert "git config --local user.name" in text
+
+
 def test_disaster_recover_uses_skip_older_flag(project_root):
     """Regression test for the 2026-05-06 part-2 incident: disaster_recover overwrote
     newer-local files with stale GCS versions because rsync had no -u flag."""
