@@ -33,14 +33,14 @@ Plot scripts live in `scripts/plots/` and are rerunnable post-hoc.
 |---|---|---|---|---|
 | F4 | Track A `baseline-seed44-rerun` eval trajectory (twin axes: val macro_f1 + train loss) | `experiments/runs/baseline-seed44-rerun/stdout.log` | ✅ | "Track A vanilla SigLIP: val macro_f1 climbs to 0.074 at step 800, plateaus. Train loss drops 4 orders of magnitude on a log scale — clear overfitting signature on a 564-image train set." |
 | F5 | Track B `qwen-baseline-seed42` val trajectory (val macro_f1 + macro_edit_f1) | `experiments/runs/qwen-baseline-seed42/stdout.log` | ✅ | **Headline figure**: Track B's macro_edit_f1 peaks at step 300 (0.2167) then DROPS to 0.1165 at step 400 while strict macro_f1 stays flat. Visual proof of specialization-induced overfitting under choice of stopping metric. |
-| F6 | Phase 7 DAPT MAE loss curve (loss vs step, full 8600 steps) | `experiments/pretraining/mae-pretrain-seed44/stdout.log` | ⏳ in-flight | "MAE pretraining loss on 2787 in-domain pharma images. 200 epochs. Dataset excludes val + test pixels." |
+| F6 | Phase 7 DAPT MAE loss curve (loss vs step, full 8600 steps) | `experiments/pretraining/mae-pretrain-seed44/stdout.log` | ✅ | "MAE pretraining loss 0.95 → 0.16 over 8600 steps (200 epochs, 2787 in-domain pharma images, val + test pixels excluded). Smooth descent, no instabilities. Final loss=0.1566 wall-clock=7.3h on A100." |
 | F7 | Phase 7 LR schedule (peak 1.5e-4, warmup 20 epochs, cosine to 0) | derived | ⏳ | "Learning rate schedule for the DAPT MAE run." |
 
 ### Qualitative examples
 
 | ID | Figure | Source data | Status | Caption draft |
 |---|---|---|---|---|
-| F8 | Sample dataset images by packaging type (ampoules, blister, strip-foil, mono-carton, syrup, powder) | `gs://auto_learn_meds/raw/raw_images/` | ⏳ | "Representative samples from the 837-image pharmaceutical packaging dataset (shared with Malepati 2026)." |
+| F8 | Annotated dataset samples — 8 representative images, one per packaging type, with polygon overlays + field labels (Malepati 2026 Fig. 1, 2 style) | `gs://auto_learn_meds/raw/golden_set/gold_standard.jsonl` (polygon coords) + `raw_images/` | ✅ | "Representative samples from the 837-image pharmaceutical packaging dataset (shared with Malepati 2026): strip-foil, ampoule, syrup-bottle, vial, blister-pack, tube, jar, sachet. Each polygon shows ground-truth field bounding regions; colors per field-name. Best example: F8_blister_pack_IMG_5582 with 6 visible fields including the OCR-critical batch_number / mrp / expiry_date." |
 | F9 | MAE reconstruction examples (input | masked | reconstructed) at epoch-50 / 100 / 200 | needs instrumenting pretrain_mae.py to dump examples | ⏳ | "MAE reconstruction quality at epoch 50, 100, 200. Mask ratio 0.75. Pixel-MSE per masked patch (per-patch normalized)." |
 | F10 | Per-track failure modes (image, ground-truth XML, predicted XML, error annotation) | TBD | ⏳ | "Failure modes per track. Track A: short-XML truncation. Track B: format-drift outputs. Track D: missed small-text regions." |
 | F11 | Track D SAHI tile boundaries + per-tile detections (Malepati 2026 Fig. 1, 2 style) | TBD when Phase 8 runs | ⏳ | "YOLOv12+SAHI inference on a 4032×3024 photo: 1024-px tiles with 0.35 overlap, base size 1280, per-tile detections merged via NMS." |
