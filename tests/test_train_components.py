@@ -47,3 +47,26 @@ def test_module_imports_without_torch(train_mod) -> None:
     Belt-and-suspenders: confirm torch isn't in the module's top-level namespace.
     """
     assert not hasattr(train_mod, "torch")
+
+
+def test_cfg_has_encoder_init_path_field(train_mod, project_root: Path) -> None:
+    """Phase 7: train.py must support cfg.encoder_init_path so Track A can
+    load an MAE-pretrained encoder."""
+    cfg = train_mod.Config()
+    assert hasattr(cfg, "encoder_init_path")
+    assert cfg.encoder_init_path == ""  # default: empty -> falls back to HF hub
+    # Source-level grep: confirm the field is actually wired into the encoder load.
+    src = (project_root / "train.py").read_text()
+    assert "encoder_init_path" in src
+    assert "cfg.encoder_init_path" in src
+
+
+def test_baseline_mae_init_yaml_loads(train_mod, project_root: Path) -> None:
+    """The Phase 7 Track A config with MAE init must load and set the new field."""
+    cfg = train_mod.Config.from_yaml(
+        project_root / "experiments" / "configs" / "baseline_mae_init.yaml"
+    )
+    assert cfg.encoder_init_path == "checkpoints/mae/run-seed44/final"
+    # Sanity: other fields still come through identical to baseline.
+    assert cfg.encoder_model == "google/siglip-base-patch16-224"
+    assert cfg.hidden_dim == 512

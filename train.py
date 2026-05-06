@@ -30,6 +30,7 @@ class Config:
     """
     seed: int = 42
     encoder_model: str = "google/siglip-base-patch16-224"
+    encoder_init_path: str = ""  # If set, load SigLIP weights from this path instead of HF hub.
     hidden_dim: int = 512
     n_decoder_layers: int = 6
     n_decoder_heads: int = 8
@@ -103,11 +104,19 @@ class Encoder:
     whether to freeze. Default: pretrained, frozen, no [CLS] (only patch tokens).
     """
 
-    def __init__(self, model_name: str = "google/siglip-base-patch16-224") -> None:
+    def __init__(
+        self,
+        model_name: str = "google/siglip-base-patch16-224",
+        encoder_init_path: str = "",
+    ) -> None:
         from transformers import AutoModel
         torch = _import_torch()
         self._torch = torch
-        self.model = AutoModel.from_pretrained(model_name).vision_model
+        # Phase 7: if encoder_init_path is set, load SigLIP weights from that
+        # local path (e.g. an MAE-pretrained checkpoint dir). Otherwise pull
+        # the stock pretrained encoder from the HF hub.
+        encoder_init = encoder_init_path if encoder_init_path else model_name
+        self.model = AutoModel.from_pretrained(encoder_init).vision_model
         for p in self.model.parameters():
             p.requires_grad_(False)
 
@@ -422,11 +431,12 @@ class PharmaVLM:
         dropout: float,
         tied_embeddings: bool,
         tokenizer,
+        encoder_init_path: str = "",
     ) -> None:
         torch = _import_torch()
         nn = torch.nn
 
-        self.encoder = Encoder(encoder_model)
+        self.encoder = Encoder(encoder_model, encoder_init_path=encoder_init_path)
         encoder_hidden = self.encoder.model.config.hidden_size
         self.proj = nn.Linear(encoder_hidden, hidden_dim, bias=False)
         self.decoder = Decoder(
@@ -721,6 +731,7 @@ def main(argv: list[str] | None = None) -> int:
         dropout=cfg.dropout,
         tied_embeddings=cfg.tied_embeddings,
         tokenizer=tokenizer,
+        encoder_init_path=cfg.encoder_init_path,
     ).to(device)
 
     wandb_run = None

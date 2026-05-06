@@ -304,6 +304,16 @@ def test_bootstrap_sets_git_config(project_root):
     assert "git config --local user.name" in text
 
 
+def test_run_pretraining_exists(project_root):
+    p = project_root / "scripts" / "run_pretraining.sh"
+    assert p.is_file()
+    assert os.access(p, os.X_OK)
+    text = p.read_text()
+    assert "PYTHONUNBUFFERED=1" in text
+    assert "/tools/google-cloud-sdk/bin" in text
+    assert "final_pretrain_loss" in text
+
+
 def test_disaster_recover_uses_skip_older_flag(project_root):
     """Regression test for the 2026-05-06 part-2 incident: disaster_recover overwrote
     newer-local files with stale GCS versions because rsync had no -u flag."""
