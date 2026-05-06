@@ -289,3 +289,14 @@ def test_bootstrap_calls_disaster_recover(project_root):
 def test_train_main_prints_final_macro_edit_f1(project_root):
     text = (project_root / "train.py").read_text()
     assert "final_macro_edit_f1=" in text, "train.py main() must print the edit_f1 final-line"
+
+
+def test_disaster_recover_uses_skip_older_flag(project_root):
+    """Regression test for the 2026-05-06 part-2 incident: disaster_recover overwrote
+    newer-local files with stale GCS versions because rsync had no -u flag."""
+    text = (project_root / "scripts" / "disaster_recover.sh").read_text()
+    rsync_lines = [ln for ln in text.splitlines() if '"$GSUTIL"' in ln and "rsync" in ln]
+    assert rsync_lines, "no GSUTIL rsync line found"
+    for ln in rsync_lines:
+        assert " -u " in ln or ln.rstrip().endswith(" -u"), \
+            f"rsync line missing -u (skip-if-not-newer): {ln}"

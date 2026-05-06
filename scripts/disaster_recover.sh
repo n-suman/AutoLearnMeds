@@ -40,17 +40,24 @@ echo "[disaster_recover] $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 cd "$WORKSPACE"
 
 # experiments/ — restore the autoresearch ledger (run_id dirs + ledger.jsonl + leaderboard.md).
-# rsync (without -d) is non-destructive: existing files survive, missing files are pulled.
-# We DO NOT use -d here because the local copy might have *newer* files (uncommitted runs).
+# rsync flags: -r recursive, -u "skip if source is not newer than destination", NO -d
+#   - NO -d: never delete files at destination that aren't at source.
+#       Reason: a fresh-bootstrap workspace is "empty"; without this guard, -d would
+#       delete the entire GCS archive on first sync. Incident 2026-05-06.
+#   - -u: only overwrite local with GCS if GCS is newer (by mtime).
+#       Reason: a fresh git checkout produces local files with NEW mtimes that may
+#       contain CORRECT content not yet in GCS (e.g. ledger.jsonl with appends
+#       committed locally + pushed to git but not yet to GCS). Without -u, gsutil
+#       overwrites those with stale GCS versions. Incident 2026-05-06 part 2.
 echo "[disaster_recover] restoring experiments/..."
 mkdir -p experiments
-"$GSUTIL" -m rsync -r "$BUCKET/experiments" experiments 2>&1 | tail -8 || \
+"$GSUTIL" -m rsync -r -u "$BUCKET/experiments" experiments 2>&1 | tail -8 || \
   echo "  WARN: experiments rsync had issues"
 
 # checkpoints/ — same pattern. Big files; -m parallel transfers.
 echo "[disaster_recover] restoring checkpoints/..."
 mkdir -p checkpoints
-"$GSUTIL" -m rsync -r "$BUCKET/checkpoints" checkpoints 2>&1 | tail -8 || \
+"$GSUTIL" -m rsync -r -u "$BUCKET/checkpoints" checkpoints 2>&1 | tail -8 || \
   echo "  WARN: checkpoints rsync had issues"
 
 # Active-experiment marker — tiny, sync directly.
