@@ -42,3 +42,41 @@ def test_pretrain_mae_module_imports_without_torch() -> None:
     import pretrain_mae
     assert not hasattr(pretrain_mae, "torch")
     assert not hasattr(pretrain_mae, "transformers")
+
+
+def test_mae_config_excludes_val_test_jsonls(pretrain_mae_mod, project_root: Path) -> None:
+    """Strict-paper claim: val + test image pixels are excluded from MAE pretraining."""
+    cfg = pretrain_mae_mod.MAEConfig.from_yaml(
+        project_root / "experiments" / "configs" / "mae_pretrain.yaml"
+    )
+    assert isinstance(cfg.exclude_jsonls, tuple)
+    assert "data/processed/val.jsonl" in cfg.exclude_jsonls
+    assert "data/processed/test.jsonl" in cfg.exclude_jsonls
+
+
+def test_build_pretrain_dataset_filters_excluded(pretrain_mae_mod, tmp_path: Path) -> None:
+    """build_pretrain_dataset must drop images whose basename appears in exclude_jsonls."""
+    import json as _json
+    import types
+
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    for name in ["a.jpg", "b.jpg", "c.jpg", "d.jpg", "e.jpg"]:
+        (raw / name).write_bytes(b"\xff\xd8\xff")  # minimal jpg-ish bytes
+    excl = tmp_path / "exclude.jsonl"
+    excl.write_text("\n".join([
+        _json.dumps({"image_path": "raw/b.jpg"}),
+        _json.dumps({"image_path": "raw/c.jpg"}),
+    ]))
+
+    # build_pretrain_dataset only reads cfg.images_root and cfg.exclude_jsonls,
+    # so a SimpleNamespace with those two fields is enough — no need to fill the
+    # full MAEConfig.
+    cfg = types.SimpleNamespace(
+        images_root=str(raw),
+        exclude_jsonls=(str(excl),),
+    )
+
+    paths = pretrain_mae_mod.build_pretrain_dataset(cfg)
+    names = sorted(p.name for p in paths)
+    assert names == ["a.jpg", "d.jpg", "e.jpg"], f"expected b.jpg+c.jpg excluded, got {names}"

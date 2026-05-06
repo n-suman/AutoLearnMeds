@@ -39,3 +39,10 @@ images_root: "/mnt/gcs/raw/raw_images"
 checkpoint_dir: "checkpoints/mae/run-seed44"
 wandb_project: "autolearnmeds"
 wandb_mode: "online"
+
+# Strict-paper exclusion: keep val + test image PIXELS out of MAE pretraining
+# (labels were never seen anyway; this kills any pixel-level leakage concern
+# for the paper claim). Drops ~222 images from the 3061-image pool → 2839.
+exclude_jsonls:
+  - "data/processed/val.jsonl"
+  - "data/processed/test.jsonl"

@@ -65,6 +65,10 @@ class MAEConfig:
     checkpoint_dir: str
     wandb_project: str
     wandb_mode: str
+    # Optional: jsonl files whose `image_path` entries should be EXCLUDED from
+    # the pretraining pool. Used to keep val/test image PIXELS out of MAE
+    # pretraining for a cleaner paper claim ("zero leakage at any level").
+    exclude_jsonls: tuple[str, ...] = ()
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> "MAEConfig":
@@ -73,6 +77,8 @@ class MAEConfig:
             data["adam_betas"] = tuple(data["adam_betas"])
         if isinstance(data.get("random_resized_crop_scale"), list):
             data["random_resized_crop_scale"] = tuple(data["random_resized_crop_scale"])
+        if isinstance(data.get("exclude_jsonls"), list):
+            data["exclude_jsonls"] = tuple(data["exclude_jsonls"])
         return cls(**data)
 
 
@@ -203,12 +209,42 @@ def random_masking(x, mask_ratio: float):
 # === Dataset ===
 
 def build_pretrain_dataset(cfg: "MAEConfig") -> list[Path]:
-    """List ALL .jpeg/.jpg/.png files under cfg.images_root.
+    """List image files under cfg.images_root, excluding any in cfg.exclude_jsonls.
 
     No labels needed — MAE self-supervised pretraining only consumes pixels.
+
+    The exclude mechanism reads each path in cfg.exclude_jsonls (each is a JSONL
+    file with `image_path` entries — same format as data/processed/{train,val,
+    test}.jsonl) and filters out images whose basename appears in the exclude
+    set. This keeps val/test pixels out of MAE pretraining so the paper can
+    claim zero leakage at any level (label OR pixel).
     """
     root = Path(cfg.images_root)
     paths = sorted(p for p in root.glob("**/*") if p.suffix.lower() in {".jpeg", ".jpg", ".png"})
+
+    if cfg.exclude_jsonls:
+        excluded_basenames: set[str] = set()
+        for jsonl_path in cfg.exclude_jsonls:
+            jp = Path(jsonl_path)
+            if not jp.is_file():
+                print(f"[mae] WARN: exclude_jsonl {jp} not found; skipping (no exclusion applied)", flush=True)
+                continue
+            for line in jp.read_text().splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    entry = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                img_path = entry.get("image_path") or entry.get("image") or ""
+                if img_path:
+                    excluded_basenames.add(Path(img_path).name)
+        if excluded_basenames:
+            before = len(paths)
+            paths = [p for p in paths if p.name not in excluded_basenames]
+            print(f"[mae] excluded {before - len(paths)} images via {len(cfg.exclude_jsonls)} jsonl(s); pool={len(paths)}", flush=True)
+
     return paths
 
 
