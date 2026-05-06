@@ -1,0 +1,38 @@
+track: B
+model_name: "Qwen/Qwen2-VL-2B-Instruct"
+
+# Quantization
+load_in_4bit: true
+bnb_4bit_compute_dtype: "bfloat16"
+bnb_4bit_quant_type: "nf4"
+
+# LoRA
+lora_rank: 8
+lora_alpha: 16
+lora_dropout: 0.05
+lora_target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+
+# Training
+seed: 42
+batch_size: 4
+grad_accum_steps: 4   # effective batch 16
+peak_lr: 2.0e-4       # higher than Track A — LoRA converges faster
+min_lr: 2.0e-5
+warmup_steps: 50
+max_steps: 500        # half of Track A
+weight_decay: 0.01    # lower — LoRA is inherently regularizing
+adam_betas: [0.9, 0.999]
+grad_clip: 1.0
+eval_every: 100
+log_every: 10
+precision: "bf16"
+max_new_tokens_eval: 256
+
+# I/O (shared with Track A)
+train_jsonl: "data/processed/train.jsonl"
+val_jsonl: "data/processed/val.jsonl"
+images_root: "/mnt/gcs/raw/raw_images"
+path_strip_prefix: "raw/raw_images/"
+checkpoint_dir: "checkpoints/runs/qwen_baseline"
+wandb_project: "autolearnmeds"
+wandb_mode: "online"

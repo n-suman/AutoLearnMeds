@@ -1,0 +1,70 @@
+[track-b] track=B model=Qwen/Qwen2-VL-2B-Instruct seed=42
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 2 files:   0%|          | 0/2 [00:00<?, ?it/s]Fetching 2 files:  50%|█████     | 1/2 [00:10<00:10, 10.73s/it]Fetching 2 files: 100%|██████████| 2/2 [00:10<00:00,  5.36s/it]
+Loading weights:   0%|          | 0/729 [00:00<?, ?it/s]Loading weights:   0%|          | 1/729 [00:00<01:26,  8.46it/s]/content/AutoLearnMeds/.venv/lib/python3.11/site-packages/bitsandbytes/backends/cuda/ops.py:213: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
+  torch._check_is_size(blocksize)
+Loading weights:   2%|▏         | 15/729 [00:00<00:09, 78.35it/s]Loading weights:   7%|▋         | 52/729 [00:00<00:03, 203.92it/s]Loading weights:  12%|█▏        | 89/729 [00:00<00:02, 266.47it/s]Loading weights:  19%|█▊        | 135/729 [00:00<00:01, 325.57it/s]Loading weights:  24%|██▎       | 172/729 [00:00<00:01, 338.71it/s]Loading weights:  29%|██▊       | 209/729 [00:00<00:01, 348.13it/s]Loading weights:  35%|███▍      | 253/729 [00:00<00:01, 376.48it/s]Loading weights:  40%|███▉      | 291/729 [00:00<00:01, 375.10it/s]Loading weights:  45%|████▌     | 329/729 [00:01<00:01, 366.48it/s]Loading weights:  57%|█████▋    | 414/729 [00:01<00:00, 506.45it/s]Loading weights:  68%|██████▊   | 496/729 [00:01<00:00, 597.01it/s]Loading weights:  79%|███████▊  | 574/729 [00:01<00:00, 647.82it/s]Loading weights:  90%|████████▉ | 656/729 [00:01<00:00, 698.58it/s]Loading weights: 100%|██████████| 729/729 [00:01<00:00, 705.74it/s]Loading weights: 100%|██████████| 729/729 [00:01<00:00, 469.51it/s]
+[track-b] LoRA attached: trainable=2,179,072 / total=1,224,454,656
+[track-b] train dataset size = 564
+/content/AutoLearnMeds/.venv/lib/python3.11/site-packages/torch/_dynamo/eval_frame.py:1263: UserWarning: torch.utils.checkpoint: the use_reentrant parameter should be passed explicitly. Starting in PyTorch 2.9, calling checkpoint without use_reentrant will raise an exception. use_reentrant=False is recommended, but if you need to preserve the current default behavior, you can pass use_reentrant=True. Refer to docs for more details on the differences between the two variants.
+  return fn(*args, **kwargs)
+[transformers] `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+[track-b] step=10 loss=3.5052 lr=4.00e-05
+[track-b] step=20 loss=1.6845 lr=8.00e-05
+[track-b] step=30 loss=1.5740 lr=1.20e-04
+[track-b] step=40 loss=1.6554 lr=1.60e-04
+[track-b] step=50 loss=1.1083 lr=2.00e-04
+[track-b] step=60 loss=1.2169 lr=2.00e-04
+[track-b] step=70 loss=1.6956 lr=1.99e-04
+[track-b] step=80 loss=0.7885 lr=1.98e-04
+[track-b] step=90 loss=1.4039 lr=1.97e-04
+[track-b] step=100 loss=0.0396 lr=1.95e-04
+/content/AutoLearnMeds/.venv/lib/python3.11/site-packages/bitsandbytes/backends/cuda/ops.py:468: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
+  torch._check_is_size(blocksize)
+[track-b] step=100 val_macro_f1=0.0000 val_macro_edit_f1=0.0000
+[track-b] step=110 loss=1.8984 lr=1.92e-04
+[track-b] step=120 loss=0.4892 lr=1.90e-04
+[track-b] step=130 loss=2.4415 lr=1.87e-04
+[track-b] step=140 loss=1.4808 lr=1.83e-04
+[track-b] step=150 loss=0.9965 lr=1.79e-04
+[track-b] step=160 loss=0.5557 lr=1.75e-04
+[track-b] step=170 loss=0.4060 lr=1.71e-04
+[track-b] step=180 loss=0.8085 lr=1.66e-04
+[track-b] step=190 loss=0.8354 lr=1.61e-04
+[track-b] step=200 loss=0.7725 lr=1.56e-04
+[track-b] step=200 val_macro_f1=0.0115 val_macro_edit_f1=0.0152
+[track-b] saved best LoRA adapters to checkpoints/runs/qwen_baseline/best_lora (macro_f1=0.0115)
+[track-b] step=210 loss=2.2245 lr=1.50e-04
+[track-b] step=220 loss=0.5026 lr=1.44e-04
+[track-b] step=230 loss=0.4184 lr=1.38e-04
+[track-b] step=240 loss=0.3967 lr=1.32e-04
+[track-b] step=250 loss=1.4912 lr=1.26e-04
+[track-b] step=260 loss=0.5295 lr=1.20e-04
+[track-b] step=270 loss=0.2074 lr=1.14e-04
+[track-b] step=280 loss=0.0796 lr=1.07e-04
+[track-b] step=290 loss=0.6337 lr=1.01e-04
+[track-b] step=300 loss=0.2148 lr=9.50e-05
+[track-b] step=300 val_macro_f1=0.0123 val_macro_edit_f1=0.2167
+[track-b] saved best LoRA adapters to checkpoints/runs/qwen_baseline/best_lora (macro_f1=0.0123)
+[track-b] step=310 loss=0.5326 lr=8.88e-05
+[track-b] step=320 loss=0.0476 lr=8.28e-05
+[track-b] step=330 loss=0.7557 lr=7.69e-05
+[track-b] step=340 loss=0.8392 lr=7.11e-05
+[track-b] step=350 loss=0.7656 lr=6.55e-05
+[track-b] step=360 loss=0.3892 lr=6.02e-05
+[track-b] step=370 loss=0.2046 lr=5.51e-05
+[track-b] step=380 loss=0.2141 lr=5.02e-05
+[track-b] step=390 loss=0.5156 lr=4.57e-05
+[track-b] step=400 loss=0.1268 lr=4.15e-05
+[track-b] step=400 val_macro_f1=0.0159 val_macro_edit_f1=0.1165
+[track-b] saved best LoRA adapters to checkpoints/runs/qwen_baseline/best_lora (macro_f1=0.0159)
+[track-b] step=410 loss=0.9000 lr=3.76e-05
+[track-b] step=420 loss=0.8738 lr=3.40e-05
+[track-b] step=430 loss=0.2125 lr=3.08e-05
+[track-b] step=440 loss=1.3912 lr=2.80e-05
+[track-b] step=450 loss=0.5494 lr=2.56e-05
+[track-b] step=460 loss=0.2375 lr=2.37e-05
+[track-b] step=470 loss=0.4772 lr=2.21e-05
+[track-b] step=480 loss=0.3918 lr=2.10e-05
+[track-b] step=490 loss=0.5414 lr=2.03e-05
+[track-b] step=500 loss=0.1857 lr=2.00e-05

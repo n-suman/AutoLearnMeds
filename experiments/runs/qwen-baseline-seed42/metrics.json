@@ -1,0 +1,11 @@
+{
+  "run_id": "qwen-baseline-seed42",
+  "track": "B",
+  "git_sha": "6e4a5b4",
+  "config": "experiments/configs/qwen_baseline.yaml",
+  "final_macro_f1": 0.0159,
+  "final_macro_edit_f1": 0.1165,
+  "wall_clock_seconds": 4700,
+  "exit_code": -1,
+  "note": "interrupted-during-step-500-eval; metrics reflect last completed eval (step 400)"
+}
