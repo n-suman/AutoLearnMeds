@@ -325,6 +325,15 @@ def test_disaster_recover_uses_skip_older_flag(project_root):
             f"rsync line missing -u (skip-if-not-newer): {ln}"
 
 
+def test_run_track_d_script_exists_and_pythonunbuffered(project_root):
+    p = project_root / "scripts" / "run_track_d.sh"
+    assert p.is_file()
+    text = p.read_text()
+    assert "PYTHONUNBUFFERED=1" in text
+    assert "track_d_pipeline.py" in text
+    assert "finalize_experiment.sh" in text
+
+
 def test_baseline_mae_text_aware_init_yaml_loads(project_root):
     import yaml
     p = project_root / "experiments" / "configs" / "baseline_mae_text_aware_init.yaml"

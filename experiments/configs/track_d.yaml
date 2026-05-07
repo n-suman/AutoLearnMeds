@@ -1,0 +1,19 @@
+phase: 8
+run_kind: track_d_eval
+yolo_weights: "checkpoints/runs/yolo-baseline-seed44/weights/best.pt"
+trocr_model: "microsoft/trocr-base-printed"
+
+# SAHI params (per Malepati 2026 recipe)
+slice_size: 1024
+overlap: 0.35
+inference_imgsz: 1280
+ocr_critical_classes: ["batch_number", "mfg_date", "expiry_date", "mrp"]
+per_class_confidence: 0.15      # for OCR-critical classes
+default_confidence: 0.25
+
+# I/O (shared with Tracks A/B/C)
+val_jsonl: "data/processed/val.jsonl"
+test_jsonl: "data/processed/test.jsonl"
+images_root: "/mnt/gcs/raw/raw_images"
+path_strip_prefix: "raw/raw_images/"
+checkpoint_dir: "checkpoints/runs/track_d-seed44"

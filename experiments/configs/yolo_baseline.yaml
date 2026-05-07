@@ -1,0 +1,20 @@
+phase: 8
+run_kind: yolo_train
+model: "yolov12s.pt"
+data: "data/yolo/data.yaml"
+epochs: 100
+imgsz: 640
+batch: 16
+optimizer: "AdamW"
+lr0: 1.0e-3
+seed: 44
+device: 0
+patience: 20
+amp: true
+augment: true
+hsv_h: 0.015
+hsv_s: 0.0    # NO color jitter (preserves text features per Phase 7b text-aware MAE finding)
+hsv_v: 0.0
+fliplr: 0.5
+project: "checkpoints/runs"
+name: "yolo-baseline-seed44"
