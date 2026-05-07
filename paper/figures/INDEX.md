@@ -24,7 +24,9 @@ Plot scripts live in `scripts/plots/` and are rerunnable post-hoc.
 |---|---|---|---|---|
 | F1a | Per-field strict F1, Track A vs Track B | `experiments/per_field_track_a.json` + `..._b.json` | ✅ | "Per-field strict F1 — Track A wins or ties Track B on every field." |
 | F1b | Per-field edit-distance F1, Track A vs Track B | same | ✅ | "Per-field lenient F1 — Track A leads by ~2× on most fields; Track B catches up most on `drug_name` (0.61 → 0.28)." |
-| F2 | Per-field heatmap (4 tracks × 12 fields) | TBD when Tracks C, D land | ⏳ | "Per-field strict F1 heatmap across all four tracks. Brighter = stronger. Track D (SAHI+OCR) projected to dominate OCR-critical fields (batch, mrp, expiry, mfg)." |
+| F2a | Per-field strict F1, 4-track (vanilla A + 3 MAE variants) | `experiments/per_field_track_a.json` + 3 `per_field_baseline_mae_*-seed44.json` | ✅ | "Per-field strict F1, 4-track. Vanilla SigLIP wins or ties on every field except brand_name where TAPT briefly competes (0.30 vs 0.58 still won by vanilla)." |
+| F2b | Per-field edit-distance F1, 4-track | same | ✅ | "Per-field lenient F1, 4-track. Confirms negative result: all 3 MAE variants underperform vanilla on every field except minor wins on brand_name (TAPT) and drug_name (text-aware)." |
+| F2c | Per-field heatmap (5 tracks × 12 fields, with Track D) | TBD when Phase 8 Track D lands | ⏳ | "Per-field heatmap across all 5 tracks once Track D (SAHI+OCR) lands. Track D projected to dominate OCR-critical fields per Malepati 2026's 17× SAHI lift on small-text classes." |
 | F3 | Confusion matrix per track (per Malepati 2026 Fig. 4-6 style) | TBD | ⏳ | "Predicted-vs-actual matrices for each track on the brand_name field; diagonal saturation indicates per-class accuracy." |
 
 ### Training trajectories

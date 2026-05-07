@@ -1,0 +1,37 @@
+{
+  "track": "A",
+  "ckpt": "checkpoints/runs/baseline_mae_text_aware_init/best.pt",
+  "config": "experiments/configs/baseline_mae_text_aware_init.yaml",
+  "val_jsonl": "data/processed/val.jsonl",
+  "n_samples": 111,
+  "macro_f1": 0.03313805479571796,
+  "macro_edit_f1": 0.15690009450234144,
+  "per_field_f1": {
+    "brand_name": 0.08163265306122448,
+    "drug_name": 0.06024096385542168,
+    "generic_name": 0.04316546762589928,
+    "strength": 0.0,
+    "quantity": 0.0,
+    "company": 0.14634146341463414,
+    "manufacturer": 0.0,
+    "batch_number": 0.0,
+    "mfg_date": 0.0,
+    "expiry_date": 0.0,
+    "mrp": 0.0,
+    "warnings": 0.0
+  },
+  "per_field_edit_f1": {
+    "brand_name": 0.2355407290149937,
+    "drug_name": 0.26682582382862485,
+    "generic_name": 0.3034758089728267,
+    "strength": 0.05714285714285714,
+    "quantity": 0.0,
+    "company": 0.2046485260770975,
+    "manufacturer": 0.0,
+    "batch_number": 0.13146066874460371,
+    "mfg_date": 0.14626846337854932,
+    "expiry_date": 0.1112719185811123,
+    "mrp": 0.11236614928274875,
+    "warnings": 0.0
+  }
+}

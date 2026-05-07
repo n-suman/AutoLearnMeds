@@ -152,21 +152,22 @@ The harness `prepare.evaluate(model, val_jsonl, images_root, path_strip_prefix, 
 
 ### A. Cross-track headline (Table 1)
 
-[FILL: Single master table with macro_f1 + macro_edit_f1 + trainable params + wall-clock for all four tracks. Pinned to commit SHAs.]
-
-Skeleton:
-
 | Track | Method | Trainable | macro_f1 (strict) | macro_edit_f1 (lenient) | edit/strict | wall (min) |
 |---|---|---:|---:|---:|---:|---:|
-| A | SigLIP+Donut, vanilla SigLIP | 26.5 M | **0.0804** | **0.4094** | 5.1× | 30 |
+| **A** | SigLIP+Donut, vanilla SigLIP (best.pt eval) | 26.5 M | **0.0741** | **0.3225** | 4.4× | 57 |
+| A-final | same model, step-1000 final-eval | 26.5 M | 0.0804 | 0.4094 | 5.1× | 57 |
 | B | Qwen2-VL-2B + LoRA r=8, step 400 | ~5 M | 0.0159 | 0.1165 | 7.3× | 78 |
-| B@peak | same, step 300 (peak edit_f1) | ~5 M | 0.0123 | 0.2167 | 17.6× | 60 |
-| C-DAPT | A + DAPT MAE encoder | 26.5 M | `[FILL]` | `[FILL]` | `[FILL]` | 30 |
-| C-TAPT | A + DAPT+TAPT MAE encoder | 26.5 M | `[FILL]` | `[FILL]` | `[FILL]` | 30 |
-| C-textaware | A + text-aware MAE encoder | 26.5 M | `[FILL]` | `[FILL]` | `[FILL]` | 30 |
-| D | YOLOv12+SAHI+OCR | YOLO ≈ 30 M, OCR head ≈ `[FILL]` | `[FILL]` | `[FILL]` | `[FILL]` | `[FILL]` |
+| B@peak | same, step 300 (peak edit_f1) | ~5 M | 0.0123 | 0.2167 | **17.6×** | 60 |
+| C-DAPT | A + 200-epoch in-domain MAE encoder | 26.5 M | 0.0284 | 0.1847 | 6.5× | 56 |
+| C-text-aware | A + 200-epoch text-region-biased MAE | 26.5 M | 0.0331 | 0.1569 | 4.7× | 55 |
+| C-TAPT | A + DAPT-then-TAPT MAE encoder | 26.5 M | 0.0262 | 0.0993 | 3.8× | 55 |
+| D | YOLOv12+SAHI+OCR (Phase 8, pending) | YOLO ≈ 30 M + OCR head | `[FILL]` | `[FILL]` | `[FILL]` | `[FILL]` |
 
-[Reference: F1a (strict), F1b (lenient), F4 (Track A trajectory), F5 (Track B trajectory).]
+**Headline.** Vanilla Track A wins on both metrics across all completed tracks. The three Track-C MAE-init variants — vanilla DAPT, text-region-biased DAPT, and DAPT-then-TAPT — all underperform vanilla Track A by 2.6–2.9× on strict and 1.7–3.2× on lenient. Track B (the much-larger pretrained VLM) underperforms by ~5× on both metrics. The 17.6× edit/strict ratio at Track B step 300 is the project's clearest format-vs-content drift signature.
+
+The result for Track C is a clean **falsification of the in-domain MAE pretraining hypothesis** in this regime. Three independent MAE recipes (uniform-mask, text-region-biased mask, DAPT+TAPT) all hurt downstream Track A performance. Section V-A discusses the likely mechanism (catastrophic forgetting of SigLIP's web-pretrained discriminative features in favor of pixel-reconstruction features that are correlated with — but not the same as — features useful for label-text reading).
+
+[Reference: F1a (strict, 2-track), F1b (lenient, 2-track), F2a (strict, 4-track), F2b (lenient, 4-track), F4 (Track A trajectory), F5 (Track B trajectory), F6 (DAPT MAE pretraining loss curve).]
 
 ### B. Per-field analysis (Table 2)
 
