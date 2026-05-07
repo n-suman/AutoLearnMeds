@@ -109,14 +109,29 @@ class Encoder:
         model_name: str = "google/siglip-base-patch16-224",
         encoder_init_path: str = "",
     ) -> None:
-        from transformers import AutoModel
+        from transformers import AutoModel, SiglipVisionModel
         torch = _import_torch()
         self._torch = torch
         # Phase 7: if encoder_init_path is set, load SigLIP weights from that
         # local path (e.g. an MAE-pretrained checkpoint dir). Otherwise pull
         # the stock pretrained encoder from the HF hub.
+        #
+        # Two cases:
+        #   (a) stock "google/siglip-base-patch16-224": full SiglipModel
+        #       config (with both vision + text towers); we want only the
+        #       vision tower, hence the .vision_model attribute access.
+        #   (b) MAE-pretrained checkpoint from pretrain_mae.py's
+        #       encoder.save_pretrained(...): config is vision-only
+        #       (model_type=siglip_vision_model). AutoModel.from_pretrained
+        #       returns a SiglipVisionModel directly — no .vision_model attr.
+        # Detect via config.model_type and dispatch to the right loader.
         encoder_init = encoder_init_path if encoder_init_path else model_name
-        self.model = AutoModel.from_pretrained(encoder_init).vision_model
+        from transformers import AutoConfig
+        cfg = AutoConfig.from_pretrained(encoder_init)
+        if getattr(cfg, "model_type", "") == "siglip_vision_model":
+            self.model = SiglipVisionModel.from_pretrained(encoder_init)
+        else:
+            self.model = AutoModel.from_pretrained(encoder_init).vision_model
         for p in self.model.parameters():
             p.requires_grad_(False)
 
