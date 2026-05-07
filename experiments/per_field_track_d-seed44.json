@@ -1,0 +1,33 @@
+{
+  "macro_f1": 0.01801587301587302,
+  "per_field_f1": {
+    "brand_name": 0.03571428571428572,
+    "drug_name": 0.1,
+    "generic_name": 0.0,
+    "strength": 0.0,
+    "quantity": 0.0,
+    "company": 0.044444444444444446,
+    "manufacturer": 0.0,
+    "batch_number": 0.0,
+    "mfg_date": 0.0,
+    "expiry_date": 0.0,
+    "mrp": 0.0,
+    "warnings": 0.0
+  },
+  "macro_edit_f1": 0.08309876903875793,
+  "per_field_edit_f1": {
+    "brand_name": 0.24062457660803252,
+    "drug_name": 0.26157045191378453,
+    "generic_name": 0.2307661195194744,
+    "strength": 0.0038461538461538438,
+    "quantity": 0.0,
+    "company": 0.07215007215007214,
+    "manufacturer": 0.0,
+    "batch_number": 0.004551820728291317,
+    "mfg_date": 0.0,
+    "expiry_date": 0.007201646090534982,
+    "mrp": 0.0102768495312355,
+    "warnings": 0.0
+  },
+  "n_examples": 111
+}

@@ -161,11 +161,21 @@ The harness `prepare.evaluate(model, val_jsonl, images_root, path_strip_prefix, 
 | C-DAPT | A + 200-epoch in-domain MAE encoder | 26.5 M | 0.0284 | 0.1847 | 6.5× | 56 |
 | C-text-aware | A + 200-epoch text-region-biased MAE | 26.5 M | 0.0331 | 0.1569 | 4.7× | 55 |
 | C-TAPT | A + DAPT-then-TAPT MAE encoder | 26.5 M | 0.0262 | 0.0993 | 3.8× | 55 |
-| D | YOLOv12+SAHI+OCR (Phase 8, pending) | YOLO ≈ 30 M + OCR head | `[FILL]` | `[FILL]` | `[FILL]` | `[FILL]` |
+| D | YOLOv12-s + SAHI + TrOCR-base-printed | YOLO 9.3 M trained + TrOCR 333 M frozen | 0.0180 | 0.0831 | 4.6× | 5 (eval) + 19 (yolo train) |
 
-**Headline.** Vanilla Track A wins on both metrics across all completed tracks. The three Track-C MAE-init variants — vanilla DAPT, text-region-biased DAPT, and DAPT-then-TAPT — all underperform vanilla Track A by 2.6–2.9× on strict and 1.7–3.2× on lenient. Track B (the much-larger pretrained VLM) underperforms by ~5× on both metrics. The 17.6× edit/strict ratio at Track B step 300 is the project's clearest format-vs-content drift signature.
+**Headline.** Vanilla Track A wins on both metrics across all five completed tracks. Three independent recipes for "improving" the small-data baseline all underperformed it:
 
-The result for Track C is a clean **falsification of the in-domain MAE pretraining hypothesis** in this regime. Three independent MAE recipes (uniform-mask, text-region-biased mask, DAPT+TAPT) all hurt downstream Track A performance. Section V-A discusses the likely mechanism (catastrophic forgetting of SigLIP's web-pretrained discriminative features in favor of pixel-reconstruction features that are correlated with — but not the same as — features useful for label-text reading).
+- Track B (LoRA-fine-tuned 2.2 B-param Qwen2-VL): 5× worse strict, 3× worse lenient.
+- Track C (in-domain MAE pretraining, three variants — DAPT / text-aware / DAPT+TAPT): 2.2–2.8× worse strict, 1.7–3.2× worse lenient.
+- Track D (modular YOLOv12+SAHI+TrOCR pipeline replicating Malepati 2026's recipe): **4.1× worse strict, 3.9× worse lenient — the worst overall**.
+
+Three falsified hypotheses, one across each method family:
+
+1. **"Bigger pretrained model bridges the small-data gap"** — Track B falsifies. LoRA on a 100× larger backbone gets 5× worse strict, with the diagnostic 17.6× edit/strict ratio revealing format-drift overfitting (Section IV-C).
+
+2. **"In-domain MAE pretraining lifts the encoder"** — Track C falsifies, three independent ways. Section V-A argues catastrophic forgetting: pixel-MSE reconstruction reorients SigLIP's text-discriminative features toward texture-reconstruction, against the downstream task.
+
+3. **"Modular detection-then-extract beats end-to-end on OCR-heavy fields"** — Track D falsifies. Even on the four OCR-critical classes (batch_number, MRP, mfg_date, expiry_date) where Malepati 2026 demonstrated SAHI's 17× detection-accuracy gain, the per-region OCR head's compound errors dominate. Section V-D quantifies the chain.
 
 [Reference: F1a (strict, 2-track), F1b (lenient, 2-track), F2a (strict, 4-track), F2b (lenient, 4-track), F4 (Track A trajectory), F5 (Track B trajectory), F6 (DAPT MAE pretraining loss curve).]
 
