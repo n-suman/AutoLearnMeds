@@ -24,12 +24,12 @@ grad_accum_steps: 2
 peak_lr: 1.5e-4
 min_lr: 0.0
 warmup_epochs: 20
-total_epochs: 200
+total_epochs: 100      # halved from 200 (DAPT loss curve plateaued by epoch 100; cuts run from 6.6h to 3.3h)
 weight_decay: 0.05
 adam_betas: [0.9, 0.95]
 grad_clip: 1.0
 log_every: 50
-save_every_epoch: 50
+save_every_epoch: 10   # was 50; tighter cadence limits worst-case lost-work-on-VM-reclaim from ~50min to ~7min
 precision: "bf16"
 
 random_resized_crop_scale: [0.5, 1.0]
