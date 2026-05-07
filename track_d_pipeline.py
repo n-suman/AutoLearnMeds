@@ -226,7 +226,15 @@ class TrackDPipeline:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """CLI for standalone eval (typically called via run_track_d.sh)."""
+    """CLI for standalone eval.
+
+    Track D's eval bypasses prepare.evaluate's tensor pipeline because that
+    pipeline downsamples images to 224x224 (SigLIP's input size) — too small
+    for SAHI's 1024-px tiling. Instead, Track D reads each val image at
+    FULL resolution from disk, runs SAHI+YOLO+TrOCR per image, parses the
+    predicted XML into a {field: value} dict, and feeds (predictions, truths)
+    directly to prepare.compute_metrics — same metric, full-res input.
+    """
     parser = argparse.ArgumentParser(description="Phase 8 - Track D inference + eval.")
     parser.add_argument("--config", default="experiments/configs/track_d.yaml")
     parser.add_argument("--seed", type=int, default=None, help="For ledger consistency; unused.")
@@ -236,26 +244,61 @@ def main(argv: list[str] | None = None) -> int:
     print(f"[track-d] config={args.config} yolo_weights={cfg.yolo_weights} trocr={cfg.trocr_model}", flush=True)
 
     pipeline = TrackDPipeline(cfg)
+    pipeline._lazy_init()
 
-    # Run eval through the same harness as Tracks A/B/C.
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import prepare
+    from PIL import Image
+
+    images_root = Path(cfg.images_root)
+    predictions: list[dict[str, str]] = []
+    truths: list[dict[str, str]] = []
 
     start = time.time()
-    metrics = prepare.evaluate(
-        pipeline,
-        cfg.val_jsonl,
-        cfg.images_root,
-        cfg.path_strip_prefix,
-        batch_size=4,
-        max_new_tokens=256,
-    )
+    with open(cfg.val_jsonl) as f:
+        for line_idx, line in enumerate(f):
+            line = line.strip()
+            if not line:
+                continue
+            entry = json.loads(line)
+
+            # Resolve full-res image path. The jsonl stores image_path like
+            # "raw/raw_images/IMG_NNNN.jpeg"; strip the configured prefix and
+            # join under cfg.images_root (which can point at the local SSD
+            # cache for fast disk reads).
+            img_path_str = entry["image_path"]
+            if cfg.path_strip_prefix and img_path_str.startswith(cfg.path_strip_prefix):
+                img_path_str = img_path_str[len(cfg.path_strip_prefix):]
+            img_path = images_root / img_path_str
+
+            pil = Image.open(img_path).convert("RGB")
+            pred_xml = pipeline._predict_one(pil)
+            pred_dict = prepare.parse_output(pred_xml)
+
+            # Build truth dict from entry["fields"]: {field_name: text_value}
+            truth_dict: dict[str, str] = {}
+            for field_name, field_data in entry.get("fields", {}).items():
+                text = field_data.get("text", "") if isinstance(field_data, dict) else ""
+                if text:
+                    truth_dict[field_name] = text
+
+            predictions.append(pred_dict)
+            truths.append(truth_dict)
+
+            if (line_idx + 1) % 10 == 0:
+                elapsed = time.time() - start
+                print(f"[track-d] processed {line_idx + 1} images "
+                      f"elapsed={elapsed:.1f}s ({elapsed/(line_idx+1):.1f}s/img)", flush=True)
+
+    metrics = prepare.compute_metrics(predictions, truths)
+
     wall = time.time() - start
-    print(f"[track-d] eval done wall={wall:.1f}s", flush=True)
+    print(f"[track-d] eval done wall={wall:.1f}s n_images={len(predictions)}", flush=True)
     print(f"final_macro_f1={metrics['macro_f1']:.4f}", flush=True)
     print(f"final_macro_edit_f1={metrics['macro_edit_f1']:.4f}", flush=True)
 
-    out = Path(cfg.checkpoint_dir).parent.parent / "per_field_track_d-seed44.json"
+    # Write per-field json under experiments/ (sibling to other tracks' jsons).
+    out = Path("experiments") / "per_field_track_d-seed44.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(metrics, indent=2))
     print(f"[track-d] wrote {out}", flush=True)
