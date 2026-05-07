@@ -79,8 +79,15 @@ def build_track_a(ckpt_path: str | Path, config_path: str | Path):
     tokenizer = prepare.get_tokenizer(cfg.tokenizer_path)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    # CRITICAL: pass encoder_init_path so MAE-pretrained encoders load correctly.
+    # Without this, the encoder defaults to stock google/siglip-base-patch16-224
+    # while the decoder weights in best.pt were trained against an MAE-pretrained
+    # encoder — feature distributions don't match → predictions are garbage and
+    # macro_f1 collapses to ~0. (Reproduced 2026-05-08 on the Phase 7+7b
+    # baseline_mae_*_init runs; per_field reported f1=0.0 vs train.py's ~0.02.)
     model = train.PharmaVLM(
         encoder_model=cfg.encoder_model,
+        encoder_init_path=getattr(cfg, "encoder_init_path", "") or "",
         vocab_size=tokenizer.get_vocab_size(),
         hidden_dim=cfg.hidden_dim,
         n_layers=cfg.n_decoder_layers,
