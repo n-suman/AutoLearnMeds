@@ -156,7 +156,8 @@ def test_mae_config_yamls_still_load_with_save_every_epoch(pretrain_mae_mod, pro
         cfg = pretrain_mae_mod.MAEConfig.from_yaml(
             project_root / "experiments" / "configs" / yaml_name
         )
-        assert cfg.save_every_epoch in (50, 25), f"{yaml_name}: unexpected save_every_epoch={cfg.save_every_epoch}"
+        # Text-aware yaml was reduced to 10 in commit 24d351b for VM-reclaim resilience.
+        assert cfg.save_every_epoch in (50, 25, 10), f"{yaml_name}: unexpected save_every_epoch={cfg.save_every_epoch}"
         assert cfg.save_to_latest is True
 
 
