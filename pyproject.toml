@@ -43,6 +43,8 @@ ml = [
     "bitsandbytes>=0.44",  # 4-bit quantization
     "qwen-vl-utils>=0.0.10",  # Qwen2-VL helpers
     "opencv-python-headless>=4.10",  # Sobel edges for Phase 7b text-aware MAE masking
+    "ultralytics>=8.3",       # YOLOv12 training + inference (Phase 8 Track D)
+    "sahi>=0.11",             # Slicing-Aided Hyper Inference (Phase 8 Track D)
 ]
 
 # Colab-specific. SSH tunnel is set up by direct cloudflared + sshd invocation
