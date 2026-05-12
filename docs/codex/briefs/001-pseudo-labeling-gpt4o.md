@@ -5,6 +5,12 @@
 **Estimated effort:** M (single-day, mostly waiting on API)
 **Estimated cost:** $20–$80 in OpenAI API spend
 
+## SUPERSEDED 2026-05-13 — see brief 003
+
+Constraint: user does not have a standalone OPENAI_API_KEY. The Codex $20 subscription does not provide raw API access for bulk image labeling.
+
+This brief is dead. Brief 003 replaces it with an open-source VLM running on Colab GPU (zero API cost, uses existing Pro+ compute units). Status file 001 stays `blocked` as a permanent record; do not work on this brief.
+
 ## Addendum 2026-05-13 (corrections, prior content unchanged below)
 
 After Codex flagged blockers, two corrections — apply these and treat as overriding any conflicting detail in the original brief body:
