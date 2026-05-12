@@ -5,6 +5,17 @@
 **Estimated effort:** M (single-day, mostly waiting on API)
 **Estimated cost:** $20–$80 in OpenAI API spend
 
+## Addendum 2026-05-13 (corrections, prior content unchanged below)
+
+After Codex flagged blockers, two corrections — apply these and treat as overriding any conflicting detail in the original brief body:
+
+1. **Data manifests live under `golden_set/`, not at the bucket's `raw/` root.** The labeled-image manifests are:
+   - `gs://auto_learn_meds/raw/golden_set/gold_standard.jsonl` — single source-of-truth labels.
+   - `gs://auto_learn_meds/raw/golden_set/splits.json` — train/val/test partition (which row IDs go in which split).
+   Reconstruct `train.jsonl` / `val.jsonl` / `test.jsonl` in-memory by joining the two. Don't try to download the non-existent files.
+2. **The unlabeled set definition is unchanged:** all files under `gs://auto_learn_meds/raw/raw_images/` whose filenames don't appear in any partition of `gold_standard.jsonl`. Expected size ≈ 2,275.
+3. **OPENAI_API_KEY:** must be present in the environment before starting calibration or full-run API calls. If missing, set status to `blocked` and write a one-line note in the status file. Do not proceed without it.
+
 ## Context (self-contained)
 
 The project is `AutoLearnMeds` — a research effort + production-leaning system to extract structured information (12 fields) from photographs of pharmaceutical product labels (ampoules, blister packs, strip foils, syrup bottles, vials, sachets, cartons, sprays, tubes, jars).
