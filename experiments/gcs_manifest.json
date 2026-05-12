@@ -1,0 +1,1296 @@
+{
+  "bucket": "gs://auto_learn_meds",
+  "checkpoint_groups": [
+    {
+      "has_best_pt": false,
+      "has_model_safetensors": true,
+      "has_trainer_state": false,
+      "object_count": 10,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0050/config.json",
+          "last_modified": "2026-05-06T14:38:00Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0050/model.safetensors",
+          "last_modified": "2026-05-06T14:38:21Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0100/config.json",
+          "last_modified": "2026-05-06T15:14:54Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0100/model.safetensors",
+          "last_modified": "2026-05-06T15:15:12Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0150/config.json",
+          "last_modified": "2026-05-06T17:04:01Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0150/model.safetensors",
+          "last_modified": "2026-05-06T17:04:18Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0200/config.json",
+          "last_modified": "2026-05-06T18:50:43Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0200/model.safetensors",
+          "last_modified": "2026-05-06T18:51:01Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/final/config.json",
+          "last_modified": "2026-05-06T18:50:45Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/final/model.safetensors",
+          "last_modified": "2026-05-06T18:51:02Z",
+          "size_bytes": 371561688
+        }
+      ],
+      "prefix": "mae/run-seed44",
+      "total_size_bytes": 1857810490
+    },
+    {
+      "has_best_pt": false,
+      "has_model_safetensors": true,
+      "has_trainer_state": true,
+      "object_count": 11,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/epoch-0025/config.json",
+          "last_modified": "2026-05-06T19:02:53Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/epoch-0025/model.safetensors",
+          "last_modified": "2026-05-06T19:03:11Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/epoch-0025/trainer_state.pt",
+          "last_modified": "2026-05-06T19:37:10Z",
+          "size_bytes": 848606623
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/epoch-0050/config.json",
+          "last_modified": "2026-05-06T19:16:19Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/epoch-0050/model.safetensors",
+          "last_modified": "2026-05-06T19:16:36Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/epoch-0050/trainer_state.pt",
+          "last_modified": "2026-05-06T19:16:54Z",
+          "size_bytes": 848606623
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/final/config.json",
+          "last_modified": "2026-05-06T19:17:45Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/final/model.safetensors",
+          "last_modified": "2026-05-06T19:18:03Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/latest/config.json",
+          "last_modified": "2026-05-06T19:16:59Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/latest/model.safetensors",
+          "last_modified": "2026-05-06T19:17:18Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/latest/trainer_state.pt",
+          "last_modified": "2026-05-06T19:17:34Z",
+          "size_bytes": 848606623
+        }
+      ],
+      "prefix": "mae/tapt-seed44",
+      "total_size_bytes": 4032068261
+    },
+    {
+      "has_best_pt": false,
+      "has_model_safetensors": true,
+      "has_trainer_state": true,
+      "object_count": 43,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/edge_cache.npy",
+          "last_modified": "2026-05-07T11:30:34Z",
+          "size_bytes": 2163184
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/edge_cache.paths.json",
+          "last_modified": "2026-05-06T19:52:23Z",
+          "size_bytes": 126360
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0050/config.json",
+          "last_modified": "2026-05-06T21:36:39Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0050/model.safetensors",
+          "last_modified": "2026-05-06T21:36:57Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0050/trainer_state.pt",
+          "last_modified": "2026-05-06T21:37:17Z",
+          "size_bytes": 848606623
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0100/config.json",
+          "last_modified": "2026-05-06T23:26:29Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0100/model.safetensors",
+          "last_modified": "2026-05-06T23:26:49Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0100/trainer_state.pt",
+          "last_modified": "2026-05-06T23:27:07Z",
+          "size_bytes": 848606623
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0110/config.json",
+          "last_modified": "2026-05-07T11:49:09Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0110/model.safetensors",
+          "last_modified": "2026-05-07T11:49:26Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0110/trainer_state.pt",
+          "last_modified": "2026-05-07T11:49:54Z",
+          "size_bytes": 848609439
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0120/config.json",
+          "last_modified": "2026-05-07T12:12:46Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0120/model.safetensors",
+          "last_modified": "2026-05-07T12:13:04Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0120/trainer_state.pt",
+          "last_modified": "2026-05-07T12:13:30Z",
+          "size_bytes": 848609439
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0130/config.json",
+          "last_modified": "2026-05-07T12:36:26Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0130/model.safetensors",
+          "last_modified": "2026-05-07T12:36:46Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0130/trainer_state.pt",
+          "last_modified": "2026-05-07T12:37:04Z",
+          "size_bytes": 848609439
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0140/config.json",
+          "last_modified": "2026-05-07T12:59:58Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0140/model.safetensors",
+          "last_modified": "2026-05-07T13:00:17Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0140/trainer_state.pt",
+          "last_modified": "2026-05-07T13:00:36Z",
+          "size_bytes": 848609439
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0150/config.json",
+          "last_modified": "2026-05-07T13:23:30Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0150/model.safetensors",
+          "last_modified": "2026-05-07T13:23:49Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0150/trainer_state.pt",
+          "last_modified": "2026-05-07T13:24:06Z",
+          "size_bytes": 848609439
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0160/config.json",
+          "last_modified": "2026-05-07T13:48:16Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0160/model.safetensors",
+          "last_modified": "2026-05-07T13:49:09Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0160/trainer_state.pt",
+          "last_modified": "2026-05-07T13:49:50Z",
+          "size_bytes": 848609439
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0170/config.json",
+          "last_modified": "2026-05-07T14:12:21Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0170/model.safetensors",
+          "last_modified": "2026-05-07T14:12:40Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0170/trainer_state.pt",
+          "last_modified": "2026-05-07T14:13:06Z",
+          "size_bytes": 848609439
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0180/config.json",
+          "last_modified": "2026-05-07T14:36:05Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0180/model.safetensors",
+          "last_modified": "2026-05-07T14:36:24Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0180/trainer_state.pt",
+          "last_modified": "2026-05-07T14:36:44Z",
+          "size_bytes": 848609439
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0190/config.json",
+          "last_modified": "2026-05-07T15:00:51Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0190/model.safetensors",
+          "last_modified": "2026-05-07T15:01:11Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0190/trainer_state.pt",
+          "last_modified": "2026-05-07T15:01:30Z",
+          "size_bytes": 848609439
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0200/config.json",
+          "last_modified": "2026-05-07T15:24:27Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0200/model.safetensors",
+          "last_modified": "2026-05-07T15:24:46Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0200/trainer_state.pt",
+          "last_modified": "2026-05-07T15:25:03Z",
+          "size_bytes": 848609439
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/final/config.json",
+          "last_modified": "2026-05-07T15:26:05Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/final/model.safetensors",
+          "last_modified": "2026-05-07T15:26:26Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/latest/config.json",
+          "last_modified": "2026-05-07T15:25:08Z",
+          "size_bytes": 410
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/latest/model.safetensors",
+          "last_modified": "2026-05-07T15:25:27Z",
+          "size_bytes": 371561688
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/latest/trainer_state.pt",
+          "last_modified": "2026-05-07T15:25:45Z",
+          "size_bytes": 848609439
+        }
+      ],
+      "prefix": "mae/text-aware-seed44",
+      "total_size_bytes": 16236075991
+    },
+    {
+      "has_best_pt": true,
+      "has_model_safetensors": false,
+      "has_trainer_state": false,
+      "object_count": 2,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline/best.meta.pt",
+          "last_modified": "2026-05-06T14:38:35Z",
+          "size_bytes": 1273
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline/best.pt",
+          "last_modified": "2026-05-06T14:38:42Z",
+          "size_bytes": 106197053
+        }
+      ],
+      "prefix": "runs/baseline",
+      "total_size_bytes": 106198326
+    },
+    {
+      "has_best_pt": true,
+      "has_model_safetensors": false,
+      "has_trainer_state": false,
+      "object_count": 2,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline_mae_init/best.meta.pt",
+          "last_modified": "2026-05-07T16:23:19Z",
+          "size_bytes": 1273
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline_mae_init/best.pt",
+          "last_modified": "2026-05-07T16:23:27Z",
+          "size_bytes": 106197117
+        }
+      ],
+      "prefix": "runs/baseline_mae_init",
+      "total_size_bytes": 106198390
+    },
+    {
+      "has_best_pt": true,
+      "has_model_safetensors": false,
+      "has_trainer_state": false,
+      "object_count": 2,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline_mae_tapt_init/best.meta.pt",
+          "last_modified": "2026-05-07T18:12:55Z",
+          "size_bytes": 1273
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline_mae_tapt_init/best.pt",
+          "last_modified": "2026-05-07T18:13:02Z",
+          "size_bytes": 106197117
+        }
+      ],
+      "prefix": "runs/baseline_mae_tapt_init",
+      "total_size_bytes": 106198390
+    },
+    {
+      "has_best_pt": true,
+      "has_model_safetensors": false,
+      "has_trainer_state": false,
+      "object_count": 2,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline_mae_text_aware_init/best.meta.pt",
+          "last_modified": "2026-05-07T17:20:36Z",
+          "size_bytes": 1273
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline_mae_text_aware_init/best.pt",
+          "last_modified": "2026-05-07T17:20:42Z",
+          "size_bytes": 106197117
+        }
+      ],
+      "prefix": "runs/baseline_mae_text_aware_init",
+      "total_size_bytes": 106198390
+    },
+    {
+      "has_best_pt": false,
+      "has_model_safetensors": false,
+      "has_trainer_state": false,
+      "object_count": 3,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/runs/qwen_baseline/best_lora/README.md",
+          "last_modified": "2026-05-05T22:40:15Z",
+          "size_bytes": 5204
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/runs/qwen_baseline/best_lora/adapter_config.json",
+          "last_modified": "2026-05-05T22:40:15Z",
+          "size_bytes": 1054
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/checkpoints/runs/qwen_baseline/best_lora/adapter_model.safetensors",
+          "last_modified": "2026-05-05T22:40:18Z",
+          "size_bytes": 8749064
+        }
+      ],
+      "prefix": "runs/qwen_baseline",
+      "total_size_bytes": 8755322
+    }
+  ],
+  "checkpoints": [
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/.gitkeep",
+      "last_modified": "2026-05-07T19:47:00Z",
+      "size_bytes": 0
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/README.md",
+      "last_modified": "2026-05-07T19:47:00Z",
+      "size_bytes": 304
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0050/config.json",
+      "last_modified": "2026-05-06T14:38:00Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0050/model.safetensors",
+      "last_modified": "2026-05-06T14:38:21Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0100/config.json",
+      "last_modified": "2026-05-06T15:14:54Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0100/model.safetensors",
+      "last_modified": "2026-05-06T15:15:12Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0150/config.json",
+      "last_modified": "2026-05-06T17:04:01Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0150/model.safetensors",
+      "last_modified": "2026-05-06T17:04:18Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0200/config.json",
+      "last_modified": "2026-05-06T18:50:43Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/epoch-0200/model.safetensors",
+      "last_modified": "2026-05-06T18:51:01Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/final/config.json",
+      "last_modified": "2026-05-06T18:50:45Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/run-seed44/final/model.safetensors",
+      "last_modified": "2026-05-06T18:51:02Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/epoch-0025/config.json",
+      "last_modified": "2026-05-06T19:02:53Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/epoch-0025/model.safetensors",
+      "last_modified": "2026-05-06T19:03:11Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/epoch-0025/trainer_state.pt",
+      "last_modified": "2026-05-06T19:37:10Z",
+      "size_bytes": 848606623
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/epoch-0050/config.json",
+      "last_modified": "2026-05-06T19:16:19Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/epoch-0050/model.safetensors",
+      "last_modified": "2026-05-06T19:16:36Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/epoch-0050/trainer_state.pt",
+      "last_modified": "2026-05-06T19:16:54Z",
+      "size_bytes": 848606623
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/final/config.json",
+      "last_modified": "2026-05-06T19:17:45Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/final/model.safetensors",
+      "last_modified": "2026-05-06T19:18:03Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/latest/config.json",
+      "last_modified": "2026-05-06T19:16:59Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/latest/model.safetensors",
+      "last_modified": "2026-05-06T19:17:18Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/tapt-seed44/latest/trainer_state.pt",
+      "last_modified": "2026-05-06T19:17:34Z",
+      "size_bytes": 848606623
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/edge_cache.npy",
+      "last_modified": "2026-05-07T11:30:34Z",
+      "size_bytes": 2163184
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/edge_cache.paths.json",
+      "last_modified": "2026-05-06T19:52:23Z",
+      "size_bytes": 126360
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0050/config.json",
+      "last_modified": "2026-05-06T21:36:39Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0050/model.safetensors",
+      "last_modified": "2026-05-06T21:36:57Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0050/trainer_state.pt",
+      "last_modified": "2026-05-06T21:37:17Z",
+      "size_bytes": 848606623
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0100/config.json",
+      "last_modified": "2026-05-06T23:26:29Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0100/model.safetensors",
+      "last_modified": "2026-05-06T23:26:49Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0100/trainer_state.pt",
+      "last_modified": "2026-05-06T23:27:07Z",
+      "size_bytes": 848606623
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0110/config.json",
+      "last_modified": "2026-05-07T11:49:09Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0110/model.safetensors",
+      "last_modified": "2026-05-07T11:49:26Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0110/trainer_state.pt",
+      "last_modified": "2026-05-07T11:49:54Z",
+      "size_bytes": 848609439
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0120/config.json",
+      "last_modified": "2026-05-07T12:12:46Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0120/model.safetensors",
+      "last_modified": "2026-05-07T12:13:04Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0120/trainer_state.pt",
+      "last_modified": "2026-05-07T12:13:30Z",
+      "size_bytes": 848609439
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0130/config.json",
+      "last_modified": "2026-05-07T12:36:26Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0130/model.safetensors",
+      "last_modified": "2026-05-07T12:36:46Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0130/trainer_state.pt",
+      "last_modified": "2026-05-07T12:37:04Z",
+      "size_bytes": 848609439
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0140/config.json",
+      "last_modified": "2026-05-07T12:59:58Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0140/model.safetensors",
+      "last_modified": "2026-05-07T13:00:17Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0140/trainer_state.pt",
+      "last_modified": "2026-05-07T13:00:36Z",
+      "size_bytes": 848609439
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0150/config.json",
+      "last_modified": "2026-05-07T13:23:30Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0150/model.safetensors",
+      "last_modified": "2026-05-07T13:23:49Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0150/trainer_state.pt",
+      "last_modified": "2026-05-07T13:24:06Z",
+      "size_bytes": 848609439
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0160/config.json",
+      "last_modified": "2026-05-07T13:48:16Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0160/model.safetensors",
+      "last_modified": "2026-05-07T13:49:09Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0160/trainer_state.pt",
+      "last_modified": "2026-05-07T13:49:50Z",
+      "size_bytes": 848609439
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0170/config.json",
+      "last_modified": "2026-05-07T14:12:21Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0170/model.safetensors",
+      "last_modified": "2026-05-07T14:12:40Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0170/trainer_state.pt",
+      "last_modified": "2026-05-07T14:13:06Z",
+      "size_bytes": 848609439
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0180/config.json",
+      "last_modified": "2026-05-07T14:36:05Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0180/model.safetensors",
+      "last_modified": "2026-05-07T14:36:24Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0180/trainer_state.pt",
+      "last_modified": "2026-05-07T14:36:44Z",
+      "size_bytes": 848609439
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0190/config.json",
+      "last_modified": "2026-05-07T15:00:51Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0190/model.safetensors",
+      "last_modified": "2026-05-07T15:01:11Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0190/trainer_state.pt",
+      "last_modified": "2026-05-07T15:01:30Z",
+      "size_bytes": 848609439
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0200/config.json",
+      "last_modified": "2026-05-07T15:24:27Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0200/model.safetensors",
+      "last_modified": "2026-05-07T15:24:46Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/epoch-0200/trainer_state.pt",
+      "last_modified": "2026-05-07T15:25:03Z",
+      "size_bytes": 848609439
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/final/config.json",
+      "last_modified": "2026-05-07T15:26:05Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/final/model.safetensors",
+      "last_modified": "2026-05-07T15:26:26Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/latest/config.json",
+      "last_modified": "2026-05-07T15:25:08Z",
+      "size_bytes": 410
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/latest/model.safetensors",
+      "last_modified": "2026-05-07T15:25:27Z",
+      "size_bytes": 371561688
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/mae/text-aware-seed44/latest/trainer_state.pt",
+      "last_modified": "2026-05-07T15:25:45Z",
+      "size_bytes": 848609439
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/per_field_track_d-seed44.json",
+      "last_modified": "2026-05-07T21:30:22Z",
+      "size_bytes": 698
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline/best.meta.pt",
+      "last_modified": "2026-05-06T14:38:35Z",
+      "size_bytes": 1273
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline/best.pt",
+      "last_modified": "2026-05-06T14:38:42Z",
+      "size_bytes": 106197053
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline_mae_init/best.meta.pt",
+      "last_modified": "2026-05-07T16:23:19Z",
+      "size_bytes": 1273
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline_mae_init/best.pt",
+      "last_modified": "2026-05-07T16:23:27Z",
+      "size_bytes": 106197117
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline_mae_tapt_init/best.meta.pt",
+      "last_modified": "2026-05-07T18:12:55Z",
+      "size_bytes": 1273
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline_mae_tapt_init/best.pt",
+      "last_modified": "2026-05-07T18:13:02Z",
+      "size_bytes": 106197117
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline_mae_text_aware_init/best.meta.pt",
+      "last_modified": "2026-05-07T17:20:36Z",
+      "size_bytes": 1273
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/runs/baseline_mae_text_aware_init/best.pt",
+      "last_modified": "2026-05-07T17:20:42Z",
+      "size_bytes": 106197117
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/runs/qwen_baseline/best_lora/README.md",
+      "last_modified": "2026-05-05T22:40:15Z",
+      "size_bytes": 5204
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/runs/qwen_baseline/best_lora/adapter_config.json",
+      "last_modified": "2026-05-05T22:40:15Z",
+      "size_bytes": 1054
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/checkpoints/runs/qwen_baseline/best_lora/adapter_model.safetensors",
+      "last_modified": "2026-05-05T22:40:18Z",
+      "size_bytes": 8749064
+    }
+  ],
+  "cross_check": {
+    "gcs_orphans": [],
+    "gcs_run_ids": [
+      "baseline-seed42",
+      "baseline-seed43",
+      "baseline-seed44",
+      "baseline-seed44-rerun",
+      "baseline_mae_init-seed44",
+      "baseline_mae_tapt_init-seed44",
+      "baseline_mae_text_aware_init-seed44",
+      "qwen-baseline-seed42",
+      "randaug-m5-seed42",
+      "track_d-seed44"
+    ],
+    "ledger_entry_count": 11,
+    "ledger_missing_from_gcs": [],
+    "ledger_missing_locally": [
+      "baseline_mae_init-seed44",
+      "baseline_mae_tapt_init-seed44",
+      "baseline_mae_text_aware_init-seed44",
+      "track_d-seed44"
+    ],
+    "ledger_run_ids": [
+      "baseline-seed42",
+      "baseline-seed43",
+      "baseline-seed44",
+      "baseline-seed44-rerun",
+      "baseline_mae_init-seed44",
+      "baseline_mae_tapt_init-seed44",
+      "baseline_mae_text_aware_init-seed44",
+      "qwen-baseline-seed42",
+      "randaug-m5-seed42",
+      "track_d-seed44"
+    ],
+    "local_run_ids": [
+      "baseline-seed42",
+      "baseline-seed43",
+      "baseline-seed44",
+      "baseline-seed44-rerun",
+      "qwen-baseline-seed42",
+      "randaug-m5-seed42"
+    ]
+  },
+  "experiments_object_count": 82,
+  "experiments_total_size_bytes": 383209,
+  "generated_at": "2026-05-12T19:47:11+00:00",
+  "generated_by": "codex (brief 002)",
+  "pretraining": [
+    {
+      "gs_path": "gs://auto_learn_meds/experiments/pretraining/mae-pretrain-seed44/config.yaml",
+      "last_modified": "2026-05-07T22:06:20Z",
+      "size_bytes": 1320
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/experiments/pretraining/mae-pretrain-seed44/metrics.json",
+      "last_modified": "2026-05-07T22:06:22Z",
+      "size_bytes": 256
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/experiments/pretraining/mae-pretrain-seed44/notes.md",
+      "last_modified": "2026-05-07T19:46:53Z",
+      "size_bytes": 6372
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/experiments/pretraining/mae-pretrain-seed44/pretrain_mae.py",
+      "last_modified": "2026-05-07T22:06:21Z",
+      "size_bytes": 18689
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/experiments/pretraining/mae-pretrain-seed44/stdout.log",
+      "last_modified": "2026-05-06T18:52:58Z",
+      "size_bytes": 14877
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/experiments/pretraining/mae-pretrain-tapt-seed44/config.yaml",
+      "last_modified": "2026-05-07T22:06:22Z",
+      "size_bytes": 1287
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/experiments/pretraining/mae-pretrain-tapt-seed44/metrics.json",
+      "last_modified": "2026-05-07T22:06:22Z",
+      "size_bytes": 265
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/experiments/pretraining/mae-pretrain-tapt-seed44/pretrain_mae.py",
+      "last_modified": "2026-05-07T22:06:21Z",
+      "size_bytes": 31243
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/experiments/pretraining/mae-pretrain-tapt-seed44/stdout.log",
+      "last_modified": "2026-05-06T19:17:40Z",
+      "size_bytes": 2655
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/experiments/pretraining/mae-pretrain-text-aware-seed44/config.yaml",
+      "last_modified": "2026-05-07T22:06:21Z",
+      "size_bytes": 1147
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/experiments/pretraining/mae-pretrain-text-aware-seed44/metrics.json",
+      "last_modified": "2026-05-07T22:06:22Z",
+      "size_bytes": 278
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/experiments/pretraining/mae-pretrain-text-aware-seed44/pretrain_mae.py",
+      "last_modified": "2026-05-07T22:06:21Z",
+      "size_bytes": 31762
+    },
+    {
+      "gs_path": "gs://auto_learn_meds/experiments/pretraining/mae-pretrain-text-aware-seed44/stdout.log",
+      "last_modified": "2026-05-07T15:26:00Z",
+      "size_bytes": 15334
+    }
+  ],
+  "raw_summary": {
+    "manifests": [
+      {
+        "gs_path": "gs://auto_learn_meds/raw/golden_set/gold_standard.jsonl",
+        "last_modified": "2026-05-04T21:17:01Z",
+        "size_bytes": 1123377
+      },
+      {
+        "gs_path": "gs://auto_learn_meds/raw/golden_set/splits.json",
+        "last_modified": "2026-05-04T21:17:00Z",
+        "size_bytes": 17874
+      }
+    ],
+    "raw_images": {
+      "du": {
+        "gs_path": "gs://auto_learn_meds/raw/raw_images",
+        "size_bytes": 8156445110
+      },
+      "image_file_count": 3060,
+      "object_count_including_non_images": 3061
+    },
+    "top_level_listing": [
+      "                                 gs://auto_learn_meds/raw/golden_set/",
+      "                                 gs://auto_learn_meds/raw/raw_images/"
+    ]
+  },
+  "runs": [
+    {
+      "has_best_pt": false,
+      "has_config_yaml": false,
+      "has_metrics_json": false,
+      "has_predictions_jsonl": false,
+      "has_stdout_log": false,
+      "kind": "track_a",
+      "object_count": 1,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline-seed42/notes.md",
+          "last_modified": "2026-05-07T19:46:52Z",
+          "size_bytes": 401
+        }
+      ],
+      "run_id": "baseline-seed42",
+      "total_size_bytes": 401
+    },
+    {
+      "has_best_pt": false,
+      "has_config_yaml": false,
+      "has_metrics_json": false,
+      "has_predictions_jsonl": false,
+      "has_stdout_log": false,
+      "kind": "track_a",
+      "object_count": 1,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline-seed43/notes.md",
+          "last_modified": "2026-05-07T19:46:53Z",
+          "size_bytes": 401
+        }
+      ],
+      "run_id": "baseline-seed43",
+      "total_size_bytes": 401
+    },
+    {
+      "has_best_pt": false,
+      "has_config_yaml": false,
+      "has_metrics_json": false,
+      "has_predictions_jsonl": false,
+      "has_stdout_log": false,
+      "kind": "track_a",
+      "object_count": 1,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline-seed44/notes.md",
+          "last_modified": "2026-05-07T19:46:52Z",
+          "size_bytes": 401
+        }
+      ],
+      "run_id": "baseline-seed44",
+      "total_size_bytes": 401
+    },
+    {
+      "has_best_pt": false,
+      "has_config_yaml": true,
+      "has_metrics_json": true,
+      "has_predictions_jsonl": false,
+      "has_stdout_log": true,
+      "kind": "track_a",
+      "object_count": 5,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline-seed44-rerun/config.yaml",
+          "last_modified": "2026-05-07T19:46:51Z",
+          "size_bytes": 809
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline-seed44-rerun/metrics.json",
+          "last_modified": "2026-05-07T19:46:52Z",
+          "size_bytes": 271
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline-seed44-rerun/notes.md",
+          "last_modified": "2026-05-07T19:46:52Z",
+          "size_bytes": 7770
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline-seed44-rerun/stdout.log",
+          "last_modified": "2026-05-07T19:46:52Z",
+          "size_bytes": 2317
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline-seed44-rerun/train.py",
+          "last_modified": "2026-05-07T19:46:52Z",
+          "size_bytes": 26751
+        }
+      ],
+      "run_id": "baseline-seed44-rerun",
+      "total_size_bytes": 37918
+    },
+    {
+      "has_best_pt": false,
+      "has_config_yaml": true,
+      "has_metrics_json": true,
+      "has_predictions_jsonl": false,
+      "has_stdout_log": true,
+      "kind": "track_c",
+      "object_count": 4,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline_mae_init-seed44/config.yaml",
+          "last_modified": "2026-05-07T15:41:25Z",
+          "size_bytes": 930
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline_mae_init-seed44/metrics.json",
+          "last_modified": "2026-05-07T16:32:48Z",
+          "size_bytes": 283
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline_mae_init-seed44/stdout.log",
+          "last_modified": "2026-05-07T16:32:48Z",
+          "size_bytes": 3698
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline_mae_init-seed44/train.py",
+          "last_modified": "2026-05-07T15:41:24Z",
+          "size_bytes": 28211
+        }
+      ],
+      "run_id": "baseline_mae_init-seed44",
+      "total_size_bytes": 33122
+    },
+    {
+      "has_best_pt": false,
+      "has_config_yaml": true,
+      "has_metrics_json": true,
+      "has_predictions_jsonl": false,
+      "has_stdout_log": true,
+      "kind": "track_c",
+      "object_count": 4,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline_mae_tapt_init-seed44/config.yaml",
+          "last_modified": "2026-05-07T17:31:00Z",
+          "size_bytes": 925
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline_mae_tapt_init-seed44/metrics.json",
+          "last_modified": "2026-05-07T18:22:40Z",
+          "size_bytes": 293
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline_mae_tapt_init-seed44/stdout.log",
+          "last_modified": "2026-05-07T18:22:40Z",
+          "size_bytes": 3855
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline_mae_tapt_init-seed44/train.py",
+          "last_modified": "2026-05-07T17:31:00Z",
+          "size_bytes": 28211
+        }
+      ],
+      "run_id": "baseline_mae_tapt_init-seed44",
+      "total_size_bytes": 33284
+    },
+    {
+      "has_best_pt": false,
+      "has_config_yaml": true,
+      "has_metrics_json": true,
+      "has_predictions_jsonl": false,
+      "has_stdout_log": true,
+      "kind": "track_c",
+      "object_count": 4,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline_mae_text_aware_init-seed44/config.yaml",
+          "last_modified": "2026-05-07T16:33:43Z",
+          "size_bytes": 941
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline_mae_text_aware_init-seed44/metrics.json",
+          "last_modified": "2026-05-07T17:27:31Z",
+          "size_bytes": 305
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline_mae_text_aware_init-seed44/stdout.log",
+          "last_modified": "2026-05-07T17:27:31Z",
+          "size_bytes": 3836
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/baseline_mae_text_aware_init-seed44/train.py",
+          "last_modified": "2026-05-07T16:33:44Z",
+          "size_bytes": 28211
+        }
+      ],
+      "run_id": "baseline_mae_text_aware_init-seed44",
+      "total_size_bytes": 33293
+    },
+    {
+      "has_best_pt": false,
+      "has_config_yaml": true,
+      "has_metrics_json": true,
+      "has_predictions_jsonl": false,
+      "has_stdout_log": true,
+      "kind": "track_b",
+      "object_count": 5,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/qwen-baseline-seed42/config.yaml",
+          "last_modified": "2026-05-07T19:46:51Z",
+          "size_bytes": 948
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/qwen-baseline-seed42/metrics.json",
+          "last_modified": "2026-05-07T19:46:53Z",
+          "size_bytes": 337
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/qwen-baseline-seed42/notes.md",
+          "last_modified": "2026-05-07T19:46:53Z",
+          "size_bytes": 9080
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/qwen-baseline-seed42/stdout.log",
+          "last_modified": "2026-05-07T19:46:53Z",
+          "size_bytes": 5643
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/qwen-baseline-seed42/train_qwen.py",
+          "last_modified": "2026-05-07T19:46:52Z",
+          "size_bytes": 17923
+        }
+      ],
+      "run_id": "qwen-baseline-seed42",
+      "total_size_bytes": 33931
+    },
+    {
+      "has_best_pt": false,
+      "has_config_yaml": true,
+      "has_metrics_json": true,
+      "has_predictions_jsonl": false,
+      "has_stdout_log": true,
+      "kind": "track_a",
+      "object_count": 5,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/randaug-m5-seed42/config.yaml",
+          "last_modified": "2026-05-07T19:46:54Z",
+          "size_bytes": 809
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/randaug-m5-seed42/metrics.json",
+          "last_modified": "2026-05-07T19:46:53Z",
+          "size_bytes": 218
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/randaug-m5-seed42/notes.md",
+          "last_modified": "2026-05-07T19:46:51Z",
+          "size_bytes": 1741
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/randaug-m5-seed42/stdout.log",
+          "last_modified": "2026-05-07T19:46:53Z",
+          "size_bytes": 2291
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/randaug-m5-seed42/train.py",
+          "last_modified": "2026-05-07T19:46:52Z",
+          "size_bytes": 27207
+        }
+      ],
+      "run_id": "randaug-m5-seed42",
+      "total_size_bytes": 32266
+    },
+    {
+      "has_best_pt": false,
+      "has_config_yaml": true,
+      "has_metrics_json": true,
+      "has_predictions_jsonl": false,
+      "has_stdout_log": true,
+      "kind": "track_d",
+      "object_count": 4,
+      "objects": [
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/track_d-seed44/config.yaml",
+          "last_modified": "2026-05-07T22:06:20Z",
+          "size_bytes": 638
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/track_d-seed44/metrics.json",
+          "last_modified": "2026-05-07T22:08:30Z",
+          "size_bytes": 288
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/track_d-seed44/stdout.log",
+          "last_modified": "2026-05-07T22:08:30Z",
+          "size_bytes": 1599
+        },
+        {
+          "gs_path": "gs://auto_learn_meds/experiments/runs/track_d-seed44/track_d_pipeline.py",
+          "last_modified": "2026-05-07T22:06:21Z",
+          "size_bytes": 11871
+        }
+      ],
+      "run_id": "track_d-seed44",
+      "total_size_bytes": 14396
+    }
+  ],
+  "total_objects": 160,
+  "total_size_bytes": 22559887771
+}
