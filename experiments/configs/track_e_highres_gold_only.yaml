@@ -30,9 +30,12 @@ val_jsonl: "data/processed/val.jsonl"
 images_root: "/mnt/gcs/raw/raw_images"
 path_strip_prefix: "raw/raw_images/"
 
-# Track E tokenizer (built on gold only here; pseudo additions happen in track_e_highres.yaml)
-tokenizer_path: "experiments/tokenizers/track_e_bpe_gold.json"
-track_e_tokenizer_path: "experiments/tokenizers/track_e_bpe_gold.json"
+# Use the existing tokenizer (built by build_processed.py on the same gold corpus).
+# build_track_e_tokenizer.py had a bug (passed XML strings instead of field values),
+# producing a tokenizer with 0 BPE merges — incident 2026-05-13. Tokenizer rebuild
+# for gold+pseudo (Run #3) is a separate followup.
+tokenizer_path: "data/processed/tokenizer.json"
+track_e_tokenizer_path: "data/processed/tokenizer.json"
 
 # Output
 checkpoint_dir: "checkpoints/runs/track_e_highres_gold_only-seed44"
