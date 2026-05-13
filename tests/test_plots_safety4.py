@@ -49,3 +49,23 @@ def test_envelope_plot(project_root: Path, tmp_path: Path) -> None:
     )
     assert result.returncode == 0, result.stderr
     assert out.exists() and out.stat().st_size > 1000
+
+
+def test_calibration_curve(project_root: Path, tmp_path: Path) -> None:
+    """Given a predictions JSON with per-field entropies + correctness, produce a coverage-vs-accuracy PNG."""
+    import json
+    preds = tmp_path / "preds.json"
+    preds.write_text(json.dumps([
+        {"field": "batch_number", "correct": True,  "entropy": 0.1},
+        {"field": "batch_number", "correct": False, "entropy": 0.9},
+        {"field": "expiry_date",  "correct": True,  "entropy": 0.2},
+        {"field": "mrp",          "correct": False, "entropy": 0.5},
+        {"field": "mfg_date",     "correct": True,  "entropy": 0.3},
+    ]))
+    out = tmp_path / "calibration.png"
+    result = subprocess.run(
+        ["python", "scripts/plots/calibration_curve.py", "--preds", str(preds), "--out", str(out)],
+        cwd=project_root, capture_output=True, text=True,
+    )
+    assert result.returncode == 0, result.stderr
+    assert out.exists() and out.stat().st_size > 1000
