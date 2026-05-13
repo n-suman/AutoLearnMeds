@@ -69,3 +69,22 @@ def test_calibration_curve(project_root: Path, tmp_path: Path) -> None:
     )
     assert result.returncode == 0, result.stderr
     assert out.exists() and out.stat().st_size > 1000
+
+
+def test_error_samples_plot(project_root: Path, tmp_path: Path) -> None:
+    """Smoke: error_samples runs against a tiny JSON and writes a PNG."""
+    import json
+    samples = tmp_path / "samples.json"
+    # Three categories, one fake sample each, with placeholder image paths (script must handle missing images gracefully).
+    samples.write_text(json.dumps([
+        {"category": "still_wrong", "image_path": "fake1.jpg", "field": "batch_number", "gold": "B1", "pred": "Bz"},
+        {"category": "fixed_by_e",  "image_path": "fake2.jpg", "field": "expiry_date",  "gold": "10/25", "pred": "10/25"},
+        {"category": "regressed",   "image_path": "fake3.jpg", "field": "mrp",          "gold": "85",   "pred": "8.5"},
+    ]))
+    out = tmp_path / "errors.png"
+    result = subprocess.run(
+        ["python", "scripts/plots/error_samples.py", "--samples", str(samples), "--out", str(out)],
+        cwd=project_root, capture_output=True, text=True,
+    )
+    # The script must produce a PNG even when image files don't exist (uses placeholder text).
+    assert out.exists() and out.stat().st_size > 1000, result.stderr
