@@ -104,3 +104,39 @@ def test_build_encoder_large_returns_large_dim(project_root: Path) -> None:
     cfg = train.Config(encoder_model="google/siglip-large-patch16-384", image_size=384)
     enc, hidden_dim = train.build_encoder(cfg)
     assert hidden_dim == 1024
+
+
+def test_dual_best_checkpoint_tracker(project_root: Path) -> None:
+    """The BestCheckpointTracker tracks two metrics independently and decides when to save."""
+    import sys
+    sys.path.insert(0, str(project_root))
+    import train
+
+    t = train.BestCheckpointTracker()
+    assert t.is_new_best("edit_f1", 0.20)  # first measurement → new best
+    assert t.is_new_best("strict_f1", 0.05)
+    assert not t.is_new_best("edit_f1", 0.15)  # regression
+    assert t.is_new_best("edit_f1", 0.25)  # improvement
+    assert t.best_value("edit_f1") == 0.25
+    assert t.best_value("strict_f1") == 0.05
+
+
+def test_best_checkpoint_tracker_unseen_metric_returns_negative_inf(project_root: Path) -> None:
+    """Querying best_value for a metric never observed returns -inf (not a crash)."""
+    import sys
+    sys.path.insert(0, str(project_root))
+    import train
+
+    t = train.BestCheckpointTracker()
+    assert t.best_value("never_seen") == -float("inf")
+
+
+def test_best_checkpoint_tracker_tie_is_not_new_best(project_root: Path) -> None:
+    """A value equal to the best should not be reported as new best (strict >)."""
+    import sys
+    sys.path.insert(0, str(project_root))
+    import train
+
+    t = train.BestCheckpointTracker()
+    assert t.is_new_best("m", 0.5)
+    assert not t.is_new_best("m", 0.5)

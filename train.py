@@ -333,6 +333,34 @@ class StageScheduler:
         raise ValueError(f"Unknown stage data: {s.data}")
 
 
+class BestCheckpointTracker:
+    """Per-metric best tracker. Independent tracking lets dual checkpoints diverge.
+
+    Usage:
+        tracker = BestCheckpointTracker()
+        if tracker.is_new_best("edit_f1", current_edit):
+            save_checkpoint(model, path / "best_edit_f1.pt")
+        if tracker.is_new_best("strict_f1", current_strict):
+            save_checkpoint(model, path / "best_strict_f1.pt")
+
+    A "new best" is strict improvement (>). Ties don't trigger a save.
+    First-ever measurement of any metric always counts as new best (compared to -inf).
+    """
+
+    def __init__(self):
+        self._best: dict[str, float] = {}
+
+    def is_new_best(self, metric: str, value: float) -> bool:
+        prev = self._best.get(metric, -float("inf"))
+        if value > prev:
+            self._best[metric] = value
+            return True
+        return False
+
+    def best_value(self, metric: str) -> float:
+        return self._best.get(metric, -float("inf"))
+
+
 # === Rotary position embedding ===
 
 def rope_cache(seq_len: int, head_dim: int, device, dtype):
