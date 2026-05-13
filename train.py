@@ -58,6 +58,16 @@ class Config:
     wandb_project: str = "autolearnmeds"
     wandb_mode: str = "online"
 
+    # --- Track E flags (defaults preserve Track A behavior) ---
+    image_size: int = 224                          # 384 for Track E
+    pseudo_jsonl: str = ""                         # path to data/pseudo_labels/round_001.jsonl
+    pseudo_weight: float = 0.0                     # 0.0 = ignore pseudo even if jsonl given
+    pseudo_weight_mode: str = "const"              # "const" | "adaptive_confidence"
+    pseudo_min_confidence: str = "medium"          # "low" | "medium" | "high"
+    track_e_tokenizer_path: str = ""               # if set, use this instead of cfg.tokenizer_path
+    stage_schedule: list = dataclasses.field(default_factory=list)  # [{name, steps, data, lr_mult}, ...]; empty = single-stage
+    compute_calibration: bool = False              # if True, eval also emits per-field entropy
+
     @classmethod
     def from_yaml(cls, path: Path | str) -> "Config":
         import yaml
