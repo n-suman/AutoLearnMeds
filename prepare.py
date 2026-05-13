@@ -329,9 +329,11 @@ def compute_subset_metrics(
     fields over auxiliary ones.
 
     Returns the same dict shape as compute_metrics — macro_f1, per_field_f1,
-    macro_edit_f1, per_field_edit_f1 — but per_field_* only contain the requested fields.
+    macro_edit_f1, per_field_edit_f1, n_examples — but per_field_* only contain
+    the requested fields.
     """
-    assert fields.issubset(ALL_FIELDS), f"Subset contains unknown fields: {fields - ALL_FIELDS}"
+    if not fields.issubset(ALL_FIELDS):
+        raise ValueError(f"Subset contains unknown fields: {fields - ALL_FIELDS}")
     per_field = {f: compute_field_f1(predictions, truths, f) for f in fields}
     per_field_edit = {f: compute_field_edit_f1(predictions, truths, f) for f in fields}
     macro = sum(per_field.values()) / len(per_field) if per_field else 0.0
@@ -341,6 +343,7 @@ def compute_subset_metrics(
         "per_field_f1": per_field,
         "macro_edit_f1": macro_edit,
         "per_field_edit_f1": per_field_edit,
+        "n_examples": len(predictions),
     }
 
 

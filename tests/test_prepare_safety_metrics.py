@@ -33,12 +33,33 @@ def test_compute_subset_metrics_macro_strict(prepare_mod) -> None:
 
 
 def test_compute_subset_metrics_partial(prepare_mod) -> None:
-    """When 2 of 4 safety fields match strictly, macro_f1 should be 0.5."""
-    preds = [{"batch_number": "B1", "mfg_date": "11/2023", "mrp": "WRONG", "expiry_date": "WRONG"}]
+    """When 2 of 4 safety fields match strictly, macro_f1 should be 0.5.
+
+    The two mismatched fields use close-but-not-exact values so edit distance
+    awards partial credit, lifting macro_edit_f1 above the strict macro_f1.
+    """
+    preds = [{"batch_number": "B1", "mfg_date": "11/2023", "mrp": "85.5", "expiry_date": "10/202"}]
     truths = [{"batch_number": "B1", "mfg_date": "11/2023", "mrp": "85.00", "expiry_date": "10/2025"}]
     result = prepare_mod.compute_subset_metrics(preds, truths, fields=prepare_mod.SAFETY_FIELDS)
     assert result["macro_f1"] == pytest.approx(0.5)
-    assert result["macro_edit_f1"] > 0.0  # partial credit on the two wrong ones
+    assert result["macro_edit_f1"] > result["macro_f1"]   # partial credit lifts above strict
+    assert result["macro_edit_f1"] < 1.0                  # but doesn't reach perfect
+
+
+def test_compute_subset_metrics_returns_n_examples(prepare_mod) -> None:
+    """The return dict must include n_examples (contract with compute_metrics)."""
+    preds = [{"batch_number": "X"}, {"batch_number": "Y"}, {"batch_number": "Z"}]
+    truths = [{"batch_number": "X"}, {"batch_number": "Y"}, {"batch_number": "Z"}]
+    result = prepare_mod.compute_subset_metrics(preds, truths, fields=prepare_mod.SAFETY_FIELDS)
+    assert result["n_examples"] == 3
+
+
+def test_compute_subset_metrics_rejects_unknown_field(prepare_mod) -> None:
+    """Unknown field in subset raises ValueError (not silent assert)."""
+    preds = [{}]
+    truths = [{}]
+    with pytest.raises(ValueError, match="unknown fields"):
+        prepare_mod.compute_subset_metrics(preds, truths, fields=frozenset(["not_a_real_field"]))
 
 
 def test_compute_safety4_metrics_convenience(prepare_mod) -> None:
