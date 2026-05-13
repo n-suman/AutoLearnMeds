@@ -382,6 +382,47 @@ def normalize_pseudo_xml(row: dict) -> dict:
     return {**row, "xml_label": xml}
 
 
+def filter_pseudo_rows(
+    rows: list[dict],
+    val_paths: set[str],
+    test_paths: set[str],
+    max_empty_fields: int = 12,
+) -> tuple[list[dict], dict[str, int]]:
+    """Filter pseudo-label rows. Returns (kept_rows, dropped_counts).
+
+    Drop reasons:
+    - val_leak / test_leak: row's image_path appears in val or test split.
+    - all_empty: row's parsed XML has >= max_empty_fields fields with empty value.
+    - parse_fail: row's xml_label fails parse_output().
+
+    The dropped_counts dict has keys val_leak, test_leak, all_empty, parse_fail (all ints).
+    """
+    kept: list[dict] = []
+    dropped = {"val_leak": 0, "test_leak": 0, "all_empty": 0, "parse_fail": 0}
+    for row in rows:
+        path = row.get("image_path", "")
+        if path in val_paths:
+            dropped["val_leak"] += 1
+            continue
+        if path in test_paths:
+            dropped["test_leak"] += 1
+            continue
+        try:
+            parsed = parse_output(row.get("xml_label", ""))
+        except Exception:
+            dropped["parse_fail"] += 1
+            continue
+        if not parsed:  # parse_output returns empty dict on failure
+            dropped["parse_fail"] += 1
+            continue
+        empty_count = sum(1 for f in FIELD_ORDER if not parsed.get(f, "").strip())
+        if empty_count >= max_empty_fields:
+            dropped["all_empty"] += 1
+            continue
+        kept.append(row)
+    return kept, dropped
+
+
 # === Image preprocessing ===
 
 # Cached after first call so we don't redownload SigLIP processor each batch.
