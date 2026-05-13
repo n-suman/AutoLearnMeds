@@ -876,6 +876,10 @@ def train_loop(model, cfg: Config, device, wandb_run=None) -> dict[str, Any]:
                 )
             edit_f1 = metrics.get("macro_edit_f1", 0.0)
             print(f"[ val ] step={step:5d} macro_f1={metrics['macro_f1']:.4f} macro_edit_f1={edit_f1:.4f} (n={metrics['n_examples']})")
+            # Dump per-field metrics for offline analysis (paper plots + safety-4 backfill)
+            import json as _json
+            _eval_dump = {"step": step, **metrics}
+            (Path(cfg.checkpoint_dir) / f"eval_step_{step}.json").write_text(_json.dumps(_eval_dump, indent=2))
             if wandb_run is not None:
                 wandb_run.log({
                     "val/macro_f1": metrics["macro_f1"],
@@ -920,6 +924,9 @@ def train_loop(model, cfg: Config, device, wandb_run=None) -> dict[str, Any]:
             image_size=cfg.image_size if cfg.image_size != 224 else None,
         )
     print(f"[final] macro_f1={last_metrics['macro_f1']:.4f}")
+    # Dump final per-field metrics — picked up by per_field_<run_id>.json convention
+    import json as _json
+    (Path(cfg.checkpoint_dir) / "per_field_final.json").write_text(_json.dumps(last_metrics, indent=2))
     if wandb_run is not None:
         wandb_run.log({"final/macro_f1": last_metrics["macro_f1"]})
     return last_metrics

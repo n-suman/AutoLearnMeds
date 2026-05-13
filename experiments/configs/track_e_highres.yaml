@@ -28,8 +28,8 @@ val_jsonl: "data/processed/val.jsonl"
 images_root: "/mnt/gcs/raw/raw_images"
 path_strip_prefix: "raw/raw_images/"
 
-tokenizer_path: "experiments/tokenizers/track_e_bpe.json"
-track_e_tokenizer_path: "experiments/tokenizers/track_e_bpe.json"
+tokenizer_path: "data/processed/tokenizer.json"
+track_e_tokenizer_path: "data/processed/tokenizer.json"
 
 checkpoint_dir: "checkpoints/runs/track_e_highres_full-seed44"
 wandb_project: "autolearnmeds"
