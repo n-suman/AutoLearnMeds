@@ -264,20 +264,25 @@ def build_combined_train_rows(cfg: Config) -> tuple[list[dict], list[float]]:
         kept, dropped = prepare.filter_pseudo_rows(pseudo, val_paths=val_paths, test_paths=test_paths)
         print(f"[train] pseudo: kept={len(kept)} dropped={dropped}", flush=True)
         # Convert pseudo rows to gold-row shape so PharmaLabelDataset can consume them.
-        # Gold rows: {image_path, image_id, fields: {f: {text: str}}, ...}
-        # Pseudo rows: {image_path, xml_label, per_field_confidence}
-        # Mapping: parse xml_label → field-value dict; derive image_id from filename.
+        # Per Run #3 v3 ablation (2026-05-14): uniform-weighted pseudo HURT safety-4
+        # by -0.108 macro_edit_f1 (0.2614 → 0.1538). Qwen2-VL is bad on small-text
+        # fields (batch_number, dates, mrp) and pseudo on those teaches the model bad
+        # habits.
+        # Field-masked pseudo: only keep pseudo's predictions for the 5 fields where
+        # Qwen2-VL scored well in calibration (≥0.45 edit_f1):
+        #   brand_name, generic_name, drug_name, company, strength
+        # Drop pseudo's predictions for everything else (safety-4 + warnings + quantity
+        # + manufacturer). The model trains those fields from gold alone.
+        PSEUDO_KEEP_FIELDS = frozenset(["brand_name", "generic_name", "drug_name", "company", "strength"])
         for r in kept:
             r["is_pseudo"] = True
-            # Derive image_id from image_path (filename stem)
             if "image_id" not in r:
                 fn = Path(r.get("image_path", "")).name
-                # Strip extension(s)
                 r["image_id"] = fn.rsplit(".", 1)[0] if "." in fn else fn
-            # Convert xml_label → fields format expected by prepare.format_output
             if "fields" not in r and r.get("xml_label"):
-                parsed = prepare.parse_output(r["xml_label"])  # {field: value} for non-empty
-                r["fields"] = {f: {"text": v} for f, v in parsed.items() if v}
+                parsed = prepare.parse_output(r["xml_label"])
+                # Field-mask: only keep the 5 "good" fields from pseudo
+                r["fields"] = {f: {"text": v} for f, v in parsed.items() if v and f in PSEUDO_KEEP_FIELDS}
         rows.extend(kept)
 
         if cfg.pseudo_weight_mode == "adaptive_confidence":
