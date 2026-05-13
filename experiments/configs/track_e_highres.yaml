@@ -41,10 +41,9 @@ pseudo_weight: 0.3
 pseudo_weight_mode: "const"
 pseudo_min_confidence: "medium"
 
-# 3-stage schedule: pseudo warmup → joint → gold finetune
-stage_schedule:
-  - { name: "warmup",   steps: 500,  data: "pseudo", lr_mult: 1.0 }
-  - { name: "joint",    steps: 2000, data: "all",    lr_mult: 1.0 }
-  - { name: "finetune", steps: 500,  data: "gold",   lr_mult: 0.1 }
+# Stage scheduler is not wired into train_loop yet (D3/D4 helpers exist but
+# aren't called). Setting empty schedule = train on gold+pseudo uniformly for
+# max_steps. Add stages back once we know pseudo even helps.
+stage_schedule: []
 
 compute_calibration: true

@@ -800,8 +800,28 @@ def train_loop(model, cfg: Config, device, wandb_run=None) -> dict[str, Any]:
     import prepare
     torch = _import_torch()
 
+    # If pseudo is configured, materialize a combined gold+pseudo JSONL and
+    # train on that. Uniform sampling (no per-row weight, no stage scheduler).
+    # The stage_schedule + weighted-sampling pieces (Task D3/D4) are a future
+    # extension. For Run #3 the headline question is "does adding 2223
+    # filtered/normalized pseudo rows to 564 gold rows help?" — this code
+    # answers that.
+    if cfg.pseudo_jsonl and cfg.pseudo_weight > 0.0:
+        rows, weights = build_combined_train_rows(cfg)
+        combined_path = Path(cfg.checkpoint_dir) / "combined_train.jsonl"
+        combined_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(combined_path, "w") as f:
+            for r in rows:
+                # Strip the is_pseudo annotation before writing — dataset doesn't expect it
+                row_for_dataset = {k: v for k, v in r.items() if k != "is_pseudo"}
+                f.write(json.dumps(row_for_dataset) + "\n")
+        print(f"[train] using combined gold+pseudo: {len(rows)} rows ({sum(1 for r in rows if r.get('is_pseudo'))} pseudo) at {combined_path}")
+        active_jsonl = str(combined_path)
+    else:
+        active_jsonl = cfg.train_jsonl
+
     train_dl = prepare.get_dataloader(
-        jsonl_path=cfg.train_jsonl,
+        jsonl_path=active_jsonl,
         images_root=cfg.images_root,
         path_strip_prefix=cfg.path_strip_prefix,
         batch_size=cfg.batch_size,
