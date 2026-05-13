@@ -1,0 +1,140 @@
+{
+  "baseline_mae_init-seed44": {
+    "per_field": {
+      "batch_number": {
+        "edit": 0.16118787814403368,
+        "strict": 0.0
+      },
+      "expiry_date": {
+        "edit": 0.20803169234541785,
+        "strict": 0.0
+      },
+      "mfg_date": {
+        "edit": 0.22457126491839216,
+        "strict": 0.0
+      },
+      "mrp": {
+        "edit": 0.17866390359623446,
+        "strict": 0.0
+      }
+    },
+    "safety4_macro_edit_f1": 0.19311368475101953,
+    "safety4_macro_f1": 0.0,
+    "source_file": "per_field_baseline_mae_init-seed44.json"
+  },
+  "baseline_mae_tapt_init-seed44": {
+    "per_field": {
+      "batch_number": {
+        "edit": 0.08636020197552706,
+        "strict": 0.0
+      },
+      "expiry_date": {
+        "edit": 0.0562053281351527,
+        "strict": 0.0
+      },
+      "mfg_date": {
+        "edit": 0.05535714285714286,
+        "strict": 0.0
+      },
+      "mrp": {
+        "edit": 0.019605032648510913,
+        "strict": 0.0
+      }
+    },
+    "safety4_macro_edit_f1": 0.05438192640408338,
+    "safety4_macro_f1": 0.0,
+    "source_file": "per_field_baseline_mae_tapt_init-seed44.json"
+  },
+  "baseline_mae_text_aware_init-seed44": {
+    "per_field": {
+      "batch_number": {
+        "edit": 0.13146066874460371,
+        "strict": 0.0
+      },
+      "expiry_date": {
+        "edit": 0.1112719185811123,
+        "strict": 0.0
+      },
+      "mfg_date": {
+        "edit": 0.14626846337854932,
+        "strict": 0.0
+      },
+      "mrp": {
+        "edit": 0.11236614928274875,
+        "strict": 0.0
+      }
+    },
+    "safety4_macro_edit_f1": 0.12534179999675352,
+    "safety4_macro_f1": 0.0,
+    "source_file": "per_field_baseline_mae_text_aware_init-seed44.json"
+  },
+  "track_a": {
+    "per_field": {
+      "batch_number": {
+        "edit": 0.18068850728697275,
+        "strict": 0.0
+      },
+      "expiry_date": {
+        "edit": 0.2655599647266314,
+        "strict": 0.0
+      },
+      "mfg_date": {
+        "edit": 0.29477624328167806,
+        "strict": 0.0
+      },
+      "mrp": {
+        "edit": 0.21732092454345509,
+        "strict": 0.0
+      }
+    },
+    "safety4_macro_edit_f1": 0.23958640995968433,
+    "safety4_macro_f1": 0.0,
+    "source_file": "per_field_track_a.json"
+  },
+  "track_b": {
+    "per_field": {
+      "batch_number": {
+        "edit": 0.11310160427807488,
+        "strict": 0.0
+      },
+      "expiry_date": {
+        "edit": 0.16172572283683395,
+        "strict": 0.0
+      },
+      "mfg_date": {
+        "edit": 0.1386490960020372,
+        "strict": 0.0
+      },
+      "mrp": {
+        "edit": 0.121943148283764,
+        "strict": 0.0
+      }
+    },
+    "safety4_macro_edit_f1": 0.1338548928501775,
+    "safety4_macro_f1": 0.0,
+    "source_file": "per_field_track_b.json"
+  },
+  "track_d-seed44": {
+    "per_field": {
+      "batch_number": {
+        "edit": 0.004551820728291317,
+        "strict": 0.0
+      },
+      "expiry_date": {
+        "edit": 0.007201646090534982,
+        "strict": 0.0
+      },
+      "mfg_date": {
+        "edit": 0.0,
+        "strict": 0.0
+      },
+      "mrp": {
+        "edit": 0.0102768495312355,
+        "strict": 0.0
+      }
+    },
+    "safety4_macro_edit_f1": 0.005507579087515449,
+    "safety4_macro_f1": 0.0,
+    "source_file": "per_field_track_d-seed44.json"
+  }
+}
