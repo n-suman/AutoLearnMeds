@@ -874,7 +874,8 @@ def train_loop(model, cfg: Config, device, wandb_run=None) -> dict[str, Any]:
                     max_new_tokens=cfg.max_target_length,
                     image_size=cfg.image_size if cfg.image_size != 224 else None,
                 )
-            print(f"[ val ] step={step:5d} macro_f1={metrics['macro_f1']:.4f} (n={metrics['n_examples']})")
+            edit_f1 = metrics.get("macro_edit_f1", 0.0)
+            print(f"[ val ] step={step:5d} macro_f1={metrics['macro_f1']:.4f} macro_edit_f1={edit_f1:.4f} (n={metrics['n_examples']})")
             if wandb_run is not None:
                 wandb_run.log({
                     "val/macro_f1": metrics["macro_f1"],
