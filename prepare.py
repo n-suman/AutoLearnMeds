@@ -445,24 +445,37 @@ def _get_siglip_processor():
     return _PROCESSOR_CACHE["processor"]
 
 
-def preprocess_image(image_path: Path | str):
-    """Resize + letterbox + normalize an image. Returns a (3, IMAGE_SIZE, IMAGE_SIZE) torch tensor.
+def preprocess_image(image_path: Path | str, image_size: int | None = None):
+    """Resize + letterbox + normalize an image. Returns a (3, S, S) torch tensor.
+
+    ``image_size`` controls the output spatial resolution.  When *None* (the
+    default) the module-level ``IMAGE_SIZE`` constant (224) is used, preserving
+    identical behaviour to before this parameter was added.
 
     Letterboxing preserves aspect ratio with mid-gray padding so non-square
     medicine boxes don't get squashed.
     """
     from PIL import Image
 
+    size = image_size if image_size is not None else IMAGE_SIZE
+
     img = Image.open(str(image_path)).convert("RGB")
     w, h = img.size
-    scale = IMAGE_SIZE / max(w, h)
+    scale = size / max(w, h)
     nw, nh = int(round(w * scale)), int(round(h * scale))
     img = img.resize((nw, nh), Image.BILINEAR)
-    canvas = Image.new("RGB", (IMAGE_SIZE, IMAGE_SIZE), color=(127, 127, 127))
-    canvas.paste(img, ((IMAGE_SIZE - nw) // 2, (IMAGE_SIZE - nh) // 2))
+    canvas = Image.new("RGB", (size, size), color=(127, 127, 127))
+    canvas.paste(img, ((size - nw) // 2, (size - nh) // 2))
 
     proc = _get_siglip_processor()
-    out = proc(images=canvas, return_tensors="pt")
+    if size == IMAGE_SIZE:
+        # Standard path: let the processor resize + normalise (cached, fast).
+        out = proc(images=canvas, return_tensors="pt")
+    else:
+        # Custom size: we have already letterboxed to (size, size).  Skip the
+        # processor's built-in resize so the spatial dims are preserved; keep
+        # normalisation (mean/std stay the same regardless of resolution).
+        out = proc(images=canvas, return_tensors="pt", do_resize=False)
     return out["pixel_values"].squeeze(0)  # (3, H, W)
 
 
@@ -481,10 +494,12 @@ class PharmaLabelDataset:
         jsonl_path: Path | str,
         images_root: Path | str,
         path_strip_prefix: str = "raw/raw_images/",
+        image_size: int | None = None,
     ) -> None:
         self.jsonl_path = Path(jsonl_path)
         self.images_root = Path(images_root)
         self.path_strip_prefix = path_strip_prefix
+        self.image_size = image_size  # None → use module-level IMAGE_SIZE (224)
         self.records: list[dict] = [
             json.loads(line)
             for line in self.jsonl_path.read_text().splitlines()
@@ -501,7 +516,7 @@ class PharmaLabelDataset:
             rel = rel[len(self.path_strip_prefix):]
         img_path = self.images_root / rel
         return {
-            "image": preprocess_image(img_path),
+            "image": preprocess_image(img_path, image_size=self.image_size),
             "target_text": format_output(rec),
             "image_id": rec["image_id"],
             "fields_truth": {f: (rec.get("fields") or {}).get(f, {}).get("text")
@@ -529,6 +544,7 @@ def get_dataloader(
     batch_size: int = 16,
     shuffle: bool = False,
     num_workers: int = 0,
+    image_size: int | None = None,
 ):
     """PyTorch DataLoader over PharmaLabelDataset."""
     from torch.utils.data import DataLoader  # type: ignore[import-not-found]
@@ -537,6 +553,7 @@ def get_dataloader(
         jsonl_path=jsonl_path,
         images_root=images_root,
         path_strip_prefix=path_strip_prefix,
+        image_size=image_size,
     )
     return DataLoader(
         ds,
