@@ -281,6 +281,58 @@ def build_combined_train_rows(cfg: Config) -> tuple[list[dict], list[float]]:
     return rows, weights
 
 
+# === Stage scheduler ===
+
+@dataclasses.dataclass(frozen=True)
+class Stage:
+    name: str
+    steps: int
+    data: str       # "all" | "gold" | "pseudo"
+    lr_mult: float
+
+
+class StageScheduler:
+    """Maps a global step → (current stage, lr_mult, data filter).
+
+    Used by the trainer's main loop to drive multi-stage Track E training.
+    With cfg.stage_schedule=[], behaves as a single 'baseline' stage covering
+    cfg.max_steps with data='all' and lr_mult=1.0 (Track A-compatible default).
+    """
+
+    def __init__(self, cfg: Config):
+        if not cfg.stage_schedule:
+            self._stages = [Stage(name="baseline", steps=cfg.max_steps, data="all", lr_mult=1.0)]
+        else:
+            self._stages = [Stage(**s) for s in cfg.stage_schedule]
+        # Precompute cumulative step boundaries
+        self._cum: list[int] = []
+        acc = 0
+        for s in self._stages:
+            acc += s.steps
+            self._cum.append(acc)
+
+    def stage_at_step(self, step: int) -> Stage:
+        for i, boundary in enumerate(self._cum):
+            if step < boundary:
+                return self._stages[i]
+        # past last stage: return the last (allows for max_steps overshoot tolerance)
+        return self._stages[-1]
+
+    def total_steps(self) -> int:
+        return self._cum[-1]
+
+    def example_mask_at_step(self, step: int, rows: list[dict]) -> list[bool]:
+        """Return a bool list parallel to `rows`: True = keep this example in this stage."""
+        s = self.stage_at_step(step)
+        if s.data == "all":
+            return [True] * len(rows)
+        if s.data == "gold":
+            return [not r.get("is_pseudo", False) for r in rows]
+        if s.data == "pseudo":
+            return [r.get("is_pseudo", False) for r in rows]
+        raise ValueError(f"Unknown stage data: {s.data}")
+
+
 # === Rotary position embedding ===
 
 def rope_cache(seq_len: int, head_dim: int, device, dtype):
