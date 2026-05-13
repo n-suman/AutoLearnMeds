@@ -573,6 +573,7 @@ def evaluate(
     path_strip_prefix: str = "raw/raw_images/",
     batch_size: int = 16,
     max_new_tokens: int = 256,
+    image_size: int | None = None,
 ) -> dict[str, Any]:
     """Run `model.predict_text(batch_images, max_new_tokens) -> list[str]`
     over the given JSONL split, parse the predicted XML, compute
@@ -581,6 +582,9 @@ def evaluate(
     `model` must implement `predict_text(batch_images, max_new_tokens)` returning
     a list of strings (one per image). The model itself is opaque — train.py
     decides how to wrap its decoder behind this method.
+
+    `image_size` overrides the dataset's spatial resolution; None preserves
+    the module-level default (224).
     """
     dl = get_dataloader(
         jsonl_path=jsonl_path,
@@ -588,6 +592,7 @@ def evaluate(
         path_strip_prefix=path_strip_prefix,
         batch_size=batch_size,
         shuffle=False,
+        image_size=image_size,
     )
     predictions: list[dict[str, str]] = []
     truths: list[dict[str, str]] = []

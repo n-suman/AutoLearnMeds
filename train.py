@@ -807,6 +807,7 @@ def train_loop(model, cfg: Config, device, wandb_run=None) -> dict[str, Any]:
         batch_size=cfg.batch_size,
         shuffle=True,
         num_workers=2,
+        image_size=cfg.image_size if cfg.image_size != 224 else None,
     )
 
     optimizer = torch.optim.AdamW(
@@ -871,6 +872,7 @@ def train_loop(model, cfg: Config, device, wandb_run=None) -> dict[str, Any]:
                     path_strip_prefix=cfg.path_strip_prefix,
                     batch_size=cfg.batch_size,
                     max_new_tokens=cfg.max_target_length,
+                    image_size=cfg.image_size if cfg.image_size != 224 else None,
                 )
             print(f"[ val ] step={step:5d} macro_f1={metrics['macro_f1']:.4f} (n={metrics['n_examples']})")
             if wandb_run is not None:
@@ -914,6 +916,7 @@ def train_loop(model, cfg: Config, device, wandb_run=None) -> dict[str, Any]:
             path_strip_prefix=cfg.path_strip_prefix,
             batch_size=cfg.batch_size,
             max_new_tokens=cfg.max_target_length,
+            image_size=cfg.image_size if cfg.image_size != 224 else None,
         )
     print(f"[final] macro_f1={last_metrics['macro_f1']:.4f}")
     if wandb_run is not None:
