@@ -11,6 +11,7 @@ from __future__ import annotations
 # === Imports ===
 import argparse
 import dataclasses
+import json
 import os
 import random
 import sys
@@ -181,6 +182,41 @@ def build_encoder(cfg: "Config"):
     encoder = Encoder(cfg.encoder_model, encoder_init_path=cfg.encoder_init_path)
     hidden_dim = encoder.model.config.hidden_size
     return encoder, hidden_dim
+
+
+# === Pre-flight checks ===
+
+def preflight_leak_check(cfg: Config) -> None:
+    """Refuse to train if pseudo_jsonl contains any image_path also in val or test.
+
+    No-op when pseudo is disabled (cfg.pseudo_jsonl == "" or cfg.pseudo_weight == 0.0).
+    """
+    if not cfg.pseudo_jsonl or cfg.pseudo_weight == 0.0:
+        return
+
+    def _paths_from_jsonl(path: str) -> set[str]:
+        out: set[str] = set()
+        with open(path) as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                row = json.loads(line)
+                out.add(row.get("image_path", ""))
+        return out
+
+    val_paths = _paths_from_jsonl(cfg.val_jsonl) if cfg.val_jsonl else set()
+    pseudo_paths = _paths_from_jsonl(cfg.pseudo_jsonl)
+
+    overlap = val_paths & pseudo_paths
+    assert not overlap, f"pseudo leak: {len(overlap)} val images found in pseudo_jsonl: {sorted(overlap)[:3]}..."
+
+    # Test-set leak check is gated by file existence — test_jsonl is conventionally val.jsonl path with "test" substituted
+    test_path = cfg.val_jsonl.replace("val.jsonl", "test.jsonl") if cfg.val_jsonl else ""
+    if test_path and Path(test_path).exists():
+        test_paths = _paths_from_jsonl(test_path)
+        test_overlap = test_paths & pseudo_paths
+        assert not test_overlap, f"PSEUDO LEAK (TEST): {len(test_overlap)} test images in pseudo_jsonl"
 
 
 # === Rotary position embedding ===
@@ -757,6 +793,7 @@ def main(argv: list[str] | None = None) -> int:
         cfg = dataclasses.replace(cfg, seed=args.seed)
 
     set_seed(cfg.seed)
+    preflight_leak_check(cfg)
 
     import prepare
     torch = _import_torch()

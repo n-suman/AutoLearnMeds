@@ -56,3 +56,30 @@ def test_track_e_yaml_overrides_defaults(project_root: Path, train_mod, tmp_path
     assert cfg.image_size == 384
     assert cfg.pseudo_weight == 0.3
     assert cfg.compute_calibration is True
+
+
+def test_preflight_rejects_pseudo_with_val_leak(project_root: Path, tmp_path: Path, train_mod) -> None:
+    """If pseudo_jsonl contains an image_path from val, preflight_leak_check should raise."""
+    val_jsonl = tmp_path / "val.jsonl"
+    pseudo_jsonl = tmp_path / "pseudo.jsonl"
+    val_jsonl.write_text('{"image_path": "raw/raw_images/IMG_001.JPG", "xml_label": "<medication><brand_name>X</brand_name></medication>"}\n')
+    pseudo_jsonl.write_text('{"image_path": "raw/raw_images/IMG_001.JPG", "xml_label": "<medication><brand_name>X</brand_name></medication>"}\n')
+
+    cfg = train_mod.Config(val_jsonl=str(val_jsonl), pseudo_jsonl=str(pseudo_jsonl), pseudo_weight=0.3)
+    with pytest.raises(AssertionError, match="leak"):
+        train_mod.preflight_leak_check(cfg)
+
+
+def test_preflight_passes_when_no_overlap(project_root: Path, tmp_path: Path, train_mod) -> None:
+    val_jsonl = tmp_path / "val.jsonl"
+    pseudo_jsonl = tmp_path / "pseudo.jsonl"
+    val_jsonl.write_text('{"image_path": "raw/raw_images/IMG_001.JPG", "xml_label": "x"}\n')
+    pseudo_jsonl.write_text('{"image_path": "raw/raw_images/IMG_999.JPG", "xml_label": "x"}\n')
+    cfg = train_mod.Config(val_jsonl=str(val_jsonl), pseudo_jsonl=str(pseudo_jsonl), pseudo_weight=0.3)
+    train_mod.preflight_leak_check(cfg)  # should not raise
+
+
+def test_preflight_noop_when_pseudo_disabled(project_root: Path, train_mod) -> None:
+    """If pseudo_weight=0.0 or pseudo_jsonl='', preflight is a no-op."""
+    cfg = train_mod.Config()
+    train_mod.preflight_leak_check(cfg)  # should not raise (no pseudo configured)
