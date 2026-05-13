@@ -306,6 +306,52 @@ def compute_metrics(
     }
 
 
+# === Safety-4 subset metric (Track E onward) ===
+
+# The four fields whose errors carry production safety/financial risk:
+# - batch_number: recall-tracing risk (drug-batch identification)
+# - expiry_date:  dispensing-error risk (expired-drug dispensing)
+# - mrp:          pricing-fraud risk
+# - mfg_date:     recall-tracing risk
+# Track E and later runs optimize macro_edit_f1 over this subset.
+SAFETY_FIELDS: frozenset[str] = frozenset(["batch_number", "mfg_date", "expiry_date", "mrp"])
+
+
+def compute_subset_metrics(
+    predictions: list[dict[str, str]],
+    truths: list[dict[str, str]],
+    fields: frozenset[str],
+) -> dict[str, Any]:
+    """Compute macro F1 + macro edit F1 restricted to a subset of fields.
+
+    Same per-field math as compute_metrics, but the macro averages are over `fields`
+    instead of FIELD_ORDER. Useful for headline metrics that weight production-critical
+    fields over auxiliary ones.
+
+    Returns the same dict shape as compute_metrics — macro_f1, per_field_f1,
+    macro_edit_f1, per_field_edit_f1 — but per_field_* only contain the requested fields.
+    """
+    assert fields.issubset(ALL_FIELDS), f"Subset contains unknown fields: {fields - ALL_FIELDS}"
+    per_field = {f: compute_field_f1(predictions, truths, f) for f in fields}
+    per_field_edit = {f: compute_field_edit_f1(predictions, truths, f) for f in fields}
+    macro = sum(per_field.values()) / len(per_field) if per_field else 0.0
+    macro_edit = sum(per_field_edit.values()) / len(per_field_edit) if per_field_edit else 0.0
+    return {
+        "macro_f1": macro,
+        "per_field_f1": per_field,
+        "macro_edit_f1": macro_edit,
+        "per_field_edit_f1": per_field_edit,
+    }
+
+
+def compute_safety4_metrics(
+    predictions: list[dict[str, str]],
+    truths: list[dict[str, str]],
+) -> dict[str, Any]:
+    """Convenience wrapper: compute_subset_metrics(..., fields=SAFETY_FIELDS)."""
+    return compute_subset_metrics(predictions, truths, SAFETY_FIELDS)
+
+
 # === Image preprocessing ===
 
 # Cached after first call so we don't redownload SigLIP processor each batch.
