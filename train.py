@@ -263,9 +263,21 @@ def build_combined_train_rows(cfg: Config) -> tuple[list[dict], list[float]]:
         test_paths = {r["image_path"] for r in _read(test_path)} if (test_path and Path(test_path).exists()) else set()
         kept, dropped = prepare.filter_pseudo_rows(pseudo, val_paths=val_paths, test_paths=test_paths)
         print(f"[train] pseudo: kept={len(kept)} dropped={dropped}", flush=True)
-        # Annotate pseudo rows
+        # Convert pseudo rows to gold-row shape so PharmaLabelDataset can consume them.
+        # Gold rows: {image_path, image_id, fields: {f: {text: str}}, ...}
+        # Pseudo rows: {image_path, xml_label, per_field_confidence}
+        # Mapping: parse xml_label → field-value dict; derive image_id from filename.
         for r in kept:
             r["is_pseudo"] = True
+            # Derive image_id from image_path (filename stem)
+            if "image_id" not in r:
+                fn = Path(r.get("image_path", "")).name
+                # Strip extension(s)
+                r["image_id"] = fn.rsplit(".", 1)[0] if "." in fn else fn
+            # Convert xml_label → fields format expected by prepare.format_output
+            if "fields" not in r and r.get("xml_label"):
+                parsed = prepare.parse_output(r["xml_label"])  # {field: value} for non-empty
+                r["fields"] = {f: {"text": v} for f, v in parsed.items() if v}
         rows.extend(kept)
 
         if cfg.pseudo_weight_mode == "adaptive_confidence":
