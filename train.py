@@ -219,6 +219,68 @@ def preflight_leak_check(cfg: Config) -> None:
         assert not test_overlap, f"PSEUDO LEAK (TEST): {len(test_overlap)} test images in pseudo_jsonl"
 
 
+# === Combined training rows builder ===
+
+def build_combined_train_rows(cfg: Config) -> tuple[list[dict], list[float]]:
+    """Return (rows, per_row_weights) for the training loop.
+
+    - Always includes all rows from cfg.train_jsonl with weight 1.0 and `is_pseudo: False`.
+    - If cfg.pseudo_jsonl is non-empty AND cfg.pseudo_weight > 0:
+      reads pseudo, runs prepare.normalize_pseudo_xml + filter_pseudo_rows
+      against val/test, appends survivors with the configured weight and `is_pseudo: True`.
+
+    The `is_pseudo` field on each row is used by StageScheduler (Task D4) to filter
+    examples by stage (gold-only vs pseudo-only).
+    """
+    import prepare
+
+    def _read(path: str) -> list[dict]:
+        rows: list[dict] = []
+        if not path:
+            return rows
+        p = Path(path)
+        if not p.exists():
+            return rows
+        with open(path) as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    rows.append(json.loads(line))
+        return rows
+
+    gold = _read(cfg.train_jsonl)
+    # Annotate gold rows
+    for r in gold:
+        r["is_pseudo"] = False
+    rows = list(gold)
+    weights = [1.0] * len(gold)
+
+    if cfg.pseudo_jsonl and cfg.pseudo_weight > 0.0:
+        pseudo_raw = _read(cfg.pseudo_jsonl)
+        pseudo = [prepare.normalize_pseudo_xml(r) for r in pseudo_raw]
+        val_paths = {r["image_path"] for r in _read(cfg.val_jsonl)} if cfg.val_jsonl else set()
+        test_path = cfg.val_jsonl.replace("val.jsonl", "test.jsonl") if cfg.val_jsonl else ""
+        test_paths = {r["image_path"] for r in _read(test_path)} if (test_path and Path(test_path).exists()) else set()
+        kept, dropped = prepare.filter_pseudo_rows(pseudo, val_paths=val_paths, test_paths=test_paths)
+        print(f"[train] pseudo: kept={len(kept)} dropped={dropped}", flush=True)
+        # Annotate pseudo rows
+        for r in kept:
+            r["is_pseudo"] = True
+        rows.extend(kept)
+
+        if cfg.pseudo_weight_mode == "adaptive_confidence":
+            # weight = avg per-field confidence * cfg.pseudo_weight
+            conf_map = {"low": 0.3, "medium": 0.7, "high": 1.0}
+            for row in kept:
+                conf = row.get("per_field_confidence", {})
+                avg = sum(conf_map.get(v, 0.5) for v in conf.values()) / max(1, len(conf))
+                weights.append(cfg.pseudo_weight * avg)
+        else:  # const
+            weights.extend([cfg.pseudo_weight] * len(kept))
+
+    return rows, weights
+
+
 # === Rotary position embedding ===
 
 def rope_cache(seq_len: int, head_dim: int, device, dtype):
