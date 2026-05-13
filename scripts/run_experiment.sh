@@ -21,12 +21,14 @@ shift || true
 CONFIG=""           # blank means "use track default"
 SEED_ARG=""
 TRACK="A"
+DRY_RUN=0
 EXTRA_ARGS=()
 while (($#)); do
   case "$1" in
     --config) CONFIG="$2"; shift 2;;
     --seed) SEED_ARG="--seed $2"; shift 2;;
     --track) TRACK="$2"; shift 2;;
+    --dry-run) DRY_RUN=1; shift;;
     *) EXTRA_ARGS+=("$1"); shift;;
   esac
 done
@@ -34,9 +36,18 @@ done
 case "$TRACK" in
   A) TRAINER="train.py"; DEFAULT_CONFIG="experiments/configs/baseline.yaml" ;;
   B) TRAINER="train_qwen.py"; DEFAULT_CONFIG="experiments/configs/qwen_baseline.yaml" ;;
-  *) echo "[run_experiment] FATAL: unknown track $TRACK (expected A or B)" >&2; exit 2 ;;
+  E) TRAINER="train.py"; DEFAULT_CONFIG="experiments/configs/track_e_highres.yaml" ;;
+  *) echo "[run_experiment] FATAL: unknown track $TRACK (expected A, B, or E)" >&2; exit 2 ;;
 esac
 [[ -z "$CONFIG" ]] && CONFIG="$DEFAULT_CONFIG"
+
+if (( DRY_RUN )); then
+  echo "[run_experiment] DRY RUN: would run python $TRAINER --config $CONFIG $SEED_ARG"
+  echo "  TRACK=$TRACK"
+  echo "  RUN_ID=$RUN_ID"
+  echo "  CONFIG=$CONFIG"
+  exit 0
+fi
 
 RUN_DIR="experiments/runs/${RUN_ID}"
 mkdir -p "$RUN_DIR"
