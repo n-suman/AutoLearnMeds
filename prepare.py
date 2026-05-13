@@ -355,6 +355,33 @@ def compute_safety4_metrics(
     return compute_subset_metrics(predictions, truths, SAFETY_FIELDS)
 
 
+# === Pseudo-label handling (Track E onward) ===
+
+_INR_PREFIX_RE = re.compile(r"(?:₹|Rs\.?\s*)")
+_DATE_SEP_RE = re.compile(r"(\d{1,2})[-.](\d{4})")  # MM-YYYY or MM.YYYY → MM/YYYY
+_WS_RUN_RE = re.compile(r"\s+")
+
+
+def normalize_pseudo_xml(row: dict) -> dict:
+    """Apply minor format normalizations to a pseudo-label row before training.
+
+    Operations (all string-replace, no structural changes):
+    - Strip Indian rupee prefixes (₹, Rs., Rs) from mrp values.
+    - Normalize date separators MM-YYYY / MM.YYYY → MM/YYYY.
+    - Collapse runs of whitespace inside any tag to a single space.
+
+    Returns a new dict (original is not mutated). All keys other than `xml_label`
+    are passed through unchanged.
+    """
+    xml = row.get("xml_label", "")
+    xml = _INR_PREFIX_RE.sub("", xml)
+    xml = _DATE_SEP_RE.sub(r"\1/\2", xml)
+    # Collapse whitespace inside tag bodies (between > and <)
+    xml = re.sub(r">([^<]*)<", lambda m: ">" + _WS_RUN_RE.sub(" ", m.group(1)).strip() + "<", xml)
+
+    return {**row, "xml_label": xml}
+
+
 # === Image preprocessing ===
 
 # Cached after first call so we don't redownload SigLIP processor each batch.
