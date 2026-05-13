@@ -164,6 +164,25 @@ class Encoder:
         return out.last_hidden_state
 
 
+def build_encoder(cfg: "Config"):
+    """Construct the (frozen) vision encoder per cfg.
+
+    Returns (encoder, hidden_dim) where:
+      - encoder is an Encoder instance wrapping a frozen SiglipVisionModel
+      - hidden_dim is encoder.model.config.hidden_size (768 for base, 1024 for large)
+
+    Behavior:
+    - If cfg.encoder_init_path is set, loads SigLIP weights from that local path
+      (Track C / Phase 7 MAE-pretrained encoder). The Encoder class handles the
+      model_type dispatch (siglip_vision_model vs full SiglipModel).
+    - Otherwise loads from HuggingFace hub via cfg.encoder_model.
+    - Always freezes all encoder parameters (enforced inside Encoder.__init__).
+    """
+    encoder = Encoder(cfg.encoder_model, encoder_init_path=cfg.encoder_init_path)
+    hidden_dim = encoder.model.config.hidden_size
+    return encoder, hidden_dim
+
+
 # === Rotary position embedding ===
 
 def rope_cache(seq_len: int, head_dim: int, device, dtype):

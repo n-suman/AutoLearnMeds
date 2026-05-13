@@ -70,3 +70,37 @@ def test_baseline_mae_init_yaml_loads(train_mod, project_root: Path) -> None:
     # Sanity: other fields still come through identical to baseline.
     assert cfg.encoder_model == "google/siglip-base-patch16-224"
     assert cfg.hidden_dim == 512
+
+
+def test_build_encoder_default_returns_base_dim(project_root: Path) -> None:
+    """Default config produces SigLIP-base with hidden_size=768."""
+    torch = pytest.importorskip("torch")  # skip in torch-less envs
+    pytest.importorskip("transformers")   # skip if transformers not installed
+
+    import sys
+    sys.path.insert(0, str(project_root))
+    import train
+
+    cfg = train.Config()
+    enc, hidden_dim = train.build_encoder(cfg)
+    assert hidden_dim == 768  # SigLIP-base hidden size
+    # Encoder should be frozen
+    assert all(not p.requires_grad for p in enc.parameters())
+
+
+def test_build_encoder_large_returns_large_dim(project_root: Path) -> None:
+    """When cfg.encoder_model = SigLIP-large, hidden_dim should be 1024.
+
+    NOTE: this test actually downloads SigLIP-large the first time it runs (~600 MB).
+    Mark as a slow/colab test.
+    """
+    torch = pytest.importorskip("torch")  # skip in torch-less envs
+    pytest.importorskip("transformers")   # skip if transformers not installed
+
+    import sys
+    sys.path.insert(0, str(project_root))
+    import train
+
+    cfg = train.Config(encoder_model="google/siglip-large-patch16-384", image_size=384)
+    enc, hidden_dim = train.build_encoder(cfg)
+    assert hidden_dim == 1024
