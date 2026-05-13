@@ -38,7 +38,10 @@ while true; do
   echo "[sync_to_gcs] $ts — sync start"
 
   # The three things we mirror; each is non-fatal on transient failure.
-  for src_rel in experiments checkpoints; do
+  # `data` was added 2026-05-13 for Track E pseudo-label artifacts under
+  # data/pseudo_labels/ (Qwen2-VL labeling output, ~3h GPU to regenerate).
+  # Same no-delete-flag discipline as the rest.
+  for src_rel in experiments checkpoints data; do
     src="$WORKSPACE/$src_rel"
     dst="$BUCKET/$src_rel"
     if [[ -d "$src" ]]; then
