@@ -1,0 +1,50 @@
+# Track E run #1: SigLIP-large-384 trained on gold only.
+# Isolates the resolution upgrade effect (vs Track A's SigLIP-base-224).
+# Headline metric: safety-4 macro_edit_f1 on val.
+
+seed: 44
+encoder_model: "google/siglip-large-patch16-384"
+image_size: 384
+hidden_dim: 512                   # decoder d_model; bridge handles encoder_hidden → 512
+n_decoder_layers: 6
+n_decoder_heads: 8
+ffn_ratio: 4
+dropout: 0.1
+tied_embeddings: true
+max_target_length: 256
+batch_size: 4                     # smaller per-step batch due to bigger encoder
+peak_lr: 3.0e-4
+min_lr: 3.0e-5
+warmup_steps: 200
+max_steps: 1500
+weight_decay: 0.05
+adam_betas: [0.9, 0.95]
+grad_clip: 1.0
+eval_every: 200
+log_every: 25
+precision: "bf16"
+
+# Data paths (Track A defaults)
+train_jsonl: "data/processed/train.jsonl"
+val_jsonl: "data/processed/val.jsonl"
+images_root: "/mnt/gcs/raw/raw_images"
+path_strip_prefix: "raw/raw_images/"
+
+# Track E tokenizer (built on gold only here; pseudo additions happen in track_e_highres.yaml)
+tokenizer_path: "experiments/tokenizers/track_e_bpe_gold.json"
+track_e_tokenizer_path: "experiments/tokenizers/track_e_bpe_gold.json"
+
+# Output
+checkpoint_dir: "checkpoints/runs/track_e_highres_gold_only-seed44"
+wandb_project: "autolearnmeds"
+wandb_mode: "online"
+
+# Pseudo disabled
+pseudo_jsonl: ""
+pseudo_weight: 0.0
+
+# Single-stage (the gold-only-control)
+stage_schedule: []
+
+# Calibration / abstention curves
+compute_calibration: true

@@ -1,0 +1,50 @@
+# Track E run #3: SigLIP-large-384 + Qwen2-VL pseudo-labels @ weight 0.3, 3-stage schedule.
+# Headline candidate: gold (564) + filtered pseudo (~2,275) over 3,000 steps.
+
+seed: 44
+encoder_model: "google/siglip-large-patch16-384"
+image_size: 384
+hidden_dim: 512
+n_decoder_layers: 6
+n_decoder_heads: 8
+ffn_ratio: 4
+dropout: 0.1
+tied_embeddings: true
+max_target_length: 256
+batch_size: 4
+peak_lr: 3.0e-4
+min_lr: 3.0e-5
+warmup_steps: 200
+max_steps: 3000                     # consumed by stage_schedule (sum of steps below)
+weight_decay: 0.05
+adam_betas: [0.9, 0.95]
+grad_clip: 1.0
+eval_every: 200
+log_every: 25
+precision: "bf16"
+
+train_jsonl: "data/processed/train.jsonl"
+val_jsonl: "data/processed/val.jsonl"
+images_root: "/mnt/gcs/raw/raw_images"
+path_strip_prefix: "raw/raw_images/"
+
+tokenizer_path: "experiments/tokenizers/track_e_bpe.json"
+track_e_tokenizer_path: "experiments/tokenizers/track_e_bpe.json"
+
+checkpoint_dir: "checkpoints/runs/track_e_highres_full-seed44"
+wandb_project: "autolearnmeds"
+wandb_mode: "online"
+
+# Pseudo
+pseudo_jsonl: "data/pseudo_labels/round_001.jsonl"
+pseudo_weight: 0.3
+pseudo_weight_mode: "const"
+pseudo_min_confidence: "medium"
+
+# 3-stage schedule: pseudo warmup → joint → gold finetune
+stage_schedule:
+  - { name: "warmup",   steps: 500,  data: "pseudo", lr_mult: 1.0 }
+  - { name: "joint",    steps: 2000, data: "all",    lr_mult: 1.0 }
+  - { name: "finetune", steps: 500,  data: "gold",   lr_mult: 0.1 }
+
+compute_calibration: true
