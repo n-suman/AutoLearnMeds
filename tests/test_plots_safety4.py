@@ -29,3 +29,23 @@ def test_per_field_safety4_plot(project_root: Path, tmp_path: Path) -> None:
     )
     assert result.returncode == 0, result.stderr
     assert out.exists() and out.stat().st_size > 1000
+
+
+def test_envelope_plot(project_root: Path, tmp_path: Path) -> None:
+    """Envelope across multiple runs reads ledger.jsonl entries and produces a PNG."""
+    import json
+    ledger = tmp_path / "ledger.jsonl"
+    ledger.write_text("\n".join(json.dumps(r) for r in [
+        {"run_id": "track_a_baseline", "metrics": {"safety4_macro_edit_f1": 0.10}, "timestamp": "2026-05-05T14:00:00Z"},
+        {"run_id": "track_e_gold_only", "metrics": {"safety4_macro_edit_f1": 0.18}, "timestamp": "2026-05-13T14:00:00Z"},
+        {"run_id": "track_e_full", "metrics": {"safety4_macro_edit_f1": 0.25}, "timestamp": "2026-05-14T14:00:00Z"},
+    ]) + "\n")
+    out = tmp_path / "envelope.png"
+    result = subprocess.run(
+        ["python", "scripts/plots/envelope.py", "--ledger", str(ledger), "--out", str(out)],
+        cwd=project_root,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
+    assert out.exists() and out.stat().st_size > 1000
