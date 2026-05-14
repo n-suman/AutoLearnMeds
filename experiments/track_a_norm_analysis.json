@@ -1,0 +1,193 @@
+{
+  "baseline": {
+    "macro_f1": 0.07410910843314322,
+    "macro_edit_f1": 0.32251107649485605,
+    "safety4_macro_f1": 0.0,
+    "safety4_macro_edit_f1": 0.2395864099596843,
+    "per_field_f1": {
+      "brand_name": 0.13793103448275862,
+      "drug_name": 0.20437956204379565,
+      "generic_name": 0.04878048780487805,
+      "strength": 0.0,
+      "quantity": 0.0,
+      "company": 0.35,
+      "manufacturer": 0.0,
+      "batch_number": 0.0,
+      "mfg_date": 0.0,
+      "expiry_date": 0.0,
+      "mrp": 0.0,
+      "warnings": 0.0
+    },
+    "per_field_edit_f1": {
+      "brand_name": 0.5790176122896711,
+      "drug_name": 0.6138558622102039,
+      "generic_name": 0.6147079771405599,
+      "strength": 0.11904761904761907,
+      "quantity": 0.0,
+      "company": 0.3401360544217687,
+      "manufacturer": 0.0,
+      "batch_number": 0.18068850728697275,
+      "mfg_date": 0.29477624328167806,
+      "expiry_date": 0.2655599647266314,
+      "mrp": 0.21732092454345509,
+      "warnings": 0.0
+    },
+    "rules_applied": []
+  },
+  "bpe_cleanup_only": {
+    "macro_f1": 0.24935786576490293,
+    "macro_edit_f1": 0.37849859466301844,
+    "safety4_macro_f1": 0.16470397737639117,
+    "safety4_macro_edit_f1": 0.3144673609892324,
+    "per_field_f1": {
+      "brand_name": 0.43103448275862066,
+      "drug_name": 0.5547445255474451,
+      "generic_name": 0.37398373983739835,
+      "strength": 0.125,
+      "quantity": 0.0,
+      "company": 0.35,
+      "manufacturer": 0.0,
+      "batch_number": 0.1724137931034483,
+      "mfg_date": 0.2592592592592593,
+      "expiry_date": 0.12,
+      "mrp": 0.10714285714285714,
+      "warnings": 0.0
+    },
+    "per_field_edit_f1": {
+      "brand_name": 0.6493899040774042,
+      "drug_name": 0.6843823724776105,
+      "generic_name": 0.6760653145536145,
+      "strength": 0.17714285714285713,
+      "quantity": 0.0,
+      "company": 0.3401360544217687,
+      "manufacturer": 0.0,
+      "batch_number": 0.24024276377217552,
+      "mfg_date": 0.38261612379555926,
+      "expiry_date": 0.3428160749798177,
+      "mrp": 0.29219448140937704,
+      "warnings": 0.0
+    },
+    "rules_applied": [
+      "_"
+    ]
+  },
+  "bpe_then_field": {
+    "macro_f1": 0.26463299804003515,
+    "macro_edit_f1": 0.369315706836008,
+    "safety4_macro_f1": 0.20289180806422188,
+    "safety4_macro_edit_f1": 0.2915101414217061,
+    "per_field_f1": {
+      "brand_name": 0.43103448275862066,
+      "drug_name": 0.5547445255474451,
+      "generic_name": 0.37398373983739835,
+      "strength": 0.125,
+      "quantity": 0.0,
+      "company": 0.35,
+      "manufacturer": 0.0,
+      "batch_number": 0.1724137931034483,
+      "mfg_date": 0.29629629629629634,
+      "expiry_date": 0.19999999999999998,
+      "mrp": 0.14285714285714288,
+      "warnings": 0.0
+    },
+    "per_field_edit_f1": {
+      "brand_name": 0.6493899040774042,
+      "drug_name": 0.6843823724776105,
+      "generic_name": 0.6760653145536145,
+      "strength": 0.17714285714285713,
+      "quantity": 0.0,
+      "company": 0.3401360544217687,
+      "manufacturer": 0.0,
+      "batch_number": 0.19725586312956556,
+      "mfg_date": 0.3852388682745826,
+      "expiry_date": 0.33837539977890857,
+      "mrp": 0.24517043450376783,
+      "warnings": 0.0
+    },
+    "rules_applied": [
+      "mrp",
+      "expiry_date",
+      "mfg_date",
+      "batch_number",
+      "_"
+    ]
+  },
+  "bpe_then_field_strip_ws": {
+    "macro_f1": 0.26463299804003515,
+    "macro_edit_f1": 0.369315706836008,
+    "safety4_macro_f1": 0.20289180806422188,
+    "safety4_macro_edit_f1": 0.2915101414217061,
+    "per_field_f1": {
+      "brand_name": 0.43103448275862066,
+      "drug_name": 0.5547445255474451,
+      "generic_name": 0.37398373983739835,
+      "strength": 0.125,
+      "quantity": 0.0,
+      "company": 0.35,
+      "manufacturer": 0.0,
+      "batch_number": 0.1724137931034483,
+      "mfg_date": 0.29629629629629634,
+      "expiry_date": 0.19999999999999998,
+      "mrp": 0.14285714285714288,
+      "warnings": 0.0
+    },
+    "per_field_edit_f1": {
+      "brand_name": 0.6493899040774042,
+      "drug_name": 0.6843823724776105,
+      "generic_name": 0.6760653145536145,
+      "strength": 0.17714285714285713,
+      "quantity": 0.0,
+      "company": 0.3401360544217687,
+      "manufacturer": 0.0,
+      "batch_number": 0.19725586312956556,
+      "mfg_date": 0.3852388682745826,
+      "expiry_date": 0.33837539977890857,
+      "mrp": 0.24517043450376783,
+      "warnings": 0.0
+    },
+    "rules_applied": [
+      "mrp",
+      "expiry_date",
+      "mfg_date",
+      "batch_number",
+      "_"
+    ]
+  },
+  "strip_all_ws_global": {
+    "macro_f1": 0.11125273532205078,
+    "macro_edit_f1": 0.3546480563859896,
+    "safety4_macro_f1": 0.054380587484035764,
+    "safety4_macro_edit_f1": 0.2894595268864839,
+    "per_field_f1": {
+      "brand_name": 0.1896551724137931,
+      "drug_name": 0.30656934306569344,
+      "generic_name": 0.04878048780487805,
+      "strength": 0.0,
+      "quantity": 0.0,
+      "company": 0.35,
+      "manufacturer": 0.0,
+      "batch_number": 0.10344827586206896,
+      "mfg_date": 0.07407407407407408,
+      "expiry_date": 0.039999999999999994,
+      "mrp": 0.0,
+      "warnings": 0.0
+    },
+    "per_field_edit_f1": {
+      "brand_name": 0.6148479703167203,
+      "drug_name": 0.6542622280717518,
+      "generic_name": 0.6189200130275289,
+      "strength": 0.16047619047619047,
+      "quantity": 0.0,
+      "company": 0.3401360544217687,
+      "manufacturer": 0.0,
+      "batch_number": 0.22998366013071897,
+      "mfg_date": 0.35078676029340167,
+      "expiry_date": 0.3197570947570948,
+      "mrp": 0.2573105923647202,
+      "warnings": 0.0
+    },
+    "rules_applied": [
+      "_"
+    ]
+  }
+}
