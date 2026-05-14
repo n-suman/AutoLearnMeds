@@ -124,10 +124,39 @@ def dump_predictions(args: argparse.Namespace) -> int:
 # prepare.normalize_field_value upstream; these rules go BEYOND that.
 
 
-_INR_PREFIX_RE = re.compile(r"^(rs\.?|₹)\s*", re.IGNORECASE)
+_INR_PREFIX_RE = re.compile(r"^(rs\.?|₹)\s*[.:]?\s*", re.IGNORECASE)
 _DATE_DASH_RE = re.compile(r"^(\d{1,2})\s*[-./\s]\s*(\d{2,4})$")
 _DATE_MONTH_RE = re.compile(
-    r"^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+(\d{2,4})$",
+    r"^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[.\s]*(\d{2,4})$",
+    re.IGNORECASE,
+)
+# Field-label prefixes that appear in MANY gold values for the dataset.
+# Gold examples we found in val.jsonl:
+#   "B. No. KP", "Batch No. : SHAP-021", "B.No:KP1307495"
+#   "M.D : MAY 2024", "Mfg.Date :04/2025", "MFG.DATE 11/2024"
+#   "E.D : APR 2026", "Exp.Date:09/2026", "Expiry Date DEC.2027"
+#   "M.R.P ₹ : 26.70", "Maximum retail price RS.243.07", "M.R.P.₹.16.12"
+# These prefixes appear before the actual value. Strip them on both
+# prediction AND gold so the comparison is content-only.
+_BATCH_PREFIX_RE = re.compile(
+    r"^(b\s*\.?\s*no\.?\s*:?\s*|batch\s*no\.?\s*:?\s*|batch\s*number\.?\s*:?\s*|lot\s*no\.?\s*:?\s*)",
+    re.IGNORECASE,
+)
+_DATE_PREFIX_RE = re.compile(
+    r"^(m\s*\.?\s*d\s*\.?\s*:?\s*|"
+    r"mfg\s*\.?\s*date\s*\.?\s*:?\s*|"
+    r"mfd\s*\.?\s*date\s*\.?\s*:?\s*|"
+    r"manufacturing\s*date\s*:?\s*|"
+    r"e\s*\.?\s*d\s*\.?\s*:?\s*|"
+    r"exp\s*\.?\s*date\s*\.?\s*:?\s*|"
+    r"expiry\s*date\s*\.?\s*:?\s*|"
+    r"use\s*by\s*:?\s*)",
+    re.IGNORECASE,
+)
+_MRP_PREFIX_RE = re.compile(
+    r"^(m\s*\.?\s*r\s*\.?\s*p\s*\.?\s*[₹rs.]*\s*[:.]?\s*|"
+    r"maximum\s+retail\s+price\s*[₹rs.]*\s*[:.]?\s*|"
+    r"mrp\s*[₹rs.]*\s*[:.]?\s*)",
     re.IGNORECASE,
 )
 _MONTH_TO_NUM = {
@@ -142,15 +171,17 @@ def norm_strip_all_ws(s: str) -> str:
 
 
 def norm_mrp(s: str) -> str:
-    """MRP: strip Rs./₹ prefixes, force numeric integer (drop .00 trailing).
+    """MRP: strip field-label + Rs./₹ prefixes, force numeric integer.
 
-    "rs. 85.00" → "85"
-    "₹85" → "85"
+    "M.R.P ₹ : 26.70" → "26.70"
+    "Maximum retail price RS.243.07" → "243.07"
+    "M.R.P.RS. 113.73" → "113.73"
     "85.00" → "85"
     "85.50" → "85.50"
     """
+    s = _MRP_PREFIX_RE.sub("", s).strip()
     s = _INR_PREFIX_RE.sub("", s).strip()
-    # If it parses as a number with .00 trailing, drop the trailing zeros
+    s = re.sub(r"[₹rs.\s]+$", "", s, flags=re.IGNORECASE).strip()
     try:
         v = float(s)
         if v == int(v):
@@ -161,11 +192,15 @@ def norm_mrp(s: str) -> str:
 
 
 def norm_date(s: str) -> str:
-    """Date: normalize MM-YYYY, MM.YYYY, MM YYYY → MM/YYYY; 'Oct 2025' → '10/2025'.
+    """Date: strip field-label prefix, then normalize to MM/YYYY.
 
-    Two-digit year extended to 4-digit (20YY).
+    "M.D : MAY 2024" → "05/2024"
+    "Mfg.Date :04/2025" → "04/2025"
+    "MFG.DATE 11/2024" → "11/2024"
+    "Exp.Date:09/2026" → "09/2026"
+    "APR 2026" → "04/2026"
     """
-    s = s.strip()
+    s = _DATE_PREFIX_RE.sub("", s).strip()
     m = _DATE_DASH_RE.match(s)
     if m:
         mm = m.group(1).zfill(2)
@@ -184,7 +219,8 @@ def norm_date(s: str) -> str:
 
 
 def norm_batch_number(s: str) -> str:
-    """Batch number: strip all whitespace + uppercase (already lower from baseline)."""
+    """Batch number: strip field-label prefix + all whitespace."""
+    s = _BATCH_PREFIX_RE.sub("", s).strip()
     return re.sub(r"\s+", "", s)
 
 
@@ -240,7 +276,10 @@ def score_predictions(predictions_path: Path, rules_out: Path) -> int:
     results = {}
 
     for rule_name, rules in RULE_SETS.items():
-        # Build predicted + truth field dicts under this rule set
+        # Build predicted + truth field dicts under this rule set.
+        # IMPORTANT: gold values also contain field-label prefixes (e.g. "M.R.P ₹ : 26.70"),
+        # so the rules must be applied symmetrically to BOTH pred and gold or the
+        # comparison is unfair.
         preds, truths = [], []
         for r in rows:
             pred_norm = {
@@ -248,7 +287,20 @@ def score_predictions(predictions_path: Path, rules_out: Path) -> int:
                 for f, v in r.get("pred_fields_raw", {}).items()
             }
             preds.append(pred_norm)
-            truths.append(r.get("gold_fields", {}))
+            # gold_fields may be either {f: "value"} or {f: {"text": "value"}}.
+            # Flatten to {f: "value"} first, then normalize symmetrically.
+            gold_raw = r.get("gold_fields", {})
+            gold_flat = {}
+            for f, v in gold_raw.items():
+                if isinstance(v, dict) and "text" in v:
+                    gold_flat[f] = v["text"]
+                elif isinstance(v, str):
+                    gold_flat[f] = v
+            gold_norm = {
+                f: apply_rules(v, f, rules)
+                for f, v in gold_flat.items()
+            }
+            truths.append(gold_norm)
 
         metrics = prepare.compute_metrics(preds, truths)
         s4_strict = sum(metrics["per_field_f1"].get(f, 0.0) for f in SAFETY) / 4
