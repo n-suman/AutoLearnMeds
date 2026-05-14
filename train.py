@@ -964,6 +964,29 @@ def train_loop(model, cfg: Config, device, wandb_run=None) -> dict[str, Any]:
     # Dump final per-field metrics — picked up by per_field_<run_id>.json convention
     import json as _json
     (Path(cfg.checkpoint_dir) / "per_field_final.json").write_text(_json.dumps(last_metrics, indent=2))
+    # If the final-after-loop eval beat the in-loop best, also update best.pt.
+    # Without this, the in-loop best (at last eval_every checkpoint) is saved but
+    # the final-step weights are lost. Same save structure as the in-loop save.
+    if last_metrics["macro_f1"] > best_macro_f1:
+        best_macro_f1 = last_metrics["macro_f1"]
+        full_ckpt = {
+            "step": cfg.max_steps,
+            "macro_f1": best_macro_f1,
+            "proj_state_dict": model.proj.state_dict(),
+            "decoder_blocks_state_dicts": [
+                {n: p.detach().cpu() for n, p in self_named_params(b)}
+                for b in model.decoder.blocks
+            ],
+            "decoder_embedding_state_dict": model.decoder.embedding.state_dict(),
+            "decoder_final_ln_state_dict": model.decoder.final_ln.state_dict(),
+            "config": dataclasses.asdict(cfg),
+        }
+        torch.save(full_ckpt, Path(cfg.checkpoint_dir) / "best.pt")
+        torch.save(
+            {"step": cfg.max_steps, "macro_f1": best_macro_f1},
+            Path(cfg.checkpoint_dir) / "best.meta.pt",
+        )
+        print(f"[final] saved best.pt at final step (new best: {best_macro_f1:.4f})")
     if wandb_run is not None:
         wandb_run.log({"final/macro_f1": last_metrics["macro_f1"]})
     return last_metrics
