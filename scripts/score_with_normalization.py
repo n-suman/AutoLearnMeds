@@ -170,6 +170,25 @@ def norm_strip_all_ws(s: str) -> str:
     return re.sub(r"\s+", "", s)
 
 
+def norm_bpe_cleanup(s: str) -> str:
+    """Undo the trainer's broken BPE decoding.
+
+    Predictions look like ' Mfg . ĠDate Ġ: 04 / 2024 ' but should be
+    'Mfg. Date : 04/2024'. The Ġ prefix in ByteLevel BPE means "real
+    space before this token"; other tokens have no space prefix. The
+    decoder is joining all tokens with a literal space regardless, so:
+      " Ġ" → " " (real space — preserve)
+      " "  → ""  (token-join artifact — drop)
+    """
+    # Real spaces first
+    s = s.replace(" Ġ", " ")
+    # Any remaining Ġ at start of string
+    s = s.replace("Ġ", " ")
+    # Drop token-join artifact spaces
+    s = s.replace(" ", "")
+    return s.strip()
+
+
 def norm_mrp(s: str) -> str:
     """MRP: strip field-label + Rs./₹ prefixes, force numeric integer.
 
@@ -228,25 +247,22 @@ def norm_batch_number(s: str) -> str:
 # Special "_" key applies to ALL fields.
 RULE_SETS = {
     "baseline": {},  # No additional normalization beyond prepare.normalize_field_value
-    "strip_all_ws_global": {"_": norm_strip_all_ws},
-    "currency_dates": {
-        "mrp": norm_mrp,
-        "expiry_date": norm_date,
-        "mfg_date": norm_date,
+    "bpe_cleanup_only": {"_": norm_bpe_cleanup},
+    "bpe_then_field": {
+        "mrp": lambda s: norm_mrp(norm_bpe_cleanup(s)),
+        "expiry_date": lambda s: norm_date(norm_bpe_cleanup(s)),
+        "mfg_date": lambda s: norm_date(norm_bpe_cleanup(s)),
+        "batch_number": lambda s: norm_batch_number(norm_bpe_cleanup(s)),
+        "_": norm_bpe_cleanup,
     },
-    "currency_dates_batch": {
-        "mrp": norm_mrp,
-        "expiry_date": norm_date,
-        "mfg_date": norm_date,
-        "batch_number": norm_batch_number,
+    "bpe_then_field_strip_ws": {
+        "mrp": lambda s: norm_mrp(norm_bpe_cleanup(s)),
+        "expiry_date": lambda s: norm_date(norm_bpe_cleanup(s)),
+        "mfg_date": lambda s: norm_date(norm_bpe_cleanup(s)),
+        "batch_number": lambda s: norm_batch_number(norm_bpe_cleanup(s)),
+        "_": lambda s: norm_strip_all_ws(norm_bpe_cleanup(s)),
     },
-    "all_safety4": {
-        "mrp": norm_mrp,
-        "expiry_date": norm_date,
-        "mfg_date": norm_date,
-        "batch_number": norm_batch_number,
-        "_": norm_strip_all_ws,
-    },
+    "strip_all_ws_global": {"_": norm_strip_all_ws},  # legacy comparison
 }
 
 
