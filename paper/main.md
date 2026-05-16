@@ -1,6 +1,6 @@
 # Comparative Evaluation of End-to-End and Modular Approaches for Small-Data Pharmaceutical Label Information Extraction
 
-> **DRAFT — 2026-05-07.** Sections marked `[FILL]` will be completed when the corresponding experiments land. All numbers cited from completed experiments are pinned to commit SHAs in the project's `experiments/ledger.jsonl`. References use cite keys defined in `papers/README.md`.
+> **Draft — 2026-05-16.** All numbers in this paper are pinned to commit SHAs in the project's `experiments/ledger.jsonl`. References use cite keys defined in `papers/README.md`. Sections I–V cover the original 4-method comparison; Section VI reports the subsequent investigation (BPE decoder discovery + Track E resolution ablation + pseudo-label negative results); Section VII concludes.
 
 ---
 
@@ -106,7 +106,7 @@ The encoder produces a (196, 768) sequence of patch tokens; a learnable linear p
 
 **Training**: AdamW [loshchilov2019adamw] with peak_lr=3e-4, linear warmup over 100 steps, cosine decay to 1e-5; effective batch size 16 (batch 4 × grad_accum 4); bf16 autocast on A100; max_steps=1000; eval every 200 steps; RandAugment [cubuk2020randaugment] M=5 N=2 image augmentation. Trainable parameters: 26.5M (decoder + cross-attention + projection; encoder frozen).
 
-We use train.py at commit `[FILL final-A SHA]` for the headline Track A run; full config in `experiments/configs/baseline.yaml`.
+We use train.py at commit `a10950dee3` for the headline Track A run (`baseline-seed44`); full config in `experiments/configs/baseline.yaml`.
 
 ### C. Track B: Qwen2-VL-2B + LoRA
 
@@ -126,7 +126,7 @@ Track C is Track A with one substitution: the SigLIP-base vision encoder is repl
 
 **TAPT (Phase 7b)**: from the DAPT-final encoder, continue-pretrain MAE for 50 more epochs on the **564 labeled train images only** (peak_lr=5e-5, 5-epoch warmup, otherwise identical config). Final pretraining loss: 0.6008. Wall clock: 26 minutes on A100. The combined DAPT+TAPT recipe follows [gururangan2020dapt].
 
-**Text-aware masking variant (Phase 7b creative reuse #1, [malepati2026sahi]-inspired and [cao2022attmask]-related)**: same architecture and schedule as DAPT, but the masking distribution is biased by per-patch Sobel edge magnitude. For each image, we precompute a (num_patches,) edge-density vector via $\sqrt{\nabla_x^2 + \nabla_y^2}$ averaged within each 16×16 patch. At training time, per-patch mask probability is mapped to the range [bg_mask_rate, text_mask_rate] = [0.60, 0.90] based on the normalized edge density. Patches with high edges (text + graphic boundaries) are masked at 90%; uniform-background patches at 60%. Average mask ratio is held at 0.75 to match the [he2021mae] recipe. Hypothesis: the encoder is forced to spend more capacity on text-from-context filling, the downstream extraction skill we care about. `[FILL final-C-text-aware SHA + final loss]`.
+**Text-aware masking variant (Phase 7b creative reuse #1, [malepati2026sahi]-inspired and [cao2022attmask]-related)**: same architecture and schedule as DAPT, but the masking distribution is biased by per-patch Sobel edge magnitude. For each image, we precompute a (num_patches,) edge-density vector via $\sqrt{\nabla_x^2 + \nabla_y^2}$ averaged within each 16×16 patch. At training time, per-patch mask probability is mapped to the range [bg_mask_rate, text_mask_rate] = [0.60, 0.90] based on the normalized edge density. Patches with high edges (text + graphic boundaries) are masked at 90%; uniform-background patches at 60%. Average mask ratio is held at 0.75 to match the [he2021mae] recipe. Hypothesis: the encoder is forced to spend more capacity on text-from-context filling, the downstream extraction skill we care about. The text-aware variant was committed at `de1f54dca0` (`baseline_mae_text_aware_init-seed44`).
 
 We compare the three Track C variants — DAPT, DAPT+TAPT, DAPT-text-aware — by separately swapping each pretrained encoder into Track A and running an otherwise identical downstream training run.
 
@@ -136,9 +136,9 @@ Track D replicates the methodology of [malepati2026sahi] and adds a per-region t
 
 1. **Detection** with YOLOv12 [tian2025yolov12], single-stage, 640×640 input (training) and 1024-px tiles with 0.35 overlap, base inference size 1280 (testing). Bounding-box classes are the same twelve XML fields.
 2. **Tiling** via Slicing-Aided Hyper Inference [akyon2022sahi], targeted to the four OCR-critical classes (batch_number, MRP, manufacturing_date, expiry_date) per the [malepati2026sahi] finding that uniform tiling does not help globally but selective tiling on small-text classes lifts AP@0.5 by 17× on those classes.
-3. **Per-region OCR** on the cropped detection regions to produce field values. We use `[FILL Phase 8: TrOCR vs SigLIP+linear vs other choice]`.
+3. **Per-region OCR** on the cropped detection regions to produce field values. We use TrOCR-base-printed [li2021trocr], a 333M-parameter encoder-decoder pretrained on printed text recognition. Each detected region is cropped at the full image resolution and passed through the TrOCR processor without further preprocessing.
 
-The final XML is constructed from the per-region OCR outputs and evaluated through the same `prepare.evaluate()` harness as Tracks A, B, C. `[FILL Phase 8 final-D run-id + numbers]`.
+The final XML is constructed from the per-region OCR outputs and evaluated through the same `prepare.evaluate()` harness as Tracks A, B, C. We use train.py at commit `b989a13fd3` for the headline Track D run (`track_d-seed44`), achieving 0.018 macro_f1 / 0.083 macro_edit_f1 — the lowest of any track on both metrics, consistent with the compound-error analysis in Section IV-A.
 
 ### F. Evaluation
 
@@ -209,11 +209,13 @@ We re-ran `baseline-seed44` from a different bootstrap session with bit-identica
 
 ### E. Decision tree by data-size regime
 
-[FILL: this becomes the paper's most-cited summary figure once Tracks C and D land. The skeleton from `docs/superpowers/research_directions.md` projects:
+The five-track results in Sections IV-A and IV-B let us project, regime-by-regime, which method family a practitioner should choose. We caution that two of the three regimes below extrapolate beyond our experimental range and should be read as hypotheses rather than measurements.
 
-- ≥ 5,000 labeled images: end-to-end Track A wins on both compute and accuracy; modular Track D adds latency without proportional gain.
-- 500–5,000 labeled images (our regime): pending Track C and D results. Current evidence (Tracks A vs B): from-scratch hybrid wins; LoRA-VLM does not bridge the gap.
-- < 500 labeled images: untested; predicted regime for `r=4` LoRA-VLM with edit_f1 early-stop or aggressive Track D.]
+**≥ 5,000 labeled images (large-data regime, not tested here).** The from-scratch hybrid (Track A) likely retains the advantage on inference latency (no LoRA adapter penalty, no detection-then-recognize cascade) but the LoRA-VLM (Track B) gap is expected to narrow or invert as the larger backbone has enough supervision to bridge its format-vs-content trade-off. Practitioners with data in this regime should run both and pick whichever wins on their target metric; the relative ordering is no longer entailed by our results.
+
+**500–5,000 labeled images (this paper's regime).** The custom hybrid (Track A) wins on both strict and lenient F1 across every per-field comparison (Section IV-B, Table 2). LoRA fine-tuning of a 100× larger backbone (Track B) underperforms by 3–5× on strict F1 due to the capacity-bottleneck mechanism (Section V-A). MAE-based domain-adaptive pretraining (Track C) underperforms by 2–3× due to catastrophic forgetting (Section V-A). The modular SAHI+OCR pipeline (Track D) underperforms by 4× due to compound errors (Section IV-A). In this regime: choose Track A.
+
+**< 500 labeled images (very small-data regime, not tested here).** Our results do not directly speak to this regime, but two extrapolations are plausible. First, Track A's decoder learns the XML scaffold from the 564 gold rows alone in fewer than 500 steps; below 500 labeled images the decoder may not converge to a usable format and stronger pretrained-decoder priors (Track B with higher LoRA rank, or Donut-style pretrained document decoders) may regain competitiveness. Second, the safety-4 fields likely become inaccessible at any method in this regime, so deployment must tolerate even higher human-review rates than Section VI-E suggests. The natural further-work direction is a separate study at 100–500 labeled images.
 
 ---
 
@@ -350,12 +352,18 @@ Auto-generated from `papers/README.md` cite keys. Format: IEEE conference style.
 
 [1]–[N]: see `papers/README.md` for the canonical bibliography. Cite keys used in this draft (in order of first appearance):
 
-malepati2026sahi, zhai2023siglip, kim2022donut, hu2021lora, wang2024qwen2vl, dettmers2023qlora, he2021mae, gururangan2020dapt, tian2025yolov12, akyon2022sahi, devlin2018bert, bao2021beit, xie2022simmim, cao2022attmask, sang2003conll, lipton2014f1, levenshtein1966, dosovitskiy2020vit, su2021roformer, press2017tied, hendrycks2016gelu, szegedy2016labelsmoothing, loshchilov2019adamw, cubuk2020randaugment.
+malepati2026sahi, zhai2023siglip, kim2022donut, hu2021lora, wang2024qwen2vl, dettmers2023qlora, he2021mae, gururangan2020dapt, tian2025yolov12, akyon2022sahi, devlin2018bert, bao2021beit, xie2022simmim, cao2022attmask, sang2003conll, lipton2014f1, levenshtein1966, dosovitskiy2020vit, su2021roformer, press2017tied, hendrycks2016gelu, szegedy2016labelsmoothing, loshchilov2019adamw, cubuk2020randaugment, radford2019bpe, oquab2024dinov2, smith2007tesseract, baek2019craft, li2021trocr.
 
-External citations needed but not yet in registry (will be added):
-- keers2013 — Keers et al. 2013, "Causes of Medication Administration Errors in Hospitals: a Systematic Review" — already in malepati2026sahi's references; add to our registry.
-- tariq2025 — Tariq et al. 2025, StatPearls "Medication Dispensing Errors and Prevention" — already in malepati2026sahi's references; add to our registry.
-- tolley2022 — Tolley et al. 2022 "The impact of a novel medication scanner on administration errors" — same.
-- nguyen2025 — Nguyen et al. 2025 "Digital Transformation of Medication Identification: Technological Evolution" — same.
-- javaid2024 — Javaid et al. 2024 "Computer vision to enhance healthcare domain" — same.
-- labelstudio — Heartex Labs Label Studio — same; not a paper but cite the URL.
+External citations introduced in this draft that need to be added to `papers/README.md`:
+
+- **keers2013** — Keers et al. 2013, "Causes of Medication Administration Errors in Hospitals: a Systematic Review" — clinical-error rate context (Section I).
+- **tariq2025** — Tariq et al. 2025, StatPearls "Medication Dispensing Errors and Prevention" — same.
+- **tolley2022** — Tolley et al. 2022 "The impact of a novel medication scanner on administration errors" — barcode/RFID baseline (Section II-A).
+- **nguyen2025** — Nguyen et al. 2025 "Digital Transformation of Medication Identification: Technological Evolution" — same.
+- **javaid2024** — Javaid et al. 2024 "Computer vision to enhance healthcare domain" — single-stage YOLO history (Section II-A).
+- **labelstudio** — Heartex Labs Label Studio — annotation tool (Section III-A); cite the URL.
+- **radford2019bpe** — Radford et al. 2019, "Language Models are Unsupervised Multitask Learners" — original GPT-2 paper introducing the ByteLevel BPE convention; cited in Section VI-A for the `Ġ` space-prefix marker.
+- **li2021trocr** — Li et al. 2021, arXiv:2109.10282, "TrOCR: Transformer-based OCR with Pre-trained Models" — per-region OCR head in Track D (Section III-E).
+- **oquab2024dinov2** — Oquab et al. 2024, "DINOv2: Learning Robust Visual Features without Supervision" — alternative encoder family that supports 518×518 input, cited in Sections VI-F and V-D as the natural extension.
+- **smith2007tesseract** — Smith 2007, "An Overview of the Tesseract OCR Engine" — print-OCR resolution-threshold reference cited in Section VI-C; substitute with a more recent open-source-OCR paper if a better fit exists in the registry.
+- **baek2019craft** — Baek et al. 2019, "Character Region Awareness for Text Detection" — modular OCR alternative to TrOCR, cited as a Section V-C limitation.
